@@ -1,0 +1,83 @@
+@(result: org.wa9nnn.cabrillo.Result, fileName: String)
+@import org.wa9nnn.cabrilloserver.NumberOrBlank
+
+@main("Cabrillo Check Results") {
+    <table class="resultTable">
+        <tr class ="sectionHeader" >
+            <th colspan="2" class="section">Process</th>
+        </tr>
+        <tr>
+            <th>File</th>
+            <th>@fileName</th>
+        </tr>
+        <tr>
+            <th>Errors</th>
+            <td  @if(result.tagsWithErrors.isEmpty) {
+            class ="happyCell number"
+        } else {
+            class ="sadCell number"
+        }
+            >
+            @result.tagsWithErrors.size
+            </td>
+        </tr>
+        <tr>
+            <th>Unknown Tags</th>
+            <td  @if(result.unknownTags.isEmpty) {
+            class ="happyCell number"
+        } else {
+            class ="sadCell number"
+        }
+            >
+            @result.unknownTags.size
+            </td>
+        </tr>
+        <tr>
+            <th>Duration</th>
+            <th>@org.wa9nnn.cabrilloserver.DurationFormat.apply(result.duration)</th>
+        </tr>
+    </table>
+    @if(result.tagsWithErrors.nonEmpty || result.unknownTags.nonEmpty) {
+        <table class="resultTable">
+            @if(result.tagsWithErrors.nonEmpty) {
+                <tr class ="sectionHeader" >
+                    <th colspan="4" class="section">Errors</th>
+                </tr>
+                <tr class ="sectionHeader">
+                    <th>Line</th>
+                    <th>Tag</th>
+                    <th>Cause</th>
+                    <th>Body</th>
+                </tr>
+                @for(e <- result.tagsWithErrors) {
+                    <tr><td> @Html(NumberOrBlank(e.lineNumber)
+                    ) </td>
+                        <td> @e.tag </td>
+                        <td> @e.cause </td>
+                        <td class="bodyValue"> @e.body </td>
+                    </tr>
+                }
+            }
+
+            @if(result.unknownTags.nonEmpty) {
+                <tr class ="sectionHeader" >
+                    <th colspan="4" class="section" title="Tags that may be allowed but will be ignored.">Unknown Tags</th>
+                </tr>
+                <tr class ="sectionHeader">
+                    <th>Line</th>
+                    <th>Tag</th>
+                    <th>Cause</th>
+                    <th>Body</th>
+                </tr>
+                @for(e <- result.unknownTags) {
+                    <tr><td> @e.lineNumber </td>
+                        <td> @e.tag </td>
+                        <td> @e.cause </td>
+                        <td class="bodyValue"> @e.body </td>
+                    </tr>
+                }
+            }
+
+        </table>
+    }
+}

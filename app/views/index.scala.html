@@ -1,0 +1,11 @@
+@helper.form(action = routes.WfdController.upload, 'enctype -> "multipart/form-data") {
+
+   @main("WFD Cabrillo File Checker"){
+
+    <p> Cabrillo file to check:
+        <input type="file" name="cabrillo">
+        <input type="submit">
+    </p>
+    }
+
+}
