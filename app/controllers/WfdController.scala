@@ -10,14 +10,18 @@ import ch.qos.logback.core.Appender
 import javax.inject._
 import org.slf4j.LoggerFactory
 import org.wa9nnn.cabrillo.Cabrillo
+import org.wa9nnn.cabrilloserver.FileSaver
 import org.wa9nnn.cabrilloserver.util.JsonLogging
+import play.api.data.Form
 import play.api.libs.Files
 import play.api.mvc._
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
-import scala.io.Source
+import scala.io.{BufferedSource, Source}
 import scala.jdk.CollectionConverters._
+import play.api.data._
+import play.api.data.Forms._
 
 /**
  * This controller creates an `Action` that demonstrates how to write
@@ -35,8 +39,10 @@ import scala.jdk.CollectionConverters._
  *                    a blocking API.
  */
 @Singleton
-class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext) extends AbstractController(cc) with JsonLogging {
+class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
+  extends AbstractController(cc) with JsonLogging {
   setLoggerName("cabrillo")
+  private val fileSaver = new FileSaver(Paths.get("/var/cabrillo"))
 
   def upload: Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { request =>
     request.body
@@ -50,10 +56,22 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
 
         val url = picture.ref.toURI.toURL
 
-        val bufferedSource = Source.fromURL(url)
+        val ots: Option[Seq[String]] = request.body.asFormUrlEncoded.get("okToSave")
+//        val ots: Seq[String] = request.body.dataParts("okToSave")
+//        val okToSave: Option[String] = ots.headOption
+
+         val bufferedSource = Source.fromURL(url)
         val result = Cabrillo(bufferedSource, url)
+        val email = result.email.getOrElse("missing")
+
+       val ff: Option[Path] =  ots.map { x =>
+          val bufferedSource: BufferedSource = Source.fromURL(url)
+          fileSaver(bufferedSource, email)
+        }
+
+
         logJson("result")
-          .++("email" -> result.email.getOrElse("missing"))
+          .++("email" -> email)
           .++("stamp" -> Instant.now())
           .++("from" -> request.connection.remoteAddress)
           .++("fileOk" -> (result.tagsWithErrors == 0))
@@ -61,6 +79,7 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           .++("errorTags" -> result.tagsWithErrors.size)
           .++("unknownTags" -> result.unknownTags.size)
           .++("duration" -> result.duration)
+          .++("saveTo" -> ff.getOrElse("declined"))
           .info()
 
         //        val logger1: Logger = logger

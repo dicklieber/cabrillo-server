@@ -1,1 +1,2 @@
-Web server to check Winter Field Day logs
+# cabrillo-server
+HTTP server for cabrillo data
