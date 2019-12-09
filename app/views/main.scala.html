@@ -4,6 +4,8 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
+@import org.wa9nnn.wfdcheck.BuildInfo
+@import java.time.Instant
 @(title: String)(content: Html)
 @import org.wa9nnn.cabrilloserver.DurationFormat._
 <!DOCTYPE html>
@@ -28,7 +30,9 @@
                 <td colspan="2" class="credits"><p>Written by Dick Lieber, <a href="https://www.qrz.com/db/wa9nnn">WA9NNN</a> for the </a>
                     <a target="_blank" href="https://www.winterfieldday.com">Winter Field Day Association</a>.  Source:
                     <a target="_blank" href="https://github.com/dicklieber/cabrillo-server">http server</a>
-                    <a target="_blank" href="https://github.com/dicklieber/cabrillio">cabrillio library</a> </p></td>
+                    <a target="_blank" href="https://github.com/dicklieber/cabrillio">cabrillio library</a><br/>
+                    Version: @org.wa9nnn.wfdcheck.BuildInfo.version Built: @Instant.ofEpochMilli(BuildInfo.buildTime.toLong).toString commit: @BuildInfo.gitHeadCommit.getOrElse("--")
+                </p></td>
             </tr>
         </table>
     </body>
