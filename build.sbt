@@ -3,7 +3,7 @@ maintainer := "wa9nnn@u505.com"
 
 name := "wfdcheck"
 
-version := "1.2"
+version := "1.3-SNAPSHOT"
 
 organization := "org.wa9nnn"
 
