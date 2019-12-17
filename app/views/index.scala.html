@@ -1,4 +1,4 @@
-@helper.form(action = routes.WfdController.upload, 'enctype -> "multipart/form-data") {
+@helper.form(action = routes.WfdController.upload, Symbol("enctype") -> "multipart/form-data") {
 
     @main("WFD Cabrillo File Checker") {
         <table>

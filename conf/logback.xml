@@ -4,7 +4,7 @@
   <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>/var/log/cabrillo/application.log</file>
+    <file>var/log/cabrillo/application.log</file>
 <!--    <file>${application.home:-.}/logs/application.log</file>-->
     <encoder>
       <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
@@ -12,9 +12,9 @@
   </appender>
 
   <appender name="CABRILLO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>/var/log/cabrillo/cabrillo.log</file>
+  <file>var/log/cabrillo/cabrillo.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>/var/log/cabrillo-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>var/log/cabrillo-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <!-- Or whenever the file size reaches 10MB -->
         <maxFileSize>10MB</maxFileSize>

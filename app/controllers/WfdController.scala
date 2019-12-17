@@ -9,8 +9,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.Appender
 import javax.inject._
 import org.slf4j.LoggerFactory
-import org.wa9nnn.cabrillo.Cabrillo
+import org.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
 import org.wa9nnn.cabrilloserver.FileSaver
+import org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester
 import org.wa9nnn.cabrilloserver.util.JsonLogging
 import play.api.data.Form
 import play.api.libs.Files
@@ -39,7 +40,7 @@ import play.api.data.Forms._
  *                    a blocking API.
  */
 @Singleton
-class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
+class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem,  ingester: MySqlIngester)(implicit exec: ExecutionContext)
   extends AbstractController(cc) with JsonLogging {
   setLoggerName("cabrillo")
   private val fileSaver = new FileSaver(Paths.get("/var/cabrillo"))
@@ -57,14 +58,15 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
         val url = picture.ref.toURI.toURL
 
         val ots: Option[Seq[String]] = request.body.asFormUrlEncoded.get("okToSave")
-//        val ots: Seq[String] = request.body.dataParts("okToSave")
-//        val okToSave: Option[String] = ots.headOption
+        //        val ots: Seq[String] = request.body.dataParts("okToSave")
+        //        val okToSave: Option[String] = ots.headOption
 
-         val bufferedSource = Source.fromURL(url)
-        val result = Cabrillo(bufferedSource, url)
+        val bufferedSource = Source.fromURL(url)
+        val resultWithData: ResultWithData = Cabrillo(bufferedSource)
+        val result = resultWithData.result
         val email = result.email.getOrElse("missing")
 
-       val ff: Option[Path] =  ots.map { x =>
+        val ff: Option[Path] = ots.map { x =>
           val bufferedSource: BufferedSource = Source.fromURL(url)
           fileSaver(bufferedSource, email)
         }
@@ -82,17 +84,20 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           .++("saveTo" -> ff.getOrElse("declined"))
           .info()
 
-        //        val logger1: Logger = logger
-        import ch.qos.logback.classic.LoggerContext
-        val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
-        val list: mutable.Seq[Logger] = context.getLoggerList.asScala
-        for {
-          logger <- list
-          appender <- logger.iteratorForAppenders.asScala
-        } {
-          println(s"${logger.getName}:  ${appender.getName}")
-
+        //        import ch.qos.logback.classic.LoggerContext
+        //        val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
+        //        val list: mutable.Seq[Logger] = context.getLoggerList.asScala
+        //        for {
+        //          logger <- list
+        //          appender <- logger.iteratorForAppenders.asScala
+        //        } {
+        //          println(s"${logger.getName}:  ${appender.getName}")
+        //
+        //        }
+        val maybeEventualMaybeInt = resultWithData.goodData.map { data =>
+          ingester(data)
         }
+
 
         Ok(views.html.wfdresult(result, filename.toString))
 

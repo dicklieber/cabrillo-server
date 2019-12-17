@@ -27,10 +27,15 @@ resolvers += "Akka Snapshot Repository" at "https://repo.akka.io/snapshots/"
 scalaVersion := "2.13.1"
 
 libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
-  "org.wa9nnn" %% "cabrillo" % "0.2.3-SNAPSHOT",
+  "com.github.dicklieber" %% "cabrillo" % "0.3.3-SNAPSHOT",
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
-  "org.specs2" %% "specs2-core" % "4.6.0" % "test"
+  "org.specs2" %% "specs2-core" % "4.6.0" % "test",
+  "com.typesafe.slick" %% "slick" % "3.3.2",
+  "org.mongodb.scala" %% "mongo-scala-driver" % "2.8.0",
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.3.2",
+  "com.typesafe.slick" %% "slick-codegen" % "3.3.2",
+  "mysql" % "mysql-connector-java" % "8.0.18"
 )
 
 

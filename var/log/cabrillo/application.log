@@ -1,0 +1,444 @@
+2019-12-13 15:17:18,074 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-10 - {"reason":"Inserted  Log"}
+2019-12-13 15:17:18,076 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-10 - {"reason":"Completed  Log"}
+2019-12-13 15:17:18,077 [ERROR] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-8 - {"reason":"Failed Qso"}
+org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class org.wa9nnn.cabrillo.parsers.Exchange_WFD.
+	at org.bson.internal.CodecCache.getOrThrow(CodecCache.java:47)
+	at org.bson.internal.ProvidersCodecRegistry.get(ProvidersCodecRegistry.java:65)
+	at org.bson.internal.ProvidersCodecRegistry.get(ProvidersCodecRegistry.java:39)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.writeValue(MacroCodec.scala:167)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.writeValue$(MacroCodec.scala:162)
+	at org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$$anon$2$QSOMacroCodec$1.writeValue(MongoPlaypen.scala:22)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.writeFieldValue(MacroCodec.scala:159)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.writeFieldValue$(MacroCodec.scala:155)
+	at org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$$anon$2$QSOMacroCodec$1.writeFieldValue(MongoPlaypen.scala:22)
+	at org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$$anon$2$QSOMacroCodec$1.writeCaseClassData(MongoPlaypen.scala:22)
+	at org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$$anon$2$QSOMacroCodec$1.writeCaseClassData(MongoPlaypen.scala:22)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.writeValue(MacroCodec.scala:165)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.writeValue$(MacroCodec.scala:162)
+	at org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$$anon$2$QSOMacroCodec$1.writeValue(MongoPlaypen.scala:22)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.encode(MacroCodec.scala:92)
+	at org.mongodb.scala.bson.codecs.macrocodecs.MacroCodec.encode$(MacroCodec.scala:88)
+	at org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$$anon$2$QSOMacroCodec$1.encode(MongoPlaypen.scala:22)
+	at org.bson.codecs.BsonDocumentWrapperCodec.encode(BsonDocumentWrapperCodec.java:63)
+	at org.bson.codecs.BsonDocumentWrapperCodec.encode(BsonDocumentWrapperCodec.java:29)
+	at com.mongodb.operation.BulkWriteBatch$WriteRequestEncoder.encode(BulkWriteBatch.java:385)
+	at com.mongodb.operation.BulkWriteBatch$WriteRequestEncoder.encode(BulkWriteBatch.java:375)
+	at org.bson.codecs.BsonDocumentWrapperCodec.encode(BsonDocumentWrapperCodec.java:63)
+	at org.bson.codecs.BsonDocumentWrapperCodec.encode(BsonDocumentWrapperCodec.java:29)
+	at com.mongodb.internal.connection.BsonWriterHelper.writeDocument(BsonWriterHelper.java:77)
+	at com.mongodb.internal.connection.BsonWriterHelper.writePayload(BsonWriterHelper.java:59)
+	at com.mongodb.internal.connection.CommandMessage.encodeMessageBodyWithMetadata(CommandMessage.java:147)
+	at com.mongodb.internal.connection.RequestMessage.encode(RequestMessage.java:138)
+	at com.mongodb.internal.connection.CommandMessage.encode(CommandMessage.java:61)
+	at com.mongodb.internal.connection.InternalStreamConnection.sendAndReceiveAsync(InternalStreamConnection.java:329)
+	at com.mongodb.internal.connection.UsageTrackingInternalConnection.sendAndReceiveAsync(UsageTrackingInternalConnection.java:114)
+	at com.mongodb.internal.connection.DefaultConnectionPool$PooledConnection.sendAndReceiveAsync(DefaultConnectionPool.java:461)
+	at com.mongodb.internal.connection.CommandProtocolImpl.executeAsync(CommandProtocolImpl.java:78)
+	at com.mongodb.internal.connection.DefaultServer$DefaultServerProtocolExecutor.executeAsync(DefaultServer.java:241)
+	at com.mongodb.internal.connection.DefaultServerConnection.executeProtocolAsync(DefaultServerConnection.java:285)
+	at com.mongodb.internal.connection.DefaultServerConnection.commandAsync(DefaultServerConnection.java:156)
+	at com.mongodb.operation.MixedBulkWriteOperation.executeCommandAsync(MixedBulkWriteOperation.java:444)
+	at com.mongodb.operation.MixedBulkWriteOperation.executeBatchesAsync(MixedBulkWriteOperation.java:350)
+	at com.mongodb.operation.MixedBulkWriteOperation.access$1000(MixedBulkWriteOperation.java:72)
+	at com.mongodb.operation.MixedBulkWriteOperation$2$1.call(MixedBulkWriteOperation.java:239)
+	at com.mongodb.operation.OperationHelper.validateWriteRequests(OperationHelper.java:189)
+	at com.mongodb.operation.MixedBulkWriteOperation$2.call(MixedBulkWriteOperation.java:222)
+	at com.mongodb.operation.OperationHelper$7.onResult(OperationHelper.java:614)
+	at com.mongodb.operation.OperationHelper$7.onResult(OperationHelper.java:611)
+	at com.mongodb.internal.connection.DefaultServer$1.onResult(DefaultServer.java:116)
+	at com.mongodb.internal.connection.DefaultServer$1.onResult(DefaultServer.java:105)
+	at com.mongodb.internal.async.ErrorHandlingResultCallback.onResult(ErrorHandlingResultCallback.java:49)
+	at com.mongodb.internal.connection.DefaultConnectionPool$2.onResult(DefaultConnectionPool.java:222)
+	at com.mongodb.internal.connection.DefaultConnectionPool$2.onResult(DefaultConnectionPool.java:207)
+	at com.mongodb.internal.connection.UsageTrackingInternalConnection$1.onResult(UsageTrackingInternalConnection.java:65)
+	at com.mongodb.internal.connection.UsageTrackingInternalConnection$1.onResult(UsageTrackingInternalConnection.java:57)
+	at com.mongodb.internal.connection.InternalStreamConnection$1$1.onResult(InternalStreamConnection.java:168)
+	at com.mongodb.internal.connection.InternalStreamConnection$1$1.onResult(InternalStreamConnection.java:155)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer.completeConnectionDescriptionInitializationAsync(InternalStreamConnectionInitializer.java:212)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer.access$000(InternalStreamConnectionInitializer.java:44)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer$1$1.onResult(InternalStreamConnectionInitializer.java:88)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer$1$1.onResult(InternalStreamConnectionInitializer.java:82)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer$CompoundAuthenticator.start(InternalStreamConnectionInitializer.java:268)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer$1.onResult(InternalStreamConnectionInitializer.java:94)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer$1.onResult(InternalStreamConnectionInitializer.java:75)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer$2$1.onResult(InternalStreamConnectionInitializer.java:191)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer$2$1.onResult(InternalStreamConnectionInitializer.java:178)
+	at com.mongodb.internal.connection.CommandHelper$1.onResult(CommandHelper.java:59)
+	at com.mongodb.internal.connection.CommandHelper$1.onResult(CommandHelper.java:53)
+	at com.mongodb.internal.connection.InternalStreamConnection$2$1.onResult(InternalStreamConnection.java:399)
+	at com.mongodb.internal.connection.InternalStreamConnection$2$1.onResult(InternalStreamConnection.java:376)
+	at com.mongodb.internal.connection.InternalStreamConnection$MessageHeaderCallback$MessageCallback.onResult(InternalStreamConnection.java:677)
+	at com.mongodb.internal.connection.InternalStreamConnection$MessageHeaderCallback$MessageCallback.onResult(InternalStreamConnection.java:644)
+	at com.mongodb.internal.connection.InternalStreamConnection$5.completed(InternalStreamConnection.java:514)
+	at com.mongodb.internal.connection.InternalStreamConnection$5.completed(InternalStreamConnection.java:511)
+	at com.mongodb.internal.connection.AsynchronousChannelStream$BasicCompletionHandler.completed(AsynchronousChannelStream.java:220)
+	at com.mongodb.internal.connection.AsynchronousChannelStream$BasicCompletionHandler.completed(AsynchronousChannelStream.java:203)
+	at java.base/sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:127)
+	at java.base/sun.nio.ch.Invoker.invokeDirect(Invoker.java:158)
+	at java.base/sun.nio.ch.UnixAsynchronousSocketChannelImpl.implRead(UnixAsynchronousSocketChannelImpl.java:562)
+	at java.base/sun.nio.ch.AsynchronousSocketChannelImpl.read(AsynchronousSocketChannelImpl.java:277)
+	at java.base/sun.nio.ch.AsynchronousSocketChannelImpl.read(AsynchronousSocketChannelImpl.java:298)
+	at com.mongodb.internal.connection.AsynchronousSocketChannelStream$AsynchronousSocketChannelAdapter.read(AsynchronousSocketChannelStream.java:137)
+	at com.mongodb.internal.connection.AsynchronousChannelStream.readAsync(AsynchronousChannelStream.java:105)
+	at com.mongodb.internal.connection.InternalStreamConnection.readAsync(InternalStreamConnection.java:511)
+	at com.mongodb.internal.connection.InternalStreamConnection.access$1000(InternalStreamConnection.java:76)
+	at com.mongodb.internal.connection.InternalStreamConnection$MessageHeaderCallback.onResult(InternalStreamConnection.java:634)
+	at com.mongodb.internal.connection.InternalStreamConnection$MessageHeaderCallback.onResult(InternalStreamConnection.java:619)
+	at com.mongodb.internal.connection.InternalStreamConnection$5.completed(InternalStreamConnection.java:514)
+	at com.mongodb.internal.connection.InternalStreamConnection$5.completed(InternalStreamConnection.java:511)
+	at com.mongodb.internal.connection.AsynchronousChannelStream$BasicCompletionHandler.completed(AsynchronousChannelStream.java:220)
+	at com.mongodb.internal.connection.AsynchronousChannelStream$BasicCompletionHandler.completed(AsynchronousChannelStream.java:203)
+	at java.base/sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:127)
+	at java.base/sun.nio.ch.UnixAsynchronousSocketChannelImpl.finishRead(UnixAsynchronousSocketChannelImpl.java:439)
+	at java.base/sun.nio.ch.UnixAsynchronousSocketChannelImpl.finish(UnixAsynchronousSocketChannelImpl.java:191)
+	at java.base/sun.nio.ch.UnixAsynchronousSocketChannelImpl.onEvent(UnixAsynchronousSocketChannelImpl.java:213)
+	at java.base/sun.nio.ch.KQueuePort$EventHandlerTask.run(KQueuePort.java:312)
+	at java.base/sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:835)
+2019-12-13 15:17:44,523 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Inserted Qso"}
+2019-12-13 15:17:44,523 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-10 - {"reason":"Inserted  Log"}
+2019-12-13 15:17:44,525 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-10 - {"reason":"Completed  Log"}
+2019-12-13 15:17:44,525 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Completed  Qso"}
+2019-12-13 15:57:18,122 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-8 - {"reason":"Inserted Qso"}
+2019-12-13 15:57:18,123 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-8 - {"reason":"Completed  Qso"}
+2019-12-13 15:57:18,125 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-7 - {"reason":"Inserted  Log"}
+2019-12-13 16:00:25,718 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-7 - {"reason":"Completed  Log"}
+2019-12-13 16:01:33,186 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Inserted Qso"}
+2019-12-13 16:01:33,186 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-10 - {"reason":"Inserted  Log"}
+2019-12-13 16:01:33,187 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Completed  Qso"}
+2019-12-13 16:01:33,187 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-10 - {"reason":"Completed  Log"}
+2019-12-13 16:02:52,477 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-12 - {"reason":"Inserted Qso"}
+2019-12-13 16:02:52,477 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Inserted  Log"}
+2019-12-13 16:02:52,478 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-12 - {"reason":"Completed  Qso"}
+2019-12-13 16:02:52,479 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Completed  Log"}
+2019-12-13 16:04:15,488 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Inserted  Log"}
+2019-12-13 16:04:15,488 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-12 - {"reason":"Inserted Qso"}
+2019-12-13 16:04:15,489 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-11 - {"reason":"Completed  Log"}
+2019-12-13 16:04:15,489 [INFO] from org.wa9nnn.cabrilloserver.db.mongodb.MongoPlaypen$ in Thread-12 - {"reason":"Completed  Qso"}
+2019-12-15 14:43:27,645 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 14:44:31,410 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 14:50:32,857 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 14:51:10,623 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 14:53:51,768 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 14:55:00,908 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 15:31:18,944 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 15:32:01,117 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 15:32:54,977 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 15:35:10,971 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 15:35:32,440 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-15 15:36:36,107 [WARN] from slick.util.AsyncExecutor in main - Having maxConnection > maxThreads can result in deadlocks if transactions or database locks are used.
+2019-12-16 19:45:21,550 [INFO] from org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester in play-dev-mode-akka.actor.default-dispatcher-4 - Connnected to slick.jdbc.DataSourceJdbcDataSource@4c62f269
+2019-12-16 19:47:54,535 [ERROR] from application in play-dev-mode-akka.actor.default-dispatcher-4 - 
+
+! @7e7cga89b - Internal server error, for (GET) [/] ->
+ 
+play.api.UnexpectedException: Unexpected exception[CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error]
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:214)
+	at play.core.server.DevServerStart$$anon$1.get(DevServerStart.scala:144)
+	at play.core.server.AkkaHttpServer.handleRequest(AkkaHttpServer.scala:304)
+	at play.core.server.AkkaHttpServer.$anonfun$createServerBinding$1(AkkaHttpServer.scala:189)
+	at akka.stream.impl.fusing.MapAsync$$anon$30.onPush(Ops.scala:1261)
+	at akka.stream.impl.fusing.GraphInterpreter.processPush(GraphInterpreter.scala:523)
+	at akka.stream.impl.fusing.GraphInterpreter.execute(GraphInterpreter.scala:409)
+	at akka.stream.impl.fusing.GraphInterpreterShell.runBatch(ActorGraphInterpreter.scala:606)
+	at akka.stream.impl.fusing.GraphInterpreterShell$AsyncInput.execute(ActorGraphInterpreter.scala:485)
+	at akka.stream.impl.fusing.GraphInterpreterShell.processEvent(ActorGraphInterpreter.scala:581)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.akka$stream$impl$fusing$ActorGraphInterpreter$$processEvent(ActorGraphInterpreter.scala:749)
+	at akka.stream.impl.fusing.ActorGraphInterpreter$$anonfun$receive$1.applyOrElse(ActorGraphInterpreter.scala:764)
+	at akka.actor.Actor.aroundReceive(Actor.scala:539)
+	at akka.actor.Actor.aroundReceive$(Actor.scala:537)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.aroundReceive(ActorGraphInterpreter.scala:671)
+	at akka.actor.ActorCell.receiveMessage(ActorCell.scala:612)
+	at akka.actor.ActorCell.invoke(ActorCell.scala:581)
+	at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:268)
+	at akka.dispatch.Mailbox.run(Mailbox.scala:229)
+	at akka.dispatch.Mailbox.exec(Mailbox.scala:241)
+	at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: com.google.inject.CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error
+	at com.google.inject.internal.Errors.throwCreationExceptionIfErrorsExist(Errors.java:543)
+	at com.google.inject.internal.InternalInjectorCreator.initializeStatically(InternalInjectorCreator.java:159)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:106)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.DevServerStart$$anon$1.$anonfun$reload$3(DevServerStart.scala:193)
+	at play.utils.Threads$.withContextClassLoader(Threads.scala:22)
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:185)
+	... 23 common frames omitted
+2019-12-16 19:51:16,479 [ERROR] from application in play-dev-mode-akka.actor.default-dispatcher-2 - 
+
+! @7e7cgll2f - Internal server error, for (GET) [/] ->
+ 
+play.api.UnexpectedException: Unexpected exception[CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error]
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:214)
+	at play.core.server.DevServerStart$$anon$1.get(DevServerStart.scala:144)
+	at play.core.server.AkkaHttpServer.handleRequest(AkkaHttpServer.scala:304)
+	at play.core.server.AkkaHttpServer.$anonfun$createServerBinding$1(AkkaHttpServer.scala:189)
+	at akka.stream.impl.fusing.MapAsync$$anon$30.onPush(Ops.scala:1261)
+	at akka.stream.impl.fusing.GraphInterpreter.processPush(GraphInterpreter.scala:523)
+	at akka.stream.impl.fusing.GraphInterpreter.execute(GraphInterpreter.scala:409)
+	at akka.stream.impl.fusing.GraphInterpreterShell.runBatch(ActorGraphInterpreter.scala:606)
+	at akka.stream.impl.fusing.GraphInterpreterShell$AsyncInput.execute(ActorGraphInterpreter.scala:485)
+	at akka.stream.impl.fusing.GraphInterpreterShell.processEvent(ActorGraphInterpreter.scala:581)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.akka$stream$impl$fusing$ActorGraphInterpreter$$processEvent(ActorGraphInterpreter.scala:749)
+	at akka.stream.impl.fusing.ActorGraphInterpreter$$anonfun$receive$1.applyOrElse(ActorGraphInterpreter.scala:764)
+	at akka.actor.Actor.aroundReceive(Actor.scala:539)
+	at akka.actor.Actor.aroundReceive$(Actor.scala:537)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.aroundReceive(ActorGraphInterpreter.scala:671)
+	at akka.actor.ActorCell.receiveMessage(ActorCell.scala:612)
+	at akka.actor.ActorCell.invoke(ActorCell.scala:581)
+	at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:268)
+	at akka.dispatch.Mailbox.run(Mailbox.scala:229)
+	at akka.dispatch.Mailbox.exec(Mailbox.scala:241)
+	at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: com.google.inject.CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error
+	at com.google.inject.internal.Errors.throwCreationExceptionIfErrorsExist(Errors.java:543)
+	at com.google.inject.internal.InternalInjectorCreator.initializeStatically(InternalInjectorCreator.java:159)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:106)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.DevServerStart$$anon$1.$anonfun$reload$3(DevServerStart.scala:193)
+	at play.utils.Threads$.withContextClassLoader(Threads.scala:22)
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:185)
+	... 23 common frames omitted
+2019-12-16 19:54:06,152 [ERROR] from application in play-dev-mode-akka.actor.default-dispatcher-3 - 
+
+! @7e7ch5c2h - Internal server error, for (GET) [/] ->
+ 
+play.api.UnexpectedException: Unexpected exception[CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error]
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:214)
+	at play.core.server.DevServerStart$$anon$1.get(DevServerStart.scala:144)
+	at play.core.server.AkkaHttpServer.handleRequest(AkkaHttpServer.scala:304)
+	at play.core.server.AkkaHttpServer.$anonfun$createServerBinding$1(AkkaHttpServer.scala:189)
+	at akka.stream.impl.fusing.MapAsync$$anon$30.onPush(Ops.scala:1261)
+	at akka.stream.impl.fusing.GraphInterpreter.processPush(GraphInterpreter.scala:523)
+	at akka.stream.impl.fusing.GraphInterpreter.execute(GraphInterpreter.scala:409)
+	at akka.stream.impl.fusing.GraphInterpreterShell.runBatch(ActorGraphInterpreter.scala:606)
+	at akka.stream.impl.fusing.GraphInterpreterShell$AsyncInput.execute(ActorGraphInterpreter.scala:485)
+	at akka.stream.impl.fusing.GraphInterpreterShell.processEvent(ActorGraphInterpreter.scala:581)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.akka$stream$impl$fusing$ActorGraphInterpreter$$processEvent(ActorGraphInterpreter.scala:749)
+	at akka.stream.impl.fusing.ActorGraphInterpreter$$anonfun$receive$1.applyOrElse(ActorGraphInterpreter.scala:764)
+	at akka.actor.Actor.aroundReceive(Actor.scala:539)
+	at akka.actor.Actor.aroundReceive$(Actor.scala:537)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.aroundReceive(ActorGraphInterpreter.scala:671)
+	at akka.actor.ActorCell.receiveMessage(ActorCell.scala:612)
+	at akka.actor.ActorCell.invoke(ActorCell.scala:581)
+	at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:268)
+	at akka.dispatch.Mailbox.run(Mailbox.scala:229)
+	at akka.dispatch.Mailbox.exec(Mailbox.scala:241)
+	at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: com.google.inject.CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error
+	at com.google.inject.internal.Errors.throwCreationExceptionIfErrorsExist(Errors.java:543)
+	at com.google.inject.internal.InternalInjectorCreator.initializeStatically(InternalInjectorCreator.java:159)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:106)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.DevServerStart$$anon$1.$anonfun$reload$3(DevServerStart.scala:193)
+	at play.utils.Threads$.withContextClassLoader(Threads.scala:22)
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:185)
+	... 23 common frames omitted
+2019-12-16 19:58:33,721 [INFO] from play.core.server.AkkaHttpServer in play-dev-mode-shutdown-hook-1 - Stopping server...
+2019-12-16 19:58:37,699 [WARN] from akka.actor.CoordinatedShutdown in play-dev-mode-akka.actor.default-dispatcher-8 - Task [shutdown-application-dev-mode] failed in phase [service-stop]: Unexpected exception[CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error]
+2019-12-16 19:58:39,062 [WARN] from akka.actor.CoordinatedShutdown in play-dev-mode-akka.actor.default-dispatcher-7 - Task [shutdown-application-dev-mode] failed in phase [service-stop]: Unexpected exception[CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error]
+2019-12-16 19:59:22,924 [ERROR] from application in play-dev-mode-akka.actor.default-dispatcher-4 - 
+
+! @7e7chnchc - Internal server error, for (GET) [/] ->
+ 
+play.api.UnexpectedException: Unexpected exception[CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error]
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:214)
+	at play.core.server.DevServerStart$$anon$1.get(DevServerStart.scala:144)
+	at play.core.server.AkkaHttpServer.handleRequest(AkkaHttpServer.scala:304)
+	at play.core.server.AkkaHttpServer.$anonfun$createServerBinding$1(AkkaHttpServer.scala:189)
+	at akka.stream.impl.fusing.MapAsync$$anon$30.onPush(Ops.scala:1261)
+	at akka.stream.impl.fusing.GraphInterpreter.processPush(GraphInterpreter.scala:523)
+	at akka.stream.impl.fusing.GraphInterpreter.execute(GraphInterpreter.scala:409)
+	at akka.stream.impl.fusing.GraphInterpreterShell.runBatch(ActorGraphInterpreter.scala:606)
+	at akka.stream.impl.fusing.GraphInterpreterShell$AsyncInput.execute(ActorGraphInterpreter.scala:485)
+	at akka.stream.impl.fusing.GraphInterpreterShell.processEvent(ActorGraphInterpreter.scala:581)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.akka$stream$impl$fusing$ActorGraphInterpreter$$processEvent(ActorGraphInterpreter.scala:749)
+	at akka.stream.impl.fusing.ActorGraphInterpreter$$anonfun$receive$1.applyOrElse(ActorGraphInterpreter.scala:764)
+	at akka.actor.Actor.aroundReceive(Actor.scala:539)
+	at akka.actor.Actor.aroundReceive$(Actor.scala:537)
+	at akka.stream.impl.fusing.ActorGraphInterpreter.aroundReceive(ActorGraphInterpreter.scala:671)
+	at akka.actor.ActorCell.receiveMessage(ActorCell.scala:612)
+	at akka.actor.ActorCell.invoke(ActorCell.scala:581)
+	at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:268)
+	at akka.dispatch.Mailbox.run(Mailbox.scala:229)
+	at akka.dispatch.Mailbox.exec(Mailbox.scala:241)
+	at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: com.google.inject.CreationException: Unable to create injector, see the following errors:
+
+1) Injected field controllers.WfdController.ingester cannot be final.
+  while locating controllers.WfdController
+    for the 3rd parameter of router.Routes.<init>(Routes.scala:33)
+  at play.api.inject.RoutesProvider$.bindingsFromConfiguration(BuiltinModule.scala:130):
+Binding(class router.Routes to self) (via modules: com.google.inject.util.Modules$OverrideModule -> play.api.inject.guice.GuiceableModuleConversions$$anon$4)
+
+1 error
+	at com.google.inject.internal.Errors.throwCreationExceptionIfErrorsExist(Errors.java:543)
+	at com.google.inject.internal.InternalInjectorCreator.initializeStatically(InternalInjectorCreator.java:159)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:106)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.DevServerStart$$anon$1.$anonfun$reload$3(DevServerStart.scala:193)
+	at play.utils.Threads$.withContextClassLoader(Threads.scala:22)
+	at play.core.server.DevServerStart$$anon$1.reload(DevServerStart.scala:185)
+	... 23 common frames omitted
+2019-12-16 20:01:48,840 [INFO] from org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester in play-dev-mode-akka.actor.default-dispatcher-2 - Connnected to slick.jdbc.JdbcBackend$DatabaseDef@6098646d
+2019-12-16 20:01:49,673 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-2 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 20:01:49,681 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-2 - Application started (Dev) (no global state)
+2019-12-16 20:02:09,496 [INFO] from cabrillo in application-akka.actor.default-dispatcher-6 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T02:02:09.356052Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.019158S","saveTo":"declined"}
+2019-12-16 20:03:03,190 [INFO] from cabrillo in application-akka.actor.default-dispatcher-2 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T02:03:03.189410Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.005688S","saveTo":"declined"}
+2019-12-16 20:17:57,024 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-4 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 20:17:57,029 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-4 - Application started (Dev) (no global state)
+2019-12-16 20:18:12,694 [INFO] from cabrillo in application-akka.actor.default-dispatcher-4 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T02:18:12.553638Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.016202S","saveTo":"declined"}
+2019-12-16 20:18:15,839 [ERROR] from application in application-akka.actor.default-dispatcher-4 - 
+
+! @7e7ck9oi2 - Internal server error, for (POST) [/wfd] ->
+ 
+play.api.http.HttpErrorHandlerExceptions$$anon$1: Execution exception[[NumberFormatException: For input string: "3.0"]]
+	at play.api.http.HttpErrorHandlerExceptions$.throwableToUsefulException(HttpErrorHandler.scala:351)
+	at play.api.http.DefaultHttpErrorHandler.onServerError(HttpErrorHandler.scala:267)
+	at play.core.server.AkkaHttpServer$$anonfun$1.applyOrElse(AkkaHttpServer.scala:448)
+	at play.core.server.AkkaHttpServer$$anonfun$1.applyOrElse(AkkaHttpServer.scala:446)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:453)
+	at akka.dispatch.BatchingExecutor$AbstractBatch.processBatch(BatchingExecutor.scala:55)
+	at akka.dispatch.BatchingExecutor$BlockableBatch.$anonfun$run$1(BatchingExecutor.scala:92)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:94)
+	at akka.dispatch.BatchingExecutor$BlockableBatch.run(BatchingExecutor.scala:92)
+	at akka.dispatch.TaskInvocation.run(AbstractDispatcher.scala:41)
+	at akka.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:49)
+	at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: java.lang.NumberFormatException: For input string: "3.0"
+	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:68)
+	at java.base/java.lang.Integer.parseInt(Integer.java:658)
+	at java.base/java.lang.Integer.parseInt(Integer.java:776)
+	at scala.collection.StringOps$.toInt$extension(StringOps.scala:889)
+	at org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester.$anonfun$apply$1(MySqlIngester.scala:28)
+	at org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester.$anonfun$apply$1$adapted(MySqlIngester.scala:28)
+	at scala.Option.map(Option.scala:242)
+	at org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester.apply(MySqlIngester.scala:28)
+	at controllers.WfdController.$anonfun$upload$6(WfdController.scala:98)
+	at scala.Option.map(Option.scala:242)
+	at controllers.WfdController.$anonfun$upload$2(WfdController.scala:97)
+	at scala.Option.map(Option.scala:242)
+	at controllers.WfdController.$anonfun$upload$1(WfdController.scala:51)
+	at scala.Function1.$anonfun$andThen$1(Function1.scala:85)
+	at play.api.mvc.ActionBuilderImpl.invokeBlock(Action.scala:489)
+	at play.api.mvc.ActionBuilderImpl.invokeBlock(Action.scala:487)
+	at play.api.mvc.ActionBuilder$$anon$9.invokeBlock(Action.scala:336)
+	at play.api.mvc.ActionBuilder$$anon$9.invokeBlock(Action.scala:331)
+	at play.api.mvc.ActionBuilder$$anon$10.apply(Action.scala:426)
+	at play.api.mvc.Action.$anonfun$apply$2(Action.scala:98)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:433)
+	... 11 common frames omitted
+2019-12-16 20:21:52,984 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-4 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 20:21:52,989 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-4 - Application started (Dev) (no global state)
+2019-12-16 20:21:59,371 [INFO] from cabrillo in application-akka.actor.default-dispatcher-2 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T02:21:59.241137Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.017071S","saveTo":"declined"}
