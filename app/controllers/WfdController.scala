@@ -84,7 +84,7 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           .++("saveTo" -> ff.getOrElse("declined"))
           .info()
 
-       val autoIncId = resultWithData.goodData.map { data =>
+       val autoEntryId = resultWithData.goodData.map { data =>
          val id = Await.result( ingester(data), 5 seconds)
           logger.info(s"id: $id")
          id

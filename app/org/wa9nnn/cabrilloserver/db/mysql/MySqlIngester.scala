@@ -18,28 +18,25 @@ class MySqlIngester @Inject() extends LazyLogging {
 
   val db = Database.forConfig(path = "wfdmysql")
 
-  implicit def opt(tag: Tag)(implicit cabrilloData: CabrilloData): Option[String] = {
-      // get body of 1st instance of the [[Tag]] or None if tag not present
-    cabrilloData.apply(tag).headOption.map(_.body)
-  }
 
-  def apply(implicit cabrilloData: CabrilloData): Future[Int] = {
+  def apply( cabrilloData: CabrilloData): Future[Int] = {
 
-    val row: mysql.Tables.EntriesRow = Tables.EntriesRow(
-      id = 0, // will come from DB
-      logVersion = opt("START-OF-LOG").map(_.toDouble.toInt),
-      callsign = opt("CALLSIGN"),
-      contest = opt("CONTEST"),
-      assisted = None,
-      bandId = Some(0),
-      modeId = Some(0),
-      operators = Some(2),
-      operatorTypeId = None,
-      powerId = Some(1),
-      stationId = None,
-      timeId = None
-    )
-    val value = Tables.Entries returning Tables.Entries.map(_.id) += row
+    val adapter = new CabrilloDataAdapter(cabrilloData)
+//    val row: mysql.Tables.EntriesRow = Tables.EntriesRow(
+//      id = 0, // will come from DB
+//      logVersion = opt("START-OF-LOG").map(_.toDouble.toInt),
+//      callsign = opt("CALLSIGN"),
+//      contest = opt("CONTEST"),
+//      assisted = None,
+//      bandId = Some(0),
+//      modeId = Some(0),
+//      operators = Some(2),
+//      operatorTypeId = None,
+//      powerId = Some(1),
+//      stationId = None,
+//      timeId = None
+//    )
+    val value = Tables.Entries returning Tables.Entries.map(_.id) += adapter.entryRow
 //    val value: FixedSqlAction[Int, NoStream, Effect.Write] = Tables.Entries += row
 //    val statement: String = Tables.Entries.insertStatement
     val eventualInt: Future[Int] = db.run(value)
