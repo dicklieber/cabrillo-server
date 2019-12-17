@@ -6,7 +6,9 @@ import javax.inject._
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.cabrilloserver.db.mysql
 import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
+import slick.dbio.Effect
 import slick.jdbc.MySQLProfile.api._
+import slick.sql.FixedSqlAction
 
 import scala.concurrent.Future
 
@@ -21,7 +23,7 @@ class MySqlIngester @Inject() extends LazyLogging {
     cabrilloData.apply(tag).headOption.map(_.body)
   }
 
-  def apply(implicit cabrilloData: CabrilloData): Future[Option[Int]] = {
+  def apply(implicit cabrilloData: CabrilloData): Future[Int] = {
 
     val row: mysql.Tables.EntriesRow = Tables.EntriesRow(
       id = 0, // will come from DB
@@ -37,13 +39,16 @@ class MySqlIngester @Inject() extends LazyLogging {
       stationId = None,
       timeId = None
     )
-    val value = Tables.Entries += row
-    val statement = Tables.Entries.insertStatement
+    val value = Tables.Entries returning Tables.Entries.map(_.id) += row
+//    val value: FixedSqlAction[Int, NoStream, Effect.Write] = Tables.Entries += row
+//    val statement: String = Tables.Entries.insertStatement
     val eventualInt: Future[Int] = db.run(value)
     //    eventualInt.onComplete { f =>
     //      println(f)
     //
     //    }
-    eventualInt.map(rowsEffected => Some(rowsEffected))
+
+
+  eventualInt
   }
 }

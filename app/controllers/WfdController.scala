@@ -16,11 +16,11 @@ import org.wa9nnn.cabrilloserver.util.JsonLogging
 import play.api.data.Form
 import play.api.libs.Files
 import play.api.mvc._
-
+import scala.language.postfixOps
 import scala.collection.mutable
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext}
 import scala.io.{BufferedSource, Source}
-import scala.jdk.CollectionConverters._
+import scala.concurrent.duration._
 import play.api.data._
 import play.api.data.Forms._
 
@@ -84,18 +84,10 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           .++("saveTo" -> ff.getOrElse("declined"))
           .info()
 
-        //        import ch.qos.logback.classic.LoggerContext
-        //        val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
-        //        val list: mutable.Seq[Logger] = context.getLoggerList.asScala
-        //        for {
-        //          logger <- list
-        //          appender <- logger.iteratorForAppenders.asScala
-        //        } {
-        //          println(s"${logger.getName}:  ${appender.getName}")
-        //
-        //        }
-        val maybeEventualMaybeInt = resultWithData.goodData.map { data =>
-          ingester(data)
+       val autoIncId = resultWithData.goodData.map { data =>
+         val id = Await.result( ingester(data), 5 seconds)
+          logger.info(s"id: $id")
+         id
         }
 
 

@@ -442,3 +442,35 @@ Caused by: java.lang.NumberFormatException: For input string: "3.0"
 
 2019-12-16 20:21:52,989 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-4 - Application started (Dev) (no global state)
 2019-12-16 20:21:59,371 [INFO] from cabrillo in application-akka.actor.default-dispatcher-2 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T02:21:59.241137Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.017071S","saveTo":"declined"}
+2019-12-16 21:34:15,648 [INFO] from cabrillo in application-akka.actor.default-dispatcher-12 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T03:34:15.648609Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.002589S","saveTo":"declined"}
+2019-12-16 22:40:22,377 [INFO] from play.core.server.AkkaHttpServer in pool-9-thread-7 - Stopping server...
+2019-12-16 22:40:27,013 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-43 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 22:40:27,014 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-43 - Application started (Dev) (no global state)
+2019-12-16 22:41:11,314 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-7 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 22:41:11,318 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-7 - Application started (Dev) (no global state)
+2019-12-16 22:41:18,707 [INFO] from cabrillo in application-akka.actor.default-dispatcher-3 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T04:41:18.614938Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.012245S","saveTo":"declined"}
+2019-12-16 22:41:33,816 [INFO] from play.core.server.AkkaHttpServer in play-dev-mode-shutdown-hook-1 - Stopping server...
+2019-12-16 22:44:42,447 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-12 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 22:44:42,452 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-12 - Application started (Dev) (no global state)
+2019-12-16 22:44:52,337 [INFO] from cabrillo in application-akka.actor.default-dispatcher-3 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T04:44:52.144890Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.019314S","saveTo":"declined"}
+2019-12-16 22:45:59,348 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-9 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 22:45:59,353 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-9 - Application started (Dev) (no global state)
+2019-12-16 22:46:08,621 [INFO] from cabrillo in application-akka.actor.default-dispatcher-2 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T04:46:08.437835Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.018099S","saveTo":"declined"}
+2019-12-16 22:46:12,321 [INFO] from cabrillo in application-akka.actor.default-dispatcher-2 - id: Future(<not completed>)
+2019-12-16 22:53:51,772 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-4 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+
+2019-12-16 22:53:51,777 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-4 - Application started (Dev) (no global state)
+2019-12-16 22:53:58,773 [INFO] from cabrillo in application-akka.actor.default-dispatcher-3 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T04:53:58.617742Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":0,"unknownTags":0,"duration":"PT0.016242S","saveTo":"declined"}
+2019-12-16 22:54:08,535 [INFO] from cabrillo in application-akka.actor.default-dispatcher-3 - id: 10
+2019-12-16 22:55:04,952 [INFO] from cabrillo in application-akka.actor.default-dispatcher-5 - {"reason":"result","email":"missing","stamp":"2019-12-17T04:55:04.952254Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":42,"errorTags":0,"unknownTags":0,"duration":"PT0.00346S","saveTo":"declined"}
+2019-12-16 22:55:15,449 [INFO] from cabrillo in application-akka.actor.default-dispatcher-5 - id: 11
+2019-12-16 22:55:25,820 [INFO] from cabrillo in application-akka.actor.default-dispatcher-5 - {"reason":"result","email":"LaneKG@gmail.com","stamp":"2019-12-17T04:55:25.820261Z","from":"/0:0:0:0:0:0:0:1","fileOk":"false","lines":43,"errorTags":1,"unknownTags":0,"duration":"PT0.00363S","saveTo":"declined"}
