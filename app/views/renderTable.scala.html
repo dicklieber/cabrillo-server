@@ -1,0 +1,76 @@
+@(uiTable: org.wa9nnn.cabrilloserver.ui.UiTable)
+<table class = "@uiTable.cssClass"
+
+    @if(uiTable.id) {
+    id="@uiTable.id.get"
+}
+>
+<thead>
+@for(chRow <- uiTable.columnHeaders) {
+    <tr>
+    @for(cell <- chRow) {
+        <th rowspan="@(cell.rowSpan)" colspan="@(cell.colSpan)" @if(cell.style) {
+            style="@(cell.style.get)"
+        }
+        class="@cell.renderedCssClass"
+        title="@(cell.tooltip)"
+    >@(cell.values.head)
+        </th>
+    }
+    </tr>
+}
+</thead>
+<tbody>
+@for(row <- uiTable.rows) {
+    <tr class="@(row.cssClass)" @(row.rowId match {
+        case None =>
+            ""
+        case Some(id) =>
+            s"id='$id'"
+    })
+    title = "@(row.rowToolTip)"
+    >
+    @for(cell <- row.cells) {
+        <td rowspan="@(cell.rowSpan)" colspan="@(cell.colSpan)"
+        class="@cell.renderedCssClass"
+        title="@(cell.tooltip)"
+            @if(cell.style) {
+                style="@(cell.style.get)"
+                }
+        > @if(cell.href.isDefined) {
+            @defining(cell.href.get) { link =>
+                @if(cell.image.nonEmpty) {
+                    <a href="@(link.url)" @if(link.target.nonEmpty) {
+                        target="@link.target"}><img src="@(cell.image.head)"></a>
+                } else {
+                    <a href="@(link.url)" @if(link.target.nonEmpty) {
+                        target="@link.target"}>@(cell.values.head)</a>
+                }
+            }
+        } else {
+            @if(cell.button) {
+                <button class="@(cell.button.get)">@(cell.values.head)</button>
+            } else {
+                @if(cell.rawHtml) {
+                    @Html(cell.values.head)
+                } else {
+                    @if(cell.image.nonEmpty) {
+                        @for(image <- cell.image) {
+                            <img src="@(image)">
+                        }
+                    } else {
+                        @(cell.values.head)
+                        @for(parentheticLine <- cell.values.drop(1)) {
+                            <br/>
+                            <span class="parenthetic">@(parentheticLine)</span>
+                        }
+                    }
+                }
+            }
+        }</td>
+    }
+    </tr>
+}
+</tbody>
+</table>
+

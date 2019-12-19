@@ -31,7 +31,13 @@ class BiMap[X, Y](map: Map[X, Y]) {
 
   def apply(x: X): Y = map(x)
 
-  def apply(y: Y)(implicit d: BiMap.MethodDistinctor): X = reverseMap(y)
+  def apply(y: Y)(implicit d: BiMap.MethodDistinctor): X = {
+    try {
+      reverseMap(y)
+    } catch {
+      case _: Throwable => domain.head
+    }
+  }
 
   /**
    *

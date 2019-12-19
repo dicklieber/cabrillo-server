@@ -28,6 +28,7 @@ scalaVersion := "2.13.1"
 
 libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
   "com.github.dicklieber" %% "cabrillo" % "0.3.3-SNAPSHOT",
+ "com.typesafe.play" %% "play-slick" % "5.0.0",
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.specs2" %% "specs2-core" % "4.6.0" % "test",

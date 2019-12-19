@@ -1,8 +1,13 @@
 
 package org.wa9nnn.cabrilloserver.db.mysql
 
+import java.sql.Time
+import java.time.Instant
+
+import com.typesafe.scalalogging.LazyLogging
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
+import org.wa9nnn.cabrillo.parsers.QSO_WFD
 import org.wa9nnn.cabrilloserver.db.mysql.Tables._
 
 /**
@@ -10,7 +15,7 @@ import org.wa9nnn.cabrilloserver.db.mysql.Tables._
  *
  * @param cabrilloData from file.
  */
-case class CabrilloDataAdapter(cabrilloData: CabrilloData) {
+case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging{
   private implicit val cd = cabrilloData
 
   /**
@@ -28,6 +33,13 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) {
 
   private implicit def int(tag: Tag): Option[Int] = {
     cabrilloData.apply(tag).headOption.map(_.body.toInt)
+  }
+
+  implicit def asDate(stamp: Instant): java.sql.Date = {
+    new java.sql.Date(stamp.toEpochMilli)
+  }
+  implicit def asTime(stamp: Instant): java.sql.Time = {
+    new java.sql.Time(stamp.toEpochMilli)
   }
 
   /**
@@ -48,7 +60,7 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) {
     operatorTypeId = Operator("CATEGORY-OPERATOR"),
     powerId = Power("CATEGORY-POWER"),
     stationId = Station("CATEGORY-STATION"),
-    timeId = Time("CATEGORY-TIME"),
+    timeId = TimeId("CATEGORY-TIME"),
     transmitterId = Transmitter("CATEGORY-TRANSMITTER"),
     overlayId = Overlay("CATEGORY-OVERLAY"),
     certificate = ("CERTIFICATE", "YES"),
@@ -66,8 +78,33 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) {
     country = "ADDRESS-COUNTRY"
   )
 
-  def contactsRows: Seq[ContactsRow] = {
-    Seq.empty //todo
+  def contactsRows(entryId: Int): Seq[ContactsRow] = {
+    def row(qso: QSO_WFD): ContactsRow = {
+      logger.info(s"qsoMode: ${qso.mode}")
+      ContactsRow(
+        id = 0, // autoinc
+        entryId = entryId,
+        freq = qso.freq,
+        qsoMode = Mode(qso.mode),
+        contactDate = qso.stamp,
+        contactTime = qso.stamp,
+        callsign = qso.sent.callsign,
+        exch = qso.received.toString(),
+        transmitter = 0 //todo
+      )
+    }
+    //todo soapbox
+
+
+    cabrilloData.apply("QSO").flatMap { tv =>
+      tv match {
+        case qso: QSO_WFD =>
+          Seq(row(qso))
+        case _ =>
+          Seq.empty
+      }
+
+    }
   }
 
 }

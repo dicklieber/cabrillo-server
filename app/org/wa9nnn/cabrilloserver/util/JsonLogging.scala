@@ -4,7 +4,7 @@
 
 package org.wa9nnn.cabrilloserver.util
 
-import java.time.{Instant, ZonedDateTime}
+import java.time.Instant
 
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.libs.json._
@@ -143,7 +143,7 @@ object LogJson {
     val jsValue = value match {
       case v: String => JsString(v)
       case v: Instant => JsString(v.toString)
-      case v: ZonedDateTime => JsString(v.toString)
+//      case v: ZonedDateTime => JsString(v.toString)
       case v: Int => JsNumber(v)
       case v: Long => JsNumber(v)
       case v: Double => JsNumber(v)

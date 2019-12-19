@@ -85,7 +85,7 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           .info()
 
        val autoEntryId = resultWithData.goodData.map { data =>
-         val id = Await.result( ingester(data), 5 seconds)
+         val id =  ingester(data)
           logger.info(s"id: $id")
          id
         }
