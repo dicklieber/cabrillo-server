@@ -4,12 +4,14 @@
 }
 
 
-/*table {*/
-/*    border: #666666;*/
-/*    border-collapse: collapse;*/
-/*    border-spacing: 2px;*/
-/*    border-width: 1px;*/
-/*}*/
+.layoutTable  table, th, td {
+    border: none;
+    background: none;
+}
+.layoutTable   th {
+    border: none;
+    background: none;
+}
 
 
 .number {
@@ -50,6 +52,8 @@ h2 {
 table th {
     text-align: left;
     border-collapse: collapse;
+    /*background: darkgrey;*/
+    /*color: white;*/
 }
 
 .resultTable {
@@ -60,6 +64,10 @@ table th {
 .resultTable th {
     border: 1px solid black;
     padding: 2px;
+    background: lightgray;
+}
+.rowHeader {
+    text-align: right;
 }
 
 .resultTable td {
@@ -79,6 +87,13 @@ table th {
     background: lightgray;
 }
 
+.parenthetic {
+    font-size: small;
+    color: darkgrey;
+    font-weight: lighter;
+    font-style: italic;
+    opacity: 75;
+}
 .bodyValue {
     font-family: monospace;
 }

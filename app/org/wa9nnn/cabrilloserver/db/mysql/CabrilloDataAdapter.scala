@@ -1,13 +1,13 @@
 
 package org.wa9nnn.cabrilloserver.db.mysql
 
-import java.sql.Time
 import java.time.Instant
 
 import com.typesafe.scalalogging.LazyLogging
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
 import org.wa9nnn.cabrillo.parsers.QSO_WFD
+import org.wa9nnn.cabrilloserver
 import org.wa9nnn.cabrilloserver.db.mysql.Tables._
 
 /**
@@ -15,7 +15,8 @@ import org.wa9nnn.cabrilloserver.db.mysql.Tables._
  *
  * @param cabrilloData from file.
  */
-case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging{
+case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging {
+
   private implicit val cd = cabrilloData
 
   /**
@@ -38,19 +39,24 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging{
   implicit def asDate(stamp: Instant): java.sql.Date = {
     new java.sql.Date(stamp.toEpochMilli)
   }
+
   implicit def asTime(stamp: Instant): java.sql.Time = {
     new java.sql.Time(stamp.toEpochMilli)
   }
+
+  def callsign: String = cabrilloData.apply("CALLSIGN").head.body
+
 
   /**
    * Most of the columns are optional with in [[EntriesRow]] is a scala Optional
    * the opt method will get the 1st named tag and wrap in an Option
    *
+   * @param logVersion None if there is no existing entry for this callsign otherwise Some(highest logVersion in db)
    * @return
    */
-  def entryRow: EntriesRow = EntriesRow(
+  def entryRow(logVersion: Option[Int]): EntriesRow = EntriesRow(
     id = 0, // will come from DB
-    logVersion = str("START-OF-LOG").map(_.toDouble.toInt),
+    logVersion = Some(logVersion.getOrElse(-1) + 1),
     callsign = "CALLSIGN",
     contest = "CONTEST",
     assisted = ("CATEGORY-ASSISTED", "ASSISTED"),
@@ -80,7 +86,6 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging{
 
   def contactsRows(entryId: Int): Seq[ContactsRow] = {
     def row(qso: QSO_WFD): ContactsRow = {
-      logger.info(s"qsoMode: ${qso.mode}")
       ContactsRow(
         id = 0, // autoinc
         entryId = entryId,
@@ -93,8 +98,6 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging{
         transmitter = 0 //todo
       )
     }
-    //todo soapbox
-
 
     cabrilloData.apply("QSO").flatMap { tv =>
       tv match {
@@ -106,6 +109,17 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging{
 
     }
   }
+
+  def soapboxes(entryId: Int): Iterable[cabrilloserver.db.mysql.Tables.SoapboxesRow] = {
+    for {
+      soapbox <- cabrilloData("SOAPBOX")
+      body = soapbox.body.trim
+      if !body.isEmpty
+    } yield {
+      SoapboxesRow(0, Some(entryId), Some(body))
+    }
+  }
+
 
 }
 

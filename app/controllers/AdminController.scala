@@ -2,6 +2,8 @@ package controllers
 
 import javax.inject._
 import org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester
+import org.wa9nnn.cabrilloserver.db.mysql.Tables._
+import org.wa9nnn.cabrilloserver.htmlTable._
 import play.api.mvc._
 
 /**
@@ -17,11 +19,16 @@ class AdminController @Inject()(cc: ControllerComponents, ingester: MySqlIngeste
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def admin = Action {
+  def admin: Action[AnyContent] = Action {
 
-    val entries = ingester.entries
+    val entries: Seq[EntriesRow] = ingester.entries
 
-    Ok(views.html.index())
+    val header = Header[EntriesRow]()
+    val entryTable = Table(header, entries.map(entry =>
+      Row(entry)): _*)
+        .withCssClass("resultTable")
+
+    Ok(views.html.entries(entryTable))
   }
 
 }

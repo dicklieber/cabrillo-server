@@ -40,7 +40,7 @@ import play.api.data.Forms._
  *                    a blocking API.
  */
 @Singleton
-class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem,  ingester: MySqlIngester)(implicit exec: ExecutionContext)
+class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, ingester: MySqlIngester)(implicit exec: ExecutionContext)
   extends AbstractController(cc) with JsonLogging {
   setLoggerName("cabrillo")
   private val fileSaver = new FileSaver(Paths.get("/var/cabrillo"))
@@ -52,14 +52,12 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
         // only get the last part of the filename
         // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
         val filename: Path = Paths.get(picture.filename).getFileName
-        val fileSize = picture.fileSize
-        val contentType = picture.contentType
+//        val fileSize = picture.fileSize
+//        val contentType = picture.contentType
 
         val url = picture.ref.toURI.toURL
 
         val ots: Option[Seq[String]] = request.body.asFormUrlEncoded.get("okToSave")
-        //        val ots: Seq[String] = request.body.dataParts("okToSave")
-        //        val okToSave: Option[String] = ots.headOption
 
         val bufferedSource = Source.fromURL(url)
         val resultWithData: ResultWithData = Cabrillo(bufferedSource)
@@ -84,17 +82,15 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           .++("saveTo" -> ff.getOrElse("declined"))
           .info()
 
-       val autoEntryId = resultWithData.goodData.map { data =>
-         val id =  ingester(data)
+        val autoEntryId: Option[Int] = resultWithData.goodData.map { data =>
+          val id = ingester(data)
           logger.info(s"id: $id")
-         id
+          id
         }
 
 
-        Ok(views.html.wfdresult(result, filename.toString))
+        Ok(views.html.wfdresult(result, filename.toString, autoEntryId))
 
-        //        picture.ref.copyTo(Paths.get(s"/tmp/picture/$filename"), replace = true)
-        //        Ok("File uploaded")
       }
       .getOrElse {
         NoContent

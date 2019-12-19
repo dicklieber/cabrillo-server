@@ -1,4 +1,4 @@
-@(uiTable: org.wa9nnn.cabrilloserver.ui.UiTable)
+@(uiTable: org.wa9nnn.cabrilloserver.htmlTable.Table)
 <table class = "@uiTable.cssClass"
 
     @if(uiTable.id) {
@@ -14,7 +14,7 @@
         }
         class="@cell.renderedCssClass"
         title="@(cell.tooltip)"
-    >@(cell.values.head)
+    >@(cell.value)
         </th>
     }
     </tr>
@@ -44,26 +44,22 @@
                         target="@link.target"}><img src="@(cell.image.head)"></a>
                 } else {
                     <a href="@(link.url)" @if(link.target.nonEmpty) {
-                        target="@link.target"}>@(cell.values.head)</a>
+                        target="@link.target"}>@(cell.value)</a>
                 }
             }
         } else {
             @if(cell.button) {
-                <button class="@(cell.button.get)">@(cell.values.head)</button>
+                <button class="@(cell.button.get)">@(cell.value)</button>
             } else {
                 @if(cell.rawHtml) {
-                    @Html(cell.values.head)
+                    @Html(cell.value)
                 } else {
                     @if(cell.image.nonEmpty) {
                         @for(image <- cell.image) {
                             <img src="@(image)">
                         }
                     } else {
-                        @(cell.values.head)
-                        @for(parentheticLine <- cell.values.drop(1)) {
-                            <br/>
-                            <span class="parenthetic">@(parentheticLine)</span>
-                        }
+                        @(cell.value)
                     }
                 }
             }
