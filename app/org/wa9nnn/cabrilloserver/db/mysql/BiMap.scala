@@ -50,6 +50,10 @@ class BiMap[X, Y](map: Map[X, Y]) {
     }
   }
 
+  def apply(x:Option[X], default:Y):Y = {
+    x.map(map(_)).getOrElse(default)
+  }
+
   val domain: Iterable[X] = map.keys
   val codomain: Iterable[Y] = reverseMap.keys
 }

@@ -66,9 +66,9 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging {
     operatorTypeId = Operator("CATEGORY-OPERATOR"),
     powerId = Power("CATEGORY-POWER"),
     stationId = Station("CATEGORY-STATION"),
-    timeId = TimeId("CATEGORY-TIME"),
+    timeId = Time("CATEGORY-TIME"),
     transmitterId = Transmitter("CATEGORY-TRANSMITTER"),
-    overlayId = Overlay("CATEGORY-OVERLAY"),
+    overlayId = Overlay(str("CATEGORY-OVERLAY")),
     certificate = ("CERTIFICATE", "YES"),
     claimedScore = "CLAIMED-SCORE",
     club = "CLUB",
@@ -95,7 +95,8 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging {
         contactTime = qso.stamp,
         callsign = qso.sent.callsign,
         exch = qso.received.toString(),
-        transmitter = 0 //todo
+        transmitter = 0 //todo how parse this
+
       )
     }
 

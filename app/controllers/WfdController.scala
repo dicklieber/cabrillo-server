@@ -11,7 +11,7 @@ import javax.inject._
 import org.slf4j.LoggerFactory
 import org.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
 import org.wa9nnn.cabrilloserver.FileSaver
-import org.wa9nnn.cabrilloserver.db.mysql.MySqlIngester
+import org.wa9nnn.cabrilloserver.db.mysql.DB
 import org.wa9nnn.cabrilloserver.util.JsonLogging
 import play.api.data.Form
 import play.api.libs.Files
@@ -40,7 +40,7 @@ import play.api.data.Forms._
  *                    a blocking API.
  */
 @Singleton
-class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, ingester: MySqlIngester)(implicit exec: ExecutionContext)
+class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, ingester: DB)(implicit exec: ExecutionContext)
   extends AbstractController(cc) with JsonLogging {
   setLoggerName("cabrillo")
   private val fileSaver = new FileSaver(Paths.get("/var/cabrillo"))

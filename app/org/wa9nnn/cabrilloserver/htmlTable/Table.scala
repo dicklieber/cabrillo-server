@@ -39,6 +39,19 @@ object Table {
   }
 
   /**
+   * A table with one column.
+   * @param singleColHeader column header
+   * @param rowValues values for row.
+   * @return
+   */
+  def apply(singleColHeader:String, rowValues:Seq[Any]):Table = {
+    val rows: Seq[Row] = rowValues.map{ v =>
+      Row(Seq(Cell(v)))
+    }
+    Table(Header(singleColHeader), rows:_*)
+
+  }
+  /**
    * A multi line header
    *
    * {{

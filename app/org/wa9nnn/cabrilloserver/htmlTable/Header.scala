@@ -46,6 +46,6 @@ object Header {
       }
     }
     val names = runtimeClass.getDeclaredFields.map(_.getName)
-    Header(top, names: _*)
+    Header(top, names.toIndexedSeq)
   }
 }

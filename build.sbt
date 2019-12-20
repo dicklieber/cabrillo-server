@@ -1,4 +1,6 @@
 import NativePackagerHelper._
+import play.sbt.routes.RoutesKeys
+
 maintainer := "wa9nnn@u505.com"
 
 name := "wfdcheck"
@@ -8,6 +10,9 @@ version := "1.3-SNAPSHOT"
 organization := "org.wa9nnn"
 
 maintainer := "wa9nnn@u505.com"
+
+
+RoutesKeys.routesImport += "org.wa9nnn.cabrilloserver.play.Binders._"
 
 lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin).settings(
   buildInfoKeys ++= Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion,

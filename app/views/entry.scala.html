@@ -1,0 +1,16 @@
+@(entry: org.wa9nnn.cabrilloserver.db.mysql.Entry)
+
+@main(s"${entry.callsign} ${entry.club}") {
+    <table>
+        <tr>
+            <td>@renderTable(entry.entryTable)</td>
+            <td valign="top">@renderTable(entry.soapBoxesTable)</td>
+        </tr>
+        <tr>
+            <td colspan="2">@renderTable(entry.contactsTable)</td>
+        </tr>
+    </table>
+
+
+
+}

@@ -6,8 +6,9 @@
 # An example controller showing a sample home page
 GET         /                    controllers.HomeController.index()
 POST        /wfd                 controllers.WfdController.upload()
-GET         /netcontrol          controllers.AdminController.admin()
-
+GET         /netcontrol          controllers.AdminController.callsigns()
+GET         /allentries          controllers.AdminController.allEntries()
+GET        /submission          controllers.AdminController.submission(csi:org.wa9nnn.cabrilloserver.CallSignId)
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
 

@@ -7,13 +7,13 @@ package org.wa9nnn.cabrilloserver.htmlTable
  */
 object MultiColumn {
   /**
-   * Build a [[Seq[Seq[Any]] with items organized into columns.
+   * Build a [[Seq[Seq[Cell]] with items organized into columns.
    *
    * @param items      each will become [[Cell]] in column,
    * @param max        number of columns, number of rows will be determined automatically.
    * @return
    */
-  def organize(items: Seq[Any], max: Int, emptyCell: Any = "-"): Seq[Seq[Any]] = {
+  def organize(items: Seq[Cell], max: Int, emptyCell: Cell): Seq[Seq[Cell]] = {
     if (items.isEmpty) {
       Seq.empty
     } else {
@@ -28,21 +28,21 @@ object MultiColumn {
         }
       }
 
-      val grid: Seq[Seq[Any]] = items.grouped(columnHeight).toSeq
+      val grid: Seq[Seq[Cell]] = items.grouped(columnHeight).toSeq
       val nRows = grid.head.length
       val nCols = grid.length
       for {
-        row <- 0 until nRows
+        iRow <- 0 until nRows
       } yield {
-        val r = for {
-          col <- 0 until nCols
-          column = grid(col)
+        val r: Seq[Cell] = for {
+          iCol <- 0 until nCols
+          column = grid(iCol)
         }
           yield {
             try {
-              column(row)
+              column(iRow)
             } catch {
-              case e: Exception =>
+              case _: Exception =>
                 emptyCell
             }
           }
@@ -56,18 +56,18 @@ object MultiColumn {
    * Build a [[Table]] with items organized into columns.
    *
    * @param items         each will become [[Cell]] in column,
-   * @param max           number of columns, number of rows will be determined
+   * @param max           number of columns, number of rows will be determined automatically.
    * @param header        non empty to create header that spans the table
-   * @param emptyCell     what to put is cells beyond thise in [[items]].
+   * @param emptyCell     what to put is cells beyond those in items.
    * @param noDataMessage show this if there are no items.
    * @return
    */
-  def apply(items: Seq[Any], max: Int, header: String = "", emptyCell: String = "", noDataMessage: String = "No data available yet!"): Table = {
+  def apply(items: Seq[Cell], max: Int, header: String = "", emptyCell: Cell = Cell("&nbsp;"), noDataMessage: String = "No data available yet!"): Table = {
     if (items.isEmpty) {
       Table(List.empty, Row(noDataMessage))
     } else {
 
-      val organizedByColumn: Seq[Row] = organize(items, max, emptyCell).map { rowOfAny => Row(rowOfAny.map(Cell(_))) }
+      val organizedByColumn: Seq[Row] = organize(items, max, emptyCell).map { rowOfCells => Row(rowOfCells) }
       val headers = if (header.nonEmpty) {
         val nCols = organizedByColumn.head.cells.length
         Seq(Seq(Cell(header).withColSpan(nCols)))
@@ -77,4 +77,8 @@ object MultiColumn {
       Table(headers, organizedByColumn)
     }
   }
+}
+
+trait CellProvider {
+  def toCell: Cell
 }
