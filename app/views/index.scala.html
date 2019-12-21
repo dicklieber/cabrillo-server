@@ -1,20 +1,13 @@
 @helper.form(action = routes.WfdController.upload, Symbol("enctype") -> "multipart/form-data") {
 
-    @main("WFD Cabrillo File Checker") {
+    @main("Winter Field Day 2019 Cabrillo File Submitter") {
         <table>
             <tr>
                 <td width="300">
-                    <p> Cabrillo file to check:</p>
+                    <p> Cabrillo file:</p>
                     <p><input type="file" name="cabrillo"></p>
                 </td>
-                <td width="300">
-                    <p>
-                        By default the cabrillo file you upload will not be saved. If you would like WA9NNN to save the file to help improve this application.
-                        I promise your cabrillo file will only be used for improving this program and not released to anyone else.
-                    </p>
-                    Save cabrillo file <input type="checkbox" name="okToSave">
-                </td>
-            </tr>
+                            </tr>
             <tr>
                 <td colspan="2">
                     <input type="submit">
