@@ -1,5 +1,6 @@
-@(result: org.wa9nnn.cabrillo.Result, fileName: String, autoEntryId: Option[Int])
-@import org.wa9nnn.cabrilloserver.NumberOrBlank
+@(result: org.wa9nnn.cabrillo.Result, fileName: String, autoEntryId: Option[Int])(implicit request: play.api.mvc.Request[AnyContent])
+
+@import org.wa9nnn.wfdserver.NumberOrBlank
 
 @main("Cabrillo Check Results") {
     <table class="resultTable">
@@ -45,7 +46,7 @@
         }
         <tr>
             <th class="rowHeader">Duration</th>
-            <td class="number">@org.wa9nnn.cabrilloserver.DurationFormat.apply(result.duration)</td>
+            <td class="number">@org.wa9nnn.wfdserver.DurationFormat.apply(result.duration)</td>
         </tr>
     </table>
     @if(result.tagsWithErrors.nonEmpty || result.unknownTags.nonEmpty) {

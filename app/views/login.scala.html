@@ -1,0 +1,36 @@
+@()(implicit request: play.api.mvc.Request[AnyContent])
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+@main("Login") {
+    <div id="content">
+        <table>
+            <tr>
+                <td valign="top">
+                    <form method="post" action="/loginOp">
+                        @if(request.flash.get("errorMessage").isDefined) {
+                            <p class="sadCell">@request.flash.get("errorMessage").getOrElse("")</p>
+                        }
+
+                        <fieldset>
+                            <legend>Login</legend>
+                            <table>
+                                <tr>
+                                    <td>User:</td>
+                                    <td><input type="text" name="userId" id="user"></td>
+                                </tr>
+                                <tr>
+                                    <td>Password:</td>
+                                    <td><input type="password" name="password" id="password"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" align="center"><input type="submit" name="login" value="Login"></td>
+                                </tr>
+                            </table>
+                        </fieldset>
+                    </form>
+                    <br/>
+                </td>
+            </tr>
+        </table>
+    </div>
+}

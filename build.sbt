@@ -1,6 +1,5 @@
 import NativePackagerHelper._
 import play.sbt.routes.RoutesKeys
-
 maintainer := "wa9nnn@u505.com"
 
 name := "wfdcheck"
@@ -12,7 +11,7 @@ organization := "org.wa9nnn"
 maintainer := "wa9nnn@u505.com"
 
 
-RoutesKeys.routesImport += "org.wa9nnn.cabrilloserver.play.Binders._"
+RoutesKeys.routesImport += "org.wa9nnn.wfdserver.play.Binders._"
 
 lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin).settings(
   buildInfoKeys ++= Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion,
@@ -41,7 +40,10 @@ libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
   "org.mongodb.scala" %% "mongo-scala-driver" % "2.8.0",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.2",
   "com.typesafe.slick" %% "slick-codegen" % "3.3.2",
-  "mysql" % "mysql-connector-java" % "8.0.18"
+  "mysql" % "mysql-connector-java" % "8.0.18",
+  "be.objectify" %% "deadbolt-scala" % "2.7.1",
+  "com.github.t3hnar" %% "scala-bcrypt" % "4.1",
+  "net.codingwell" %% "scala-guice" % "4.2.6"
 )
 
 

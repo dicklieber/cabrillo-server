@@ -7,8 +7,12 @@
 GET         /                    controllers.HomeController.index()
 POST        /wfd                 controllers.WfdController.upload()
 GET         /netcontrol          controllers.AdminController.callsigns()
-GET         /allentries          controllers.AdminController.allEntries()
-GET        /submission          controllers.AdminController.submission(csi:org.wa9nnn.cabrilloserver.CallSignId)
+GET        /submission          controllers.AdminController.submission(csi:org.wa9nnn.wfdserver.CallSignId)
+
+GET         /login                                   controllers.LoginController.login
+POST        /loginOp                                 controllers.LoginController.dologin
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
 

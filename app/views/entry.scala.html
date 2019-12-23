@@ -1,4 +1,4 @@
-@(entry: org.wa9nnn.cabrilloserver.db.mysql.Entry)
+@(entry: org.wa9nnn.wfdserver.db.mysql.Entry)(implicit request: play.api.mvc.Request[AnyContent])
 
 @main(s"${entry.callsign} ${entry.club}") {
     <table>
