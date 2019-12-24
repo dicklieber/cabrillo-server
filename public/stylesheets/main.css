@@ -91,6 +91,12 @@ table th {
     background: lightgray;
 }
 
+.sectionHeader  {
+    font-weight: bold;
+    text-align: center;
+    background: lightgray;
+}
+
 .parenthetic {
     font-size: small;
     color: darkgrey;
@@ -100,6 +106,12 @@ table th {
 }
 .bodyValue {
     font-family: monospace;
+}
+.container {
+    position: relative;
+    /*width: 500px;*/
+    height: 35px;
+    /*background-color: #ffbf00;*/
 }
 
 body {

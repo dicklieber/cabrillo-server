@@ -6,11 +6,14 @@
 # An example controller showing a sample home page
 GET         /                    controllers.HomeController.index()
 POST        /wfd                 controllers.WfdController.upload()
-GET         /netcontrol          controllers.AdminController.callsigns()
-GET        /submission          controllers.AdminController.submission(csi:org.wa9nnn.wfdserver.CallSignId)
 
-GET         /login                                   controllers.LoginController.login
-POST        /loginOp                                 controllers.LoginController.dologin
+GET         /state               controllers.StatsController.index()
+GET         /netcontrol          controllers.AdminController.admin()
+GET         /entries             controllers.AdminController.callsigns()
+GET         /submission          controllers.AdminController.submission(csi:org.wa9nnn.wfdserver.CallSignId)
+
+GET         /login               controllers.LoginController.login
+POST        /loginOp             controllers.LoginController.dologin
 
 
 # Map static resources from the /public folder to the /assets URL path

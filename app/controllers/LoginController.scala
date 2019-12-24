@@ -43,7 +43,7 @@ class LoginController @Inject()(cc: ControllerComponents,
               .++("remoteAddress" -> request.remoteAddress)
               .info()
 
-            val result: Result = Redirect(routes.AdminController.callsigns())
+            val result: Result = Redirect(routes.AdminController.admin())
             result.withSession(sessionKey -> subject.toJson)
           case None =>
             logJson("Not Authenticated")

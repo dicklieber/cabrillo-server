@@ -1,0 +1,10 @@
+@()(implicit request: play.api.mvc.Request[AnyContent])
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+@main("Administration") {
+
+    <div class="container">
+        <div ><a href=@routes.AdminController.callsigns() >Log Submissions</a></div>
+        <div ><a href=@routes.StatsController.index() >Statistics</a></div>
+    </div>
+}

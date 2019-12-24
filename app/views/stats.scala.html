@@ -1,0 +1,5 @@
+@(table: org.wa9nnn.wfdserver.htmlTable.Table)(implicit request: play.api.mvc.Request[AnyContent])
+
+    @main("Statistics") {
+        @renderTable(table)
+    }
