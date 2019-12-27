@@ -1,0 +1,3 @@
+DELETE FROM WFD.soapboxes WHERE ID > 0 ;
+DELETE FROM WFD.contacts WHERE ID > 0 ;
+DELETE FROM WFD.entries WHERE ID > 0 ;

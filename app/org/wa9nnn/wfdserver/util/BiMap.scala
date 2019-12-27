@@ -1,5 +1,5 @@
 
-package org.wa9nnn.wfdserver.db.mysql
+package org.wa9nnn.wfdserver.util
 
 import scala.util.control.Exception._
 

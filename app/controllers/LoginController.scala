@@ -5,14 +5,14 @@ import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject.Inject
 import org.wa9nnn.wfdserver.auth.WfdSubject._
 import org.wa9nnn.wfdserver.auth.{Credentials, UserPassword}
-import org.wa9nnn.wfdserver.db.mysql.DB
+import org.wa9nnn.wfdserver.db.DBRouter
 import org.wa9nnn.wfdserver.util.JsonLogging
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
 
 class LoginController @Inject()(cc: ControllerComponents,
-                                db: DB,
+                                db: DBRouter,
                                 credentials: Credentials,
                                 actionBuilder: ActionBuilders) extends AbstractController(cc) with JsonLogging {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -43,7 +43,7 @@ class LoginController @Inject()(cc: ControllerComponents,
               .++("remoteAddress" -> request.remoteAddress)
               .info()
 
-            val result: Result = Redirect(routes.AdminController.admin())
+            val result: Result = Redirect(routes.AdminController.adminlanding())
             result.withSession(sessionKey -> subject.toJson)
           case None =>
             logJson("Not Authenticated")

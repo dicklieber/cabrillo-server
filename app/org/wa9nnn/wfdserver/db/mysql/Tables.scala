@@ -1,4 +1,6 @@
 package org.wa9nnn.wfdserver.db.mysql
+
+import org.wa9nnn.wfdserver.htmlTable.RowsSource
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
@@ -143,6 +145,7 @@ trait Tables {
    *  @param postalcode Database column postalcode SqlType(VARCHAR), Length(75,true), Default(None)
    *  @param country Database column country SqlType(VARCHAR), Length(75,true), Default(None) */
   case class EntriesRow(id: Int, logVersion: Option[Int] = None, callsign: Option[String] = None, contest: Option[String] = None, assisted: Option[Boolean] = None, bandId: Option[Int] = None, modeId: Option[Int] = None, operators: Option[Int] = None, operatorTypeId: Option[Int] = None, powerId: Option[Int] = None, stationId: Option[Int] = None, timeId: Option[Int] = None, transmitterId: Option[Int] = None, overlayId: Option[Int] = None, certificate: Option[Boolean] = None, claimedScore: Option[Int] = None, club: Option[String] = None, createdBy: Option[String] = None, email: Option[String] = None, gridLocator: Option[String] = None, location: Option[String] = None, name: Option[String] = None, address: Option[String] = None, city: Option[String] = None, stateProvince: Option[String] = None, postalcode: Option[String] = None, country: Option[String] = None)
+  extends RowsSource
   /** GetResult implicit for fetching EntriesRow objects using plain SQL queries */
   implicit def GetResultEntriesRow(implicit e0: GR[Int], e1: GR[Option[Int]], e2: GR[Option[String]], e3: GR[Option[Boolean]]): GR[EntriesRow] = GR{
     prs => import prs._

@@ -8,7 +8,8 @@ GET         /                    controllers.HomeController.index()
 POST        /wfd                 controllers.WfdController.upload()
 
 GET         /state               controllers.StatsController.index()
-GET         /netcontrol          controllers.AdminController.admin()
+GET         /netcontrol          controllers.AdminController.adminlanding()
+POST        /stuff               controllers.AdminController.stuffPost()
 GET         /entries             controllers.AdminController.callsigns()
 GET         /submission          controllers.AdminController.submission(csi:org.wa9nnn.wfdserver.CallSignId)
 

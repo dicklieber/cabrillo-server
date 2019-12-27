@@ -1,51 +1,19 @@
 
 package org.wa9nnn.wfdserver.db.mysql
 
-import java.time.Instant
-
 import com.typesafe.scalalogging.LazyLogging
 import org.wa9nnn.cabrillo.model.CabrilloData
-import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
 import org.wa9nnn.cabrillo.parsers.QSO_WFD
 import org.wa9nnn.wfdserver
+import org.wa9nnn.wfdserver.db.Adapter
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-
+import org.wa9nnn.wfdserver.db.mysql.CabrilloDataAdapter._
 /**
  * Knows how to adapt a [[CabrilloData]] to the case classes need to interact with a SQL database.
  *
  * @param cabrilloData from file.
  */
-case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging {
-
-  private implicit val cd = cabrilloData
-
-  /**
-   *
-   * @param tag name
-   * @return body of 1st instance of the [[Tag]] or None if tag not present
-   */
-  private implicit def str(tag: Tag): Option[String] = {
-    cabrilloData.apply(tag).headOption.map(_.body)
-  }
-
-  private implicit def bol(t: (Tag, String)): Option[Boolean] = {
-    cabrilloData.apply(t._1).headOption.map(_.body.toUpperCase() == t._2)
-  }
-
-  private implicit def int(tag: Tag): Option[Int] = {
-    cabrilloData.apply(tag).headOption.map(_.body.toInt)
-  }
-
-  implicit def asDate(stamp: Instant): java.sql.Date = {
-    new java.sql.Date(stamp.toEpochMilli)
-  }
-
-  implicit def asTime(stamp: Instant): java.sql.Time = {
-    new java.sql.Time(stamp.toEpochMilli)
-  }
-
-  def callsign: String = cabrilloData.apply("CALLSIGN").head.body
-
+case class CabrilloDataAdapter(override val cabrilloData: CabrilloData) extends Adapter() with LazyLogging {
 
   /**
    * Most of the columns are optional with in [[EntriesRow]] is a scala Optional
@@ -94,7 +62,7 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging {
         contactDate = qso.stamp,
         contactTime = qso.stamp,
         callsign = qso.sent.callsign,
-        exch = qso.received.toString(),
+        exch = qso.sent.toString() + exchSeperator + qso.received.toString(),
         transmitter = 0 //todo how parse this
 
       )
@@ -107,7 +75,6 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging {
         case _ =>
           Seq.empty
       }
-
     }
   }
 
@@ -120,8 +87,10 @@ case class CabrilloDataAdapter(cabrilloData: CabrilloData) extends LazyLogging {
       SoapboxesRow(0, Some(entryId), Some(body))
     }
   }
+}
 
-
+object CabrilloDataAdapter {
+  val exchSeperator = '|'
 }
 
 

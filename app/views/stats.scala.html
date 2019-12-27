@@ -1,5 +1,6 @@
-@(table: org.wa9nnn.wfdserver.htmlTable.Table)(implicit request: play.api.mvc.Request[AnyContent])
+@(table: org.wa9nnn.wfdserver.htmlTable.Table, dbName:String)(implicit request: play.api.mvc.Request[AnyContent])
 
     @main("Statistics") {
+        <p>Using @dbName</p>
         @renderTable(table)
     }

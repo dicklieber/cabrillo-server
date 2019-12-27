@@ -3,6 +3,7 @@ package org.wa9nnn.wfdserver.db.mysql
 import java.util.NoSuchElementException
 
 import org.specs2.mutable.Specification
+import org.wa9nnn.wfdserver.util.BiMap
 
 class BiMapSpec extends Specification {
 

@@ -1,10 +1,33 @@
-@()(implicit request: play.api.mvc.Request[AnyContent])
+@import controllers.Stuff
+@import org.wa9nnn.wfdserver.db.DBRouter
+@import helper._
+@(stuffForm: Form[Stuff], dbRouter: DBRouter, dbName: String)(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 @main("Administration") {
-
-    <div class="container">
-        <div ><a href=@routes.AdminController.callsigns() >Log Submissions</a></div>
-        <div ><a href=@routes.StatsController.index() >Statistics</a></div>
-    </div>
+    <table>
+        <tr>
+            <td valign="top">
+                <fieldset>
+                    <legend>Actions</legend>
+                    <div class="container">
+                        <div ><a href=@routes.AdminController.callsigns() >Log Submissions</a></div>
+                        <div ><a href=@routes.StatsController.index() >Statistics</a></div>
+                    </div>
+                </fieldset>
+            </td>
+            <td valign="top">
+                <fieldset>
+                    <legend>Session Settings</legend>
+                    @form(action = routes.AdminController.stuffPost()) {
+                        @select(
+                            field = stuffForm("dbName"),
+                            options = dbRouter.dbNames.map(db => db -> db)
+                        )
+                        <input type="submit" name="Save">
+                        }
+                </fieldset>
+            </td>
+        </tr>
+    </table>
 }

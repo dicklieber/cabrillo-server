@@ -1,6 +1,8 @@
 
 package org.wa9nnn.wfdserver.db.mysql
 
+import org.wa9nnn.wfdserver.util.BiMap
+
 object Overlay extends BiMap[Int, String](
   0 -> "N/A",
   1 -> "ONE",

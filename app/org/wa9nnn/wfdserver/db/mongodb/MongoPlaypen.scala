@@ -1,10 +1,10 @@
 
 package org.wa9nnn.wfdserver.db.mongodb
 
-import java.time.{Instant, LocalDateTime}
-import java.util.UUID
+import java.time.Instant
 
 import org.bson.codecs.configuration.CodecRegistries._
+import org.bson.types.ObjectId
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase, _}
@@ -12,7 +12,7 @@ import org.wa9nnn.cabrillo.Builder
 import org.wa9nnn.cabrillo.parsers.Exchange_WFD
 import org.wa9nnn.wfdserver.util.JsonLogging
 
-object MongoPlaypen extends JsonLogging{
+object MongoPlaypen extends JsonLogging {
   def main(args: Array[String]): Unit = {
     val customCodecs = fromProviders(
       classOf[StationLog],
@@ -43,8 +43,13 @@ object MongoPlaypen extends JsonLogging{
       .+("EMAIL", "dick@u505.com")
       .toCabrilloData
 
-    val stationLog = StationLog("WM9W", "IL", "3I", Seq("CATEGORY-OPERATOR" -> "MULTI-OP").toMap, Seq("1,500 points for setting up away from home."), Some("dick@u505.com"), "Dick Lieber", 42)
-
+    val stationLog = StationLog(_id = new ObjectId(),
+      logVersion = 0,
+      "WM9W", Some("This 220HMz Guys"), "IL", "3I",
+      Categories(),
+      Seq("1,500 points for setting up away from home."),
+      Some("dick@u505.com"),
+      Some("Dick Lieber"), 42)
 
 
     val value: SingleObservable[Completed] = entryCollection.insertOne(stationLog)
@@ -57,6 +62,7 @@ object MongoPlaypen extends JsonLogging{
 
         logJson("Inserted  Log").info()
       }
+
       override def onError(e: Throwable): Unit =
         logJson("Failed Log").error(e)
 

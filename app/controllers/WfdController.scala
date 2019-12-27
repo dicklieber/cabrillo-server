@@ -4,29 +4,21 @@ import java.nio.file.{Path, Paths}
 import java.time.Instant
 
 import akka.actor.ActorSystem
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.Appender
 import javax.inject._
-import org.slf4j.LoggerFactory
 import org.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
 import org.wa9nnn.wfdserver.FileSaver
-import org.wa9nnn.wfdserver.db.mysql.DB
+import org.wa9nnn.wfdserver.db.DBRouter
 import org.wa9nnn.wfdserver.util.JsonLogging
-import play.api.data.Form
 import play.api.libs.Files
 import play.api.mvc._
-import scala.language.postfixOps
-import scala.collection.mutable
-import scala.concurrent.{Await, ExecutionContext}
+
+import scala.concurrent.ExecutionContext
 import scala.io.{BufferedSource, Source}
-import scala.concurrent.duration._
-import play.api.data._
-import play.api.data.Forms._
+import scala.language.postfixOps
 
 
 @Singleton
-class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, ingester: DB)(implicit exec: ExecutionContext)
+class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, ingester: DBRouter)(implicit exec: ExecutionContext)
   extends AbstractController(cc) with JsonLogging {
   setLoggerName("cabrillo")
   private val fileSaver = new FileSaver(Paths.get("/var/cabrillo"))
@@ -39,8 +31,6 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
         // only get the last part of the filename
         // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
         val filename: Path = Paths.get(picture.filename).getFileName
-//        val fileSize = picture.fileSize
-//        val contentType = picture.contentType
 
         val url = picture.ref.toURI.toURL
 
@@ -69,10 +59,8 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           .++("saveTo" -> ff.getOrElse("declined"))
           .info()
 
-        val autoEntryId: Option[Int] = resultWithData.goodData.map { data =>
-          val id = ingester(data)
-          logger.info(s"id: $id")
-          id
+        val autoEntryId: Option[String] = resultWithData.goodData.map { data =>
+          ingester.ingest(data)
         }
 
 

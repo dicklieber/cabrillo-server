@@ -1,9 +1,9 @@
 
-package org.wa9nnn.wfdserver.stats
+package org.wa9nnn.wfdserver.db.mysql
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import org.wa9nnn.wfdserver.db.mysql.Tables._
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Row}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
@@ -15,6 +15,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
+@Singleton
 class StatsGenerator @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global //todo probably want one specifically for database
 
@@ -54,7 +55,7 @@ class Aggregator {
   }
 
   def result: Seq[Row] = {
-      Row(Seq(Cell("Locations").withColSpan(2).withCssClass("sectionHeader"))) +: locationCounts.results
+    Row(Seq(Cell("Locations").withColSpan(2).withCssClass("sectionHeader"))) +: locationCounts.results
   }
 }
 

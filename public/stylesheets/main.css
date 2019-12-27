@@ -107,6 +107,9 @@ table th {
 .bodyValue {
     font-family: monospace;
 }
+.exchange {
+    font-family: monospace;
+}
 .container {
     position: relative;
     /*width: 500px;*/

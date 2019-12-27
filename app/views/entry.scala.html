@@ -1,10 +1,10 @@
-@(entry: org.wa9nnn.wfdserver.db.mysql.Entry)(implicit request: play.api.mvc.Request[AnyContent])
+@(entry: org.wa9nnn.wfdserver.db.EntryViewData, dbName:String)(implicit request: play.api.mvc.Request[AnyContent])
 
-@main(s"${entry.callsign} ${entry.club}") {
+@main(s"${entry.callSign} ${entry.club}") {
+    <p>Using @dbName</p>
     <table>
         <tr>
             <td>@renderTable(entry.entryTable)</td>
-            <td valign="top">@renderTable(entry.soapBoxesTable)</td>
         </tr>
         <tr>
             <td colspan="2">@renderTable(entry.contactsTable)</td>
