@@ -29,9 +29,12 @@ object CallSignId {
    * @return CallSignId
    */
   def apply(doc:Document): CallSignId = {
+    val stationLog: Document = doc.get("stationLog").asInstanceOf[Document]
+    val cs = stationLog.getString("callSign")
+    val lv = stationLog.getInteger("logVersion")
     new CallSignId(
-      callsign = doc.getString("callSign"),
-      logVersion = doc.getInteger("logVersion"),
+      callsign = cs,
+      logVersion = lv,
       entryId = doc.getObjectId("_id").toHexString)
   }
 

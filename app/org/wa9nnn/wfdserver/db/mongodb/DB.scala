@@ -27,69 +27,71 @@ class DB(config: Config) extends DBService {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   private val customCodecs = fromProviders(
+    classOf[LogInstance],
     classOf[Categories],
     classOf[StationLog],
     classOf[QSO],
     classOf[Exchange_WFD],
   )
   private val codecRegistry = fromRegistries(customCodecs,
-    //      javaCodecs,
     DEFAULT_CODEC_REGISTRY)
 
   private val mongoClient: MongoClient = MongoClient()
-  private val database: MongoDatabase = mongoClient.getDatabase("wfd-dev").withCodecRegistry(codecRegistry).withWriteConcern(WriteConcern.MAJORITY)
-  private val logCollection: MongoCollection[StationLog] = database.getCollection("logs")
+  private val database: MongoDatabase = mongoClient.getDatabase("wfd").withCodecRegistry(codecRegistry).withWriteConcern(WriteConcern.MAJORITY)
+  private val logCollection: MongoCollection[LogInstance] = database.getCollection("logs")
+  private val previousCollection: MongoCollection[LogInstance] = database.getCollection("replaced")
   private val logDocumentCollection = database.getCollection("logs")
-  private val qsoCollection: MongoCollection[QSO] = database.getCollection("qsos")
 
   /**
    *
    * @param cabrilloData in coming.
-   * @return database key for this data. This is always a string. For MySQL it will
+   * @return database key for this data. This is always a string. For Mongo it's he hex version of the [[ObjectId]]
    */
   override def ingest(cabrilloData: CabrilloData): String = {
 
     val callSign = cabrilloData("CALLSIGN").head.body
 
-    val logVersion = logDocumentCollection.countDocuments(equal("callSign", callSign)).headResult().toInt
-    //    val logVersion  = Await.result[Long](value.toFuture(), 5 seconds).toInt
+    val maybePrevious: Option[LogInstance] = logCollection.find(equal("stationLog.callSign", callSign))
+      .results()
+      .headOption
+    val logVersion = maybePrevious.map { previous =>
+      // copy to previousCollection
+      previousCollection.insertOne(previous).results()
+      // delete from main
+      logCollection.deleteOne(equal("_id", previous._id)).results()
+      previous.stationLog.logVersion + 1
+    }.getOrElse(1)
 
+    val adapter = new MongoAdapter(cabrilloData, logVersion)
 
-    val adapter = new MongoAdapter(cabrilloData)
-    val qsos = adapter.qsos
-
-
-    val stationLog: StationLog = adapter.stationLog(logVersion)
-    logCollection.insertOne(stationLog).results()
-    qsoCollection.insertMany(qsos).results()
-    stationLog._id.toHexString
+    logCollection.insertOne(adapter.logInstance).results()
+    adapter.logId.toHexString
 
   }
 
   override def callSignIds: Future[Seq[CallSignId]] = {
     logDocumentCollection.find()
-      .projection(include("callSign", "logVersion", "_id"))
+      .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
       .toFuture()
       .map { s => s.map(CallSignId(_)) }
   }
 
   override def entry(entryId: String): Future[Option[EntryViewData]] = {
     val id = new ObjectId(entryId)
-
-    val future: Future[Seq[StationLog]] = logCollection.find(equal("_id", id)).toFuture()
-
-    future.map(_.headOption
-      .map { stationLog: StationLog =>
-        val qsos: Seq[QSO] = qsoCollection.find(equal("logId", id)).results()
-        val rowsSource:RowsSource = stationLog
-        EntryViewData(rowsSource,
-          qsos.map(_.toRow),
-          stationLog.callSign,
-          stationLog.club)
-      })
+    logCollection.find(equal("_id", id)).first.toFutureOption().map(_.map { logInstance =>
+      val stationLog = logInstance.stationLog
+      val rowsSource: RowsSource = stationLog
+      EntryViewData(rowsSource,
+        logInstance.qsos.map(_.toRow),
+        stationLog.callSign,
+        stationLog.club)
+    })
   }
 
-  override def stats: Future[Table] = {
+
+  override def stats: Future[Table]
+
+  = {
     throw new NotImplementedError() //todo
   }
 }

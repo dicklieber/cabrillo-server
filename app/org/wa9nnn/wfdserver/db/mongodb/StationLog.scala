@@ -6,23 +6,21 @@ import org.mongodb.scala.bson.ObjectId
 import org.wa9nnn.cabrillo.parsers.Exchange_WFD
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowsSource, RowSource}
 
-case class StationLog(_id: ObjectId = new ObjectId(), // PK
-                      logVersion: Int = 0,
-                      callSign: String,
-                      club: Option[String],
-                      location: String,
-                      category: String,
-                      categories: Categories,
-                      soapBoxes: Seq[String],
-                      email: Option[String],
-                      name: Option[String],
-                      claimedScore: Int,
-                      ingested: Instant = Instant.now()) extends RowsSource
+case class StationLog(
+                       logVersion: Int,
+                       callSign: String,
+                       club: Option[String],
+                       location: String,
+                       category: String,
+                       categories: Categories,
+                       soapBoxes: Seq[String],
+                       email: Option[String],
+                       name: Option[String],
+                       claimedScore: Int,
+                       ingested: Instant = Instant.now()) extends RowsSource
 
 
 case class QSO(
-                _id: ObjectId = new ObjectId(), //PK
-                logId: ObjectId, //FK to StationLog
                 freq: String,
                 mode: String,
                 stamp: Instant,
@@ -32,6 +30,11 @@ case class QSO(
     Row(freq, mode, sent, received, stamp)
   }
 }
+
+case class LogInstance(_id: ObjectId = new ObjectId(), // PK
+                       stationLog: StationLog,
+                       qsos: Seq[QSO]
+                      )
 
 object QSO {
   val header: Header = Header("QSO", "Freq", "Mode", "Sent", "Received", "Stamp")

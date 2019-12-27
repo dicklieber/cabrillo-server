@@ -7,16 +7,18 @@ import org.wa9nnn.cabrillo.parsers.QSO_WFD
 import org.wa9nnn.wfdserver.db.Adapter
 
 /**
- * Converts a [[CabrilloData]] to
  *
- * @param cabrilloData source.
+ * Converts a [[CabrilloData]] to a [[LogInstance]].
+ *
+ * @param cabrilloData as parsed
+ * @param logVersion   how many time this callsign has been updafted
  */
-class MongoAdapter(val cabrilloData: CabrilloData) extends Adapter {
+class MongoAdapter(val cabrilloData: CabrilloData, logVersion: Int) extends Adapter {
+
   val logId = new ObjectId()
 
-  def stationLog(logVersion:Int): StationLog = {
+  val stationLog: StationLog = {
     StationLog(
-      _id = logId,
       logVersion = logVersion,
       callSign = callsign,
       club = "CLUB",
@@ -44,12 +46,10 @@ class MongoAdapter(val cabrilloData: CabrilloData) extends Adapter {
     )
   }
 
-  def qsos: Seq[QSO] = {
-    val r = cabrilloData("QSO").map { tv: TagValue =>
+  private val qsos: Seq[QSO] = {
+    cabrilloData("QSO").map { tv: TagValue =>
       val q: QSO_WFD = tv.asInstanceOf[QSO_WFD]
       QSO(
-        _id = new ObjectId(),
-        logId = logId,
         freq = q.freq,
         mode = q.mode,
         stamp = q.stamp,
@@ -57,6 +57,10 @@ class MongoAdapter(val cabrilloData: CabrilloData) extends Adapter {
         received = q.received
       )
     }
-    r
   }
+
+  val logInstance: LogInstance = LogInstance(
+    stationLog = stationLog,
+    qsos = qsos
+  )
 }
