@@ -94,17 +94,13 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     )
   }
 
-  override def stats: Future[Table]
-
-  = {
-    statsGenerator().map { rows: Seq[Row] =>
-      val table: Table = Table(Header("Statistics", "Item", "Value"), rows: _*).withCssClass("resultTable")
-
-      val withLocations = table.copy(rows = table.rows :++ statsGenerator.aggregates())
-      withLocations
-    }
-
+  override def stats: Future[Table] = {
+    val rows: Future[Seq[Row]] = statsGenerator()
+    rows.map(
+      Table(Header("Statistics", "Item", "Value"), _: _*).withCssClass("resultTable")
+    )
   }
+
 
 }
 

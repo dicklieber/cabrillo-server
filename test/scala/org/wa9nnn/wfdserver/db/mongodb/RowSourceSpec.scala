@@ -2,7 +2,6 @@ package org.wa9nnn.wfdserver.db.mongodb
 
 import java.time.Instant
 
-import org.bson.types.ObjectId
 import org.specs2.mutable.Specification
 import org.wa9nnn.wfdserver.htmlTable.TextRenderer
 
@@ -28,8 +27,8 @@ class RowSourceSpec extends Specification {
     "nested" >> {
 
       val stationLog = StationLog(
-        _id = new ObjectId("5e054282b4e5dc541c3abf44"),
-        callsign = "WM9W",
+        logVersion = 2,
+        callSign = "WM9W",
         club = Some("The 220MHz Guys"),
         category = "1H",
         location = "IL",
@@ -45,12 +44,11 @@ class RowSourceSpec extends Specification {
         ingested = Instant.EPOCH
       )
       val rows = stationLog.toRows()
-      rows must haveLength(20)
+      rows must haveLength(19)
 
       val str = TextRenderer(rows)
-      str mustEqual ("""||_id                 |5e054282b4e5dc541c3abf44                    |
-                        ||logVersion          |0                                           |
-                        ||callsign            |WM9W                                        |
+      str mustEqual ("""||logVersion          |2                                           |
+                        ||callSign            |WM9W                                        |
                         ||club                |The 220MHz Guys                             |
                         ||location            |IL                                          |
                         ||category            |1H                                          |

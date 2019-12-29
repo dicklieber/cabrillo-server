@@ -14,7 +14,7 @@ import org.wa9nnn.cabrillo.parsers.Exchange_WFD
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
 import org.wa9nnn.wfdserver.db.{DBService, EntryViewData}
-import org.wa9nnn.wfdserver.htmlTable.{RowsSource, Table}
+import org.wa9nnn.wfdserver.htmlTable.{Header, RowsSource, Table}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -32,6 +32,7 @@ class DB(config: Config) extends DBService {
     classOf[StationLog],
     classOf[QSO],
     classOf[Exchange_WFD],
+    classOf[Agg],
   )
   private val codecRegistry = fromRegistries(customCodecs,
     DEFAULT_CODEC_REGISTRY)
@@ -41,6 +42,8 @@ class DB(config: Config) extends DBService {
   private val logCollection: MongoCollection[LogInstance] = database.getCollection("logs")
   private val previousCollection: MongoCollection[LogInstance] = database.getCollection("replaced")
   private val logDocumentCollection = database.getCollection("logs")
+
+  val statsGenerator: StatsGenerator = new StatsGenerator(database)
 
   /**
    *
@@ -89,9 +92,10 @@ class DB(config: Config) extends DBService {
   }
 
 
-  override def stats: Future[Table]
-
-  = {
-    throw new NotImplementedError() //todo
+  override def stats: Future[Table] = {
+    val rows = statsGenerator()
+    Future(
+      Table(Header("Statistics", "Item", "Value"), rows: _*).withCssClass("resultTable")
+    )
   }
 }

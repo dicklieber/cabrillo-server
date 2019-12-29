@@ -32,9 +32,20 @@ case class QSO(
 }
 
 case class LogInstance(_id: ObjectId = new ObjectId(), // PK
+                       qsoCount: Int,
                        stationLog: StationLog,
                        qsos: Seq[QSO]
                       )
+
+object LogInstance {
+  def apply(stationLog: StationLog,
+            qsos: Seq[QSO]): LogInstance = {
+    new LogInstance(qsoCount = qsos.length,
+      qsos = qsos,
+      stationLog = stationLog
+    )
+  }
+}
 
 object QSO {
   val header: Header = Header("QSO", "Freq", "Mode", "Sent", "Received", "Stamp")
