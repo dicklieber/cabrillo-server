@@ -14,6 +14,6 @@ case class EntryViewData(stationLog: RowsSource, contacts: Seq[Row], callSign: S
   }
 
   val contactsTable: Table = {
-    Table(QSO.header, contacts:_*).withCssClass("resultTable")
+    Table(QSO.header(contacts.length), contacts:_*).withCssClass("resultTable")
   }
 }

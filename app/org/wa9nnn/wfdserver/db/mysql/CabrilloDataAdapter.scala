@@ -62,7 +62,7 @@ case class CabrilloDataAdapter(override val cabrilloData: CabrilloData) extends 
         contactDate = qso.stamp,
         contactTime = qso.stamp,
         callsign = qso.sent.callsign,
-        exch = qso.sent.toString() + exchSeperator + qso.received.toString(),
+        exch = qso.sent.category + " " + qso.sent.section + exchSeperator + qso.received.toString(),
         transmitter = 0 //todo how parse this
 
       )

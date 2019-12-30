@@ -48,7 +48,7 @@ object LogInstance {
 }
 
 object QSO {
-  val header: Header = Header("QSO", "Freq", "Mode", "Sent", "Received", "Stamp")
+  def header(qsoCoount:Int): Header = Header(s"QSO ($qsoCoount)", "Freq", "Mode", "Sent", "Received", "Stamp")
 }
 
 

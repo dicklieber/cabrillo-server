@@ -20,6 +20,6 @@ class Module extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def provideCredentials(configuration: Config): Credentials = {
-    new Credentials(Paths.get(configuration.getString("credentials.file")))
+    new Credentials(Paths.get(configuration.getString("wfd.credentials.file")))
   }
 }

@@ -76,7 +76,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       //      EntryTables(entriesRow.head, soaps, contacts)
       entriesRow.headOption.map { er: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.EntriesRow =>
         val contactRows: Seq[Row] = contacts.map((c: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.ContactsRow) => {
-          val exchanges = c.exch.split(org.wa9nnn.wfdserver.db.mysql.CabrilloDataAdapter.exchSeperator)
+          val exchanges: Array[String] = c.exch.split(org.wa9nnn.wfdserver.db.mysql.CabrilloDataAdapter.exchSeperator)
           val instant = LocalDateTime.of(c.contactDate.toLocalDate, c.contactTime.toLocalTime)
           Row(
             //"Freq", "Mode", "Sent", "Received")
