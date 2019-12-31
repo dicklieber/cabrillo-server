@@ -12,6 +12,7 @@ GET         /netcontrol          controllers.AdminController.adminlanding()
 POST        /stuff               controllers.AdminController.stuffPost()
 GET         /entries             controllers.AdminController.callsigns()
 GET         /submission          controllers.AdminController.submission(csi:org.wa9nnn.wfdserver.CallSignId)
+GET         /bulkLoad            controllers.BulkLoaderController.index()
 
 GET         /login               controllers.LoginController.login
 POST        /loginOp             controllers.LoginController.dologin

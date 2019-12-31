@@ -1,8 +1,10 @@
 package controllers
 
+import akka.actor.ActorRef
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
-import org.wa9nnn.wfdserver.CallSignId
+import org.wa9nnn.wfdserver.actor.BulkLoaderActorAnno
+import org.wa9nnn.wfdserver.{BulkLoader, CallSignId}
 import org.wa9nnn.wfdserver.db.DBRouter
 import org.wa9nnn.wfdserver.db.DBRouter.dbFromSession
 import org.wa9nnn.wfdserver.htmlTable._
@@ -10,6 +12,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}
 import org.wa9nnn.wfdserver.db.DBRouter._
+
 import scala.concurrent.Future
 
 /**
@@ -30,7 +33,7 @@ class AdminController @Inject()(cc: ControllerComponents,
       request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey).getOrElse()
       val dbName: Option[String] = dbFromSession
       db.callSignIds(dbName).map { callSignIds =>
-        val table = MultiColumn(callSignIds.map(_.toCell), 10, "Submissions").withCssClass("resultTable")
+        val table = MultiColumn(callSignIds.map(_.toCell), 10, s"Submissions (${callSignIds.length})").withCssClass("resultTable")
         Ok(views.html.entries(table, dbName.getOrElse("default")))
       }
   }

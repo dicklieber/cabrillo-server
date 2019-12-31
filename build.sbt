@@ -1,5 +1,6 @@
 import NativePackagerHelper._
 import play.sbt.routes.RoutesKeys
+
 maintainer := "wa9nnn@u505.com"
 
 name := "wfdcheck"
@@ -32,7 +33,8 @@ scalaVersion := "2.13.1"
 
 libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
   "com.github.dicklieber" %% "cabrillo" % "0.3.3-SNAPSHOT",
- "com.typesafe.play" %% "play-slick" % "5.0.0",
+  "com.typesafe.play" %% "play-slick" % "5.0.0",
+  "com.typesafe.play" %% "play-json" % "2.8.1",
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.specs2" %% "specs2-core" % "4.6.0" % "test",
@@ -43,7 +45,11 @@ libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
   "mysql" % "mysql-connector-java" % "8.0.18",
   "be.objectify" %% "deadbolt-scala" % "2.7.1",
   "com.github.t3hnar" %% "scala-bcrypt" % "4.1",
-  "net.codingwell" %% "scala-guice" % "4.2.6"
+  "net.codingwell" %% "scala-guice" % "4.2.6",
+  "commons-io" % "commons-io" % "2.6",
+  "io.dropwizard.metrics" % "metrics-core" % "4.1.2",
+  "nl.grons" %% "metrics4-scala" % "4.1.1"
+
 )
 
 
