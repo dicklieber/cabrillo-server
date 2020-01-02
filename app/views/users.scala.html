@@ -1,0 +1,9 @@
+@import org.wa9nnn.wfdserver.htmlTable.Table
+@(credentialsTable: Table )(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+@main("User Manager") {
+    @renderTable(credentialsTable)
+
+    <a href="@routes.UserController.create()">Create user</a>
+}

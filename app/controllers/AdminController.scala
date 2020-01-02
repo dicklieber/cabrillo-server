@@ -1,17 +1,14 @@
 package controllers
 
-import akka.actor.ActorRef
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
-import org.wa9nnn.wfdserver.actor.BulkLoaderActorAnno
-import org.wa9nnn.wfdserver.{BulkLoader, CallSignId}
+import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.DBRouter
-import org.wa9nnn.wfdserver.db.DBRouter.dbFromSession
+import org.wa9nnn.wfdserver.db.DBRouter.{dbFromSession, _}
 import org.wa9nnn.wfdserver.htmlTable._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}
-import org.wa9nnn.wfdserver.db.DBRouter._
 
 import scala.concurrent.Future
 

@@ -6,8 +6,8 @@ import be.objectify.deadbolt.scala.models.Role
 case class WfdRole(name: String) extends Role
 
 object Roles {
-  val adminRole: WfdRole = WfdRole("Admin")
-  val userRole: WfdRole = WfdRole("User")
+  val USERMANAGER_ROLE: WfdRole = WfdRole("UserManager")
+  val DATA_ROLE: WfdRole = WfdRole("Data")
 
 }
 

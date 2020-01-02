@@ -10,7 +10,7 @@ import javax.inject.Singleton
 import net.codingwell.scalaguice.ScalaModule
 import org.wa9nnn.wfdserver.Loader
 import org.wa9nnn.wfdserver.actor.BulkLoaderActorAnno
-import org.wa9nnn.wfdserver.auth.{Credentials, WFDAuthorizedRoutes, WfdHandlerCache}
+import org.wa9nnn.wfdserver.auth.{CredentialsDao, WFDAuthorizedRoutes, WfdHandlerCache}
 
 class Module extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
@@ -19,11 +19,11 @@ class Module extends AbstractModule with ScalaModule {
   }
 
 
-  @Provides
-  @Singleton
-  def provideCredentials(configuration: Config): Credentials = {
-    new Credentials(Paths.get(configuration.getString("wfd.credentials.file")))
-  }
+//  @Provides
+//  @Singleton
+//  def provideCredentials(configuration: Config): CredentialsDao = {
+//    new CredentialsDao(Paths.get(configuration.getString("wfd.credentials.file")))
+//  }
 
   @Provides
   @Singleton

@@ -13,6 +13,11 @@ POST        /stuff               controllers.AdminController.stuffPost()
 GET         /entries             controllers.AdminController.callsigns()
 GET         /submission          controllers.AdminController.submission(csi:org.wa9nnn.wfdserver.CallSignId)
 GET         /bulkLoad            controllers.BulkLoaderController.index()
+GET         /userList            controllers.UserController.index()
+GET         /userEditor          controllers.UserController.edit(userId:String)
+GET         /userCreate          controllers.UserController.create()
+POST        /userUpdate          controllers.UserController.update()
+#POST        /userDelete          controllers.UserController.delete(userId:String)
 
 GET         /login               controllers.LoginController.login
 POST        /loginOp             controllers.LoginController.dologin

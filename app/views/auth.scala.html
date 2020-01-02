@@ -1,0 +1,20 @@
+@()(implicit request: play.api.mvc.Request[AnyContent])
+
+@helper.form(action = routes.WfdController.upload, Symbol("enctype") -> "multipart/form-data") {
+
+    @main("Winter Field Day 2019 Cabrillo File Submitter") {
+        <table>
+            <tr>
+                <td width="300">
+                    <p> Cabrillo file:</p>
+                    <p><input type="file" name="cabrillo"></p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit">
+                </td>
+            </tr>
+        </table>
+    }
+}@import views.html.helper.form

@@ -5,9 +5,8 @@ import be.objectify.deadbolt.scala.models.Subject
 import be.objectify.deadbolt.scala.{AuthenticatedRequest, DeadboltHandler, DynamicResourceHandler}
 import controllers.routes
 import org.wa9nnn.wfdserver.auth.WfdSubject._
-import play.api.mvc.{AnyContent, Request, Result, Results}
-import views.html.{denied, login}
 import play.api.mvc.Results.Redirect
+import play.api.mvc.{Request, Result}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -4,7 +4,7 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject.Inject
 import org.wa9nnn.wfdserver.auth.WfdSubject._
-import org.wa9nnn.wfdserver.auth.{Credentials, UserPassword}
+import org.wa9nnn.wfdserver.auth.{CredentialsDao, UserPassword}
 import org.wa9nnn.wfdserver.db.DBRouter
 import org.wa9nnn.wfdserver.util.JsonLogging
 import play.api.data.Form
@@ -13,7 +13,7 @@ import play.api.mvc._
 
 class LoginController @Inject()(cc: ControllerComponents,
                                 db: DBRouter,
-                                credentials: Credentials,
+                                dao: CredentialsDao,
                                 actionBuilder: ActionBuilders) extends AbstractController(cc) with JsonLogging {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
   private val loginForm = Form(
@@ -35,7 +35,7 @@ class LoginController @Inject()(cc: ControllerComponents,
       },
       userPassword => {
         /* binding success, you get the actual value. */
-        credentials.validate(userPassword) match {
+        dao.validate(userPassword) match {
           case Some(subject) =>
             logJson("Login")
               .++("userId" -> subject.identifier)

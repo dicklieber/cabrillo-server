@@ -1,0 +1,13 @@
+@import org.wa9nnn.wfdserver.auth.UserPasswordRoles
+@import helper._
+
+@(userForm: Form[UserPasswordRoles])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+@main("Create User") {
+    @form(action = routes.UserController.update()) {
+        @inputText(userForm("userId"))
+        @inputPassword(userForm("password"))
+        @checkbox(userForm("data"))
+        @checkbox(userForm("userManager"))
+        <input type="submit" name="cmd" value="Save">
+    }
+}
