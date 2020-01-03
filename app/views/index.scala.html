@@ -1,4 +1,5 @@
 @import org.wa9nnn.wfdserver.contest.CurrentSubmissionState
+
 @(submissionState: CurrentSubmissionState)(implicit request: play.api.mvc.Request[AnyContent])
 
     @helper.form(action = routes.WfdController.upload, Symbol("enctype") -> "multipart/form-data") {
@@ -9,7 +10,7 @@
                 <table>
                     <tr>
                         <td width="300">
-                            <p> Cabrillo file:</p>
+                            <p>Cabrillo file:</p>
                             <p><input type="file" name="cabrillo"></p>
                         </td>
                     </tr>
@@ -20,7 +21,7 @@
                     </tr>
                 </table>
             }
-            <div>@submissionState.message.message</div>
-            <div class="times">@submissionState.times</div>
+            <div class="message">@Html(submissionState.message.md)</div>
+            <div class="times">Log Submit Window: @submissionState.times</div>
         }
     } @import views.html.helper.form

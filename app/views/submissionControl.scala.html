@@ -1,0 +1,67 @@
+@import controllers.ControlUi
+@import helper._
+@import org.wa9nnn.wfdserver.util.MarkDown
+@(fui: Form[ControlUi])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+@implicitField = @{
+    helper.FieldConstructor(views.html.fieldConstructor.f)
+}
+
+@main("Submission Control") {
+    @form(action = routes.SubmissionControlController.post()) {
+        <table class="layoutTable">
+            <tr>
+                <th>&nbsp;</th>
+                <th>Before</th>
+                <th>During</th>
+                <th>After</th>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp</td>
+                <td>
+                    <table>
+                        <tr>
+                            <th>Starts</th>
+                            <th>Ends</th>
+                        </tr>
+                        <tr>
+                            <td>@inputDate(fui("start"))</td>
+                            <td>@inputDate(fui("end"))</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>&nbsp</td>
+            </tr>
+            <tr>
+                <th>Header</th>
+                <td>@inputText(fui("beforeMessage.h2"), Symbol("size") -> 55)</td>
+                <td>@inputText(fui("duringMessage.h2"), Symbol("size") -> 55)</td>
+                <td>@inputText(fui("afterMessage.h2"), Symbol("size") -> 55)</td>
+            </tr>
+            <tr class="message" title="Message can have multiple lines and may include html markup">
+                <th>Message</th>
+                <td>@textarea(fui("beforeMessage.message"))</td>
+                <td>@textarea(fui("duringMessage.message"))</td>
+                <td>@textarea(fui("afterMessage.message"))</td>
+            </tr>
+
+           <tr class="message">
+               <th>Message Markdown<br/>Rendered</th>
+               <td>
+                   <div > @Html( MarkDown((fui("beforeMessage.message"))))</div>
+               </td>
+               <td>
+                   <div class="message">  @Html(MarkDown(fui("duringMessage.message")))</div>
+               </td>
+               <td>
+                   <div class="message">  @Html(MarkDown(fui("afterMessage.message")))</div>
+               </td>
+           </tr>
+            <tr>
+                <td colspan="4">
+                    <input align="center" type="submit" name ="Save">
+                </td>
+            </tr>
+        </table>
+    }
+}

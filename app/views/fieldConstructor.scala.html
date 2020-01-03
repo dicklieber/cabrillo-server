@@ -1,0 +1,6 @@
+@(elements: views.html.helper.FieldElements)
+
+@elements.input
+@elements.errors.map { error =>
+<dd class="error">@error</dd>
+}

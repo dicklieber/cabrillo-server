@@ -3,15 +3,19 @@ package org.wa9nnn.wfdserver.contest
 
 import java.time.Instant
 
+import org.wa9nnn.wfdserver.util.MarkDown
 import org.wa9nnn.wfdserver.util.TimeConverters.instantDisplayUTCCST
 import play.api.libs.json.{Format, Json}
-
 /**
  *
  * @param h2      header shown above message
  * @param message body the message. Will not be html-escaped, so any HTML may be used.
  */
-case class Message(h2: String, message: String)
+case class Message(h2: String, message: String) {
+ val md:String = {
+   MarkDown(message)
+ }
+}
 
 /**
  * This is persisted in the apps config:wfd.submissionControl
@@ -38,10 +42,16 @@ case class SubmissionConfig(beforeMessage: Message, duringMessage: Message, afte
       message = afterMessage,
       times = times.display)
   }
+
+  def messagesMap: Map[String, String] = Seq(
+    "before" -> beforeMessage.message,
+    "during" -> duringMessage.message,
+    "after" -> afterMessage.message,
+  ).toMap
 }
 
 case class Times(submissionBegin: Instant, submissionEnd: Instant) {
-  lazy val display:String = {
+  lazy val display: String = {
     s"${instantDisplayUTCCST(submissionBegin)} through ${instantDisplayUTCCST(submissionEnd)}"
   }
 }
@@ -49,18 +59,12 @@ case class Times(submissionBegin: Instant, submissionEnd: Instant) {
 object SubmissionConfig {
   val default: SubmissionConfig = {
     SubmissionConfig(
-      beforeMessage = Message(
-        h2 = "Submission not yet open!",
-        message = """Logs cannot be submitted until the end of Winter Field Day."""
-      ),
-      duringMessage = Message(
-        h2 = "Welcome to submit WFD Log files.",
-        message = """Choose a <a href="http://wwrof.org/cabrillo/cabrillo-specification-v3/">cabrillo file< to submit. Defails at <a href="https://a2a53e2b-2285-4083-9cff-c99fe5ba1658.filesusr.com/ugd/1c7085_8fa2f4f66e5e40b29a79d014ec53578f.pdf"> """
-      ),
-      afterMessage = Message(
-        h2 = "Winter Field Day Logs no longer accepted!",
-        message = "The log submission period is over. Please come back again next year."
-      ),
+      beforeMessage = Message(h2 = "Submission not yet open!", message = """Logs cannot be submitted until the **end** of Winter Field Day."""),
+      duringMessage = Message(h2 = "Welcome to submit WFD Log files.", message =
+                """If you make mistake, ou can simply resubmit your cabrillo file here.
+                  |The latest submitted file will be used, overwriting previous submissions.
+                  |""".stripMargin),
+      afterMessage = Message(h2 = "Winter Field Day Logs no longer accepted!", message = "The log submission period is over. Please come back again next year."),
       times = Times(Instant.parse("2020-01-26T19:00:00Z"),
         Instant.parse("2020-03-01T00:00:00Z"))
     )
@@ -84,3 +88,5 @@ object Message {
   implicit val configFormat: Format[SubmissionConfig] = Json.format[SubmissionConfig]
 
 }
+
+

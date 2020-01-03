@@ -6,15 +6,17 @@
  *@
 @import org.wa9nnn.wfdcheck.BuildInfo
 @import java.time.Instant
+@import org.wa9nnn.wfdserver.play.FieldConstructor._
 @import org.wa9nnn.wfdserver.DurationFormat._
 @(title: String)(content: Html)(implicit request: play.api.mvc.Request[AnyContent])
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/wfdflake.png")">
-        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
+@*        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>*@
     </head>
     <body>
         <table class="layoutTable">

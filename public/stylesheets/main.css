@@ -82,11 +82,11 @@ table th {
     padding: 2px;
 }
 
-.resultTable table {
-    border: 10px solid darkred;
-    padding: 1em;
-    margin-bottom: 1em;
-}
+/*.resultTable table {*/
+/*    border: 10px solid darkred;*/
+/*    padding: 1em;*/
+/*    margin-bottom: 1em;*/
+/*}*/
 
 .sectionHeader .section {
     font-weight: bold;
@@ -118,6 +118,31 @@ table th {
     /*width: 500px;*/
     height: 35px;
     /*background-color: #ffbf00;*/
+}
+
+
+.message div{
+    border: 1px solid darkgray;
+    justify-content: left;
+    height: 10em;
+    width: 25em;
+    font-size: inherit;
+}
+
+.message{
+    border: 1px solid darkgray;
+    justify-content: left;
+    height: 10em;
+    width: 25em;
+    font-size: inherit;
+    padding-top: 0;
+}
+
+
+.message textarea {
+    height: 10em;
+    width: 25em;
+    font-size: inherit;
 }
 
 body {
