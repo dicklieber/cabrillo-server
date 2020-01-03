@@ -16,7 +16,7 @@ import scala.util.Using
 @Singleton
 class CredentialsDao @Inject()(config: Config) extends JsonLogging {
 
-  private val credentialsFilePath = Paths.get(config.getString("wfd.credentials.file"))
+  private val credentialsFilePath = Paths.get(config.getString("wfd.credentialsFile"))
 
   private var users = Users()
 
@@ -61,9 +61,13 @@ class CredentialsDao @Inject()(config: Config) extends JsonLogging {
   }
 
   def readFile(): Unit = {
-    Using(Files.newInputStream(credentialsFilePath)) { inputStream =>
-      users = Json.parse(inputStream).as[Users]
-      logger.info(s"Loaded ${users.size} from $credentialsFilePath")
+    if(Files.exists(credentialsFilePath)) {
+      Using(Files.newInputStream(credentialsFilePath)) { inputStream =>
+        users = Json.parse(inputStream).as[Users]
+        logger.info(s"Loaded ${users.size} from $credentialsFilePath")
+      }
+    }else{
+      logger.error(s"Did not find credentials file at $credentialsFilePath, use defalt user to at lease one admin user.")
     }
   }
 

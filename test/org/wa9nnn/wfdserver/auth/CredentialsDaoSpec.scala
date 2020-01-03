@@ -12,25 +12,12 @@ class CredentialsDaoSpec extends Specification {
 
   def newDao(n:Int): CredentialsDao = {
     val dir: Path = Files.createTempDirectory("CredentialsDaoSpec")
-    println(s"dir: $dir")
     val path: Path = dir.resolveSibling(s"credFie$n")
-    val map: util.Map[String, String] = Seq("wfd.credentials.file" -> path.toString).toMap.asJava
+    val map: util.Map[String, String] = Seq("wfd.credentialsFile" -> path.toString).toMap.asJava
     new CredentialsDao(ConfigFactory.parseMap(map))
   }
 
   "CredentialsDao" should {
-//    "validate" in {
-//      ok
-//    }
-//
-//    "getForEdit" in {
-//      ok
-//    }
-//
-//    "delete" in {
-//      ok
-//    }
-
     "list" in {
       val dao = newDao(1)
       //      Files.del

@@ -65,7 +65,7 @@ class RowSourceSpec extends Specification {
                         ||email               |dick@u505.com                               |
                         ||name                |dick lieber                                 |
                         ||claimedScore        |142                                         |
-                        ||ingested            |12/31/69 18:00:00 CST                       |""".stripMargin)
+                        ||ingested            |12/31/69 18:00 CST                       |""".stripMargin)
 
     }
     "rows skip None" >> {

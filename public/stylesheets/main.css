@@ -36,6 +36,9 @@
     background: #00FF00;
 }
 
+.times {
+    font-size: smaller;
+}
 
 p {
     margin: 1em 0;

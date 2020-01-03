@@ -11,6 +11,7 @@ import net.codingwell.scalaguice.ScalaModule
 import org.wa9nnn.wfdserver.Loader
 import org.wa9nnn.wfdserver.actor.BulkLoaderActorAnno
 import org.wa9nnn.wfdserver.auth.{CredentialsDao, WFDAuthorizedRoutes, WfdHandlerCache}
+import org.wa9nnn.wfdserver.contest.SubmissionControlDao
 
 class Module extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
@@ -18,18 +19,20 @@ class Module extends AbstractModule with ScalaModule {
     bind[HandlerCache].to[WfdHandlerCache]
   }
 
-
-//  @Provides
-//  @Singleton
-//  def provideCredentials(configuration: Config): CredentialsDao = {
-//    new CredentialsDao(Paths.get(configuration.getString("wfd.credentials.file")))
-//  }
-
   @Provides
   @Singleton
   @BulkLoaderActorAnno
   def provideBulkLoader(loader: Loader, config: Config, system: ActorSystem): ActorRef = {
     system.actorOf(org.wa9nnn.wfdserver.BulkLoader.props(loader, config))
   }
+
+  @Provides
+  @Singleton
+  def provideSubmissionControl(config: Config): SubmissionControlDao = {
+    val credentialsFilePath = Paths.get(config.getString("wfd.submissionControl"))
+    new SubmissionControlDao(credentialsFilePath)
+  }
+
+
 }
 
