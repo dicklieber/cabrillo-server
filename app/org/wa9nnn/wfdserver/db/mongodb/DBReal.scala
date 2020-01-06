@@ -9,7 +9,7 @@ import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Projections._
-import org.wa9nnn.cabrillo.model.CabrilloData
+import org.wa9nnn.cabrillo.model.{CabrilloData, Exchange}
 import org.wa9nnn.cabrillo.parsers.Exchange_WFD
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
@@ -23,7 +23,7 @@ import scala.language.postfixOps
  *
  * @param config mongodb section of application.conf
  */
-class DB(config: Config) extends DBService {
+class DBReal(config: Config) extends DBService {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   private val customCodecs = fromProviders(
@@ -50,7 +50,7 @@ class DB(config: Config) extends DBService {
    * @param cabrilloData in coming.
    * @return database key for this data. This is always a string. For Mongo it's he hex version of the [[ObjectId]]
    */
-  override def ingest(cabrilloData: CabrilloData): String = {
+  override def ingest(cabrilloData: CabrilloData): LogInstance = {
 
     val callSign = cabrilloData("CALLSIGN").head.body
 
@@ -67,8 +67,9 @@ class DB(config: Config) extends DBService {
 
     val adapter = new MongoAdapter(cabrilloData, logVersion)
 
-    logCollection.insertOne(adapter.logInstance).results()
-    adapter.logId.toHexString
+    adapter.logInstance
+//    logCollection.insertOne(logInstance).results()
+//    adapter.logId.toHexString
 
   }
 

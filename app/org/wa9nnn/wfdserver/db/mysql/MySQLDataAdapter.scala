@@ -7,13 +7,13 @@ import org.wa9nnn.cabrillo.parsers.QSO_WFD
 import org.wa9nnn.wfdserver
 import org.wa9nnn.wfdserver.db.Adapter
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.mysql.CabrilloDataAdapter._
+import org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter._
 /**
  * Knows how to adapt a [[CabrilloData]] to the case classes need to interact with a SQL database.
  *
  * @param cabrilloData from file.
  */
-case class CabrilloDataAdapter(override val cabrilloData: CabrilloData) extends Adapter() with LazyLogging {
+case class MySQLDataAdapter(override val cabrilloData: CabrilloData) extends Adapter() with LazyLogging {
 
   /**
    * Most of the columns are optional with in [[EntriesRow]] is a scala Optional
@@ -89,7 +89,7 @@ case class CabrilloDataAdapter(override val cabrilloData: CabrilloData) extends 
   }
 }
 
-object CabrilloDataAdapter {
+object MySQLDataAdapter {
   val exchSeperator = '|'
 }
 

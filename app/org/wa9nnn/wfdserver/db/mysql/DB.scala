@@ -8,7 +8,7 @@ import javax.inject._
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.{DBService, EntryViewData}
+import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData}
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, Table}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -27,8 +27,8 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global //todo probably want one specifically for database
 
-  def ingest(cabrilloData: CabrilloData): String = {
-    val adapter = CabrilloDataAdapter(cabrilloData)
+  def ingest(cabrilloData: CabrilloData): MySqlIngestResult = {
+    val adapter = MySQLDataAdapter(cabrilloData)
 
     val callsign = adapter.callsign
 
@@ -42,7 +42,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       entryId
     }
     val eventualInt = db.run(query)
-    Await.result[Int](eventualInt, 10 seconds).toString
+    MySqlIngestResult( Await.result[Int](eventualInt, 10 seconds))
   }
 
   def entries: Future[Seq[EntriesRow]] = {
@@ -76,7 +76,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       //      EntryTables(entriesRow.head, soaps, contacts)
       entriesRow.headOption.map { er: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.EntriesRow =>
         val contactRows: Seq[Row] = contacts.map((c: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.ContactsRow) => {
-          val exchanges: Array[String] = c.exch.split(org.wa9nnn.wfdserver.db.mysql.CabrilloDataAdapter.exchSeperator)
+          val exchanges: Array[String] = c.exch.split(org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter.exchSeperator)
           val instant = LocalDateTime.of(c.contactDate.toLocalDate, c.contactTime.toLocalTime)
           Row(
             //"Freq", "Mode", "Sent", "Received")
@@ -104,7 +104,9 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
 }
 
-
+case class MySqlIngestResult(intId:Int)  extends DbIngestResult {
+  override def id: String = intId.toString
+}
 
 
 

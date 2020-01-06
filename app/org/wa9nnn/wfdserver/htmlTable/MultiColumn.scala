@@ -60,7 +60,7 @@ object MultiColumn {
    * @param header        non empty to create header that spans the table
    * @param emptyCell     what to put is cells beyond those in items.
    * @param noDataMessage show this if there are no items.
-   * @return
+   * @return table
    */
   def apply(items: Seq[Cell], max: Int, header: String = "", emptyCell: Cell = Cell(""), noDataMessage: String = "No data available yet!"): Table = {
     if (items.isEmpty) {

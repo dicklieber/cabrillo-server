@@ -17,6 +17,14 @@
     color: black;
 }
 
+.multiplierTable td {
+    border: none !important;
+    background: none;
+    white-space: nowrap;
+    font-size: x-small;
+    padding: 1pt!important;
+}
+
 
 .number {
     text-align: right;

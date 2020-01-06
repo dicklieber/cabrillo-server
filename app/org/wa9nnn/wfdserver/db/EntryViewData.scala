@@ -4,7 +4,7 @@ import org.wa9nnn.wfdserver.db.mongodb.QSO
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowsSource, Table}
 
 /**
- * All info about an entry
+ * All info about an entry as html [[Table]]s that can be rendered on an HTML page.
  *
  */
 case class EntryViewData(stationLog: RowsSource, contacts: Seq[Row], callSign: String, club: Option[String]) {

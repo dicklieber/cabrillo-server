@@ -7,7 +7,7 @@ import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import nl.grons.metrics4.scala.DefaultInstrumented
 import org.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
-import org.wa9nnn.wfdserver.db.DBRouter
+import org.wa9nnn.wfdserver.db.{DBRouter, DbIngestResult}
 import org.wa9nnn.wfdserver.util.JsonLogging
 
 /**
@@ -23,7 +23,7 @@ class Loader @Inject()(fileSaver: FileSaver, db: DBRouter) extends DefaultInstru
    * @param path of file.
    * @return ResultWithData -> logEntryId
    */
-  def apply(path: Path, from: String): (ResultWithData, Option[String]) = {
+  def apply(path: Path, from: String): (ResultWithData, Option[DbIngestResult]) = {
     metrics.timer("Load").time {
       loadMeter.mark()
       val rawFile: Array[Byte] = Files.readAllBytes(path)
@@ -43,7 +43,7 @@ class Loader @Inject()(fileSaver: FileSaver, db: DBRouter) extends DefaultInstru
         .++("saveTo" -> saveToPath.toString)
         .info()
 
-      val logEntryId: Option[String] = resultWithData.goodData.map { data =>
+      val logEntryId: Option[DbIngestResult] = resultWithData.goodData.map { data =>
         qsosMeter.mark(resultWithData.result.qsoCount)
         db.ingest(data)
       }

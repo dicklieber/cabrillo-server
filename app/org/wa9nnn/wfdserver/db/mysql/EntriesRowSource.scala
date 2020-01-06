@@ -2,7 +2,7 @@ package org.wa9nnn.wfdserver.db.mysql
 
 import java.time.LocalDateTime
 
-import org.wa9nnn.wfdserver.db.mysql.CabrilloDataAdapter.exchSeperator
+import org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter.exchSeperator
 import org.wa9nnn.wfdserver.db.mysql.Tables.{ContactsRow, EntriesRow}
 import org.wa9nnn.wfdserver.db.{EntryViewData, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Row, RowsSource}

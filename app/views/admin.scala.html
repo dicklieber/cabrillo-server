@@ -1,7 +1,7 @@
-@import controllers.Stuff
+@import controllers.DbName
 @import org.wa9nnn.wfdserver.db.DBRouter
 @import helper._
-@(stuffForm: Form[Stuff], dbRouter: DBRouter, dbName: String)(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+@(stuffForm: Form[DbName], dbRouter: DBRouter, dbName: String)(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 @main("Administration") {

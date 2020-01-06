@@ -34,7 +34,7 @@ class MongoAdapter(val cabrilloData: CabrilloData, logVersion: Int) extends Adap
         mode = "CATEGORY-MODE"
       ),
       soapBoxes = for {
-        soapbox <- cabrilloData("SOAPBOX")
+        soapbox <- cabrilloData("SOAPBOX").toList
         body = soapbox.body.trim
         if !body.isEmpty
       } yield {

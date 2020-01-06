@@ -6,6 +6,9 @@ import java.time.Instant
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
 
+/**
+ * Things useful for MongoDB or MySQL databases
+ */
 trait Adapter {
   implicit val cabrilloData:CabrilloData
 

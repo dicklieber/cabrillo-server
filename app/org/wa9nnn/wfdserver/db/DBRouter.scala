@@ -7,7 +7,7 @@ import com.typesafe.config.Config
 import javax.inject.{Inject, Singleton}
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.wfdserver.CallSignId
-import org.wa9nnn.wfdserver.db.mongodb.{DB => MongoDB}
+import org.wa9nnn.wfdserver.db.mongodb.{DBReal => MongoDB}
 import org.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.util.JsonLogging
@@ -19,10 +19,7 @@ import scala.concurrent.Future
 class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging {
   private val dbs: Map[String, DBService] = {
     val builder = Map.newBuilder[String, DBService]
-    val mongoConfig = config.getConfig("mongodb")
-    if (mongoConfig.getBoolean("enable")) {
-      builder += "MongoDB" -> new MongoDB(mongoConfig)
-    }
+    builder += "MongoDB" -> new MongoDB(config.getConfig("mongodb"))
     try {
       val slickConfig = config.getConfig("slick.dbs.default")
       if (slickConfig.getBoolean("enable")) {
@@ -41,9 +38,8 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
     System.exit(1)
   }
 
-
-  def ingest(cabrilloData: CabrilloData): String = {
-    dbs.values.map(_.ingest(cabrilloData)).head.toString // use Key from last one (probably mongodb)
+  def ingest(cabrilloData: CabrilloData): DbIngestResult = {
+    dbs.values.map(_.ingest(cabrilloData)).head // use Key from last one, mongodb)0
   }
 
   private def db(name: Option[String]): DBService = {
@@ -83,7 +79,7 @@ trait DBService {
    * @param cabrilloData in coming.
    * @return database key for this data.
    */
-  def ingest(cabrilloData: CabrilloData): String
+  def ingest(cabrilloData: CabrilloData): DbIngestResult
 
   def callSignIds: Future[Seq[CallSignId]]
 
@@ -92,3 +88,6 @@ trait DBService {
   def stats: Future[Table]
 }
 
+trait DbIngestResult {
+  def id: String
+}
