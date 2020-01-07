@@ -35,7 +35,7 @@ object CallSignId {
     new CallSignId(
       callsign = cs,
       logVersion = lv,
-      entryId = doc.getObjectId("_id").toHexString)
+      entryId = doc.getString("_id"))
   }
 
  def apply(callsign: String, logversion: Int, entryId: Int): CallSignId = {

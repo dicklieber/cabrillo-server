@@ -9,11 +9,9 @@ import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Projections._
-import org.wa9nnn.cabrillo.model.{CabrilloData, Exchange}
-import org.wa9nnn.cabrillo.parsers.Exchange_WFD
 import org.wa9nnn.wfdserver.CallSignId
+import org.wa9nnn.wfdserver.db.{Exchange, _}
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
-import org.wa9nnn.wfdserver.db.{DBService, EntryViewData}
 import org.wa9nnn.wfdserver.htmlTable.{Header, RowsSource, Table}
 
 import scala.concurrent.Future
@@ -30,8 +28,8 @@ class DBReal(config: Config) extends DBService {
     classOf[LogInstance],
     classOf[Categories],
     classOf[StationLog],
-    classOf[QSO],
-    classOf[Exchange_WFD],
+    classOf[Exchange],
+    classOf[Qso],
     classOf[Agg],
   )
   private val codecRegistry = fromRegistries(customCodecs,
@@ -47,12 +45,12 @@ class DBReal(config: Config) extends DBService {
 
   /**
    *
-   * @param cabrilloData in coming.
+   * @param logInstance in coming.
    * @return database key for this data. This is always a string. For Mongo it's he hex version of the [[ObjectId]]
    */
-  override def ingest(cabrilloData: CabrilloData): LogInstance = {
+  override def ingest(logInstance: LogInstance): LogInstance = {
 
-    val callSign = cabrilloData("CALLSIGN").head.body
+    val callSign = logInstance.stationLog.callSign
 
     val maybePrevious: Option[LogInstance] = logCollection.find(equal("stationLog.callSign", callSign))
       .results()
@@ -62,15 +60,18 @@ class DBReal(config: Config) extends DBService {
       previousCollection.insertOne(previous).results()
       // delete from main
       logCollection.deleteOne(equal("_id", previous._id)).results()
-      previous.stationLog.logVersion + 1
+      previous.logVersion + 1
     }.getOrElse(1)
 
-    val adapter = new MongoAdapter(cabrilloData, logVersion)
-
-    adapter.logInstance
-//    logCollection.insertOne(logInstance).results()
-//    adapter.logId.toHexString
-
+    val logInstanceWithLogVersion = {
+      if (logInstance.logVersion != logVersion) {
+        logInstance.copy(logVersion = logVersion)
+      } else {
+        logInstance
+      }
+    }
+    logCollection.insertOne(logInstanceWithLogVersion).results()
+    logInstance
   }
 
   override def callSignIds: Future[Seq[CallSignId]] = {
@@ -81,8 +82,7 @@ class DBReal(config: Config) extends DBService {
   }
 
   override def entry(entryId: String): Future[Option[EntryViewData]] = {
-    val id = new ObjectId(entryId)
-    logCollection.find(equal("_id", id)).first.toFutureOption().map(_.map { logInstance =>
+    logCollection.find(equal("_id", entryId)).first.toFutureOption().map(_.map { logInstance =>
       val stationLog = logInstance.stationLog
       val rowsSource: RowsSource = stationLog
       EntryViewData(rowsSource,

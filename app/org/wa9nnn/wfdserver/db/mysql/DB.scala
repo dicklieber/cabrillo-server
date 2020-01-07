@@ -5,10 +5,9 @@ import java.time.LocalDateTime
 
 import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
-import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData}
+import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData, LogInstance}
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, Table}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -27,10 +26,10 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global //todo probably want one specifically for database
 
-  def ingest(cabrilloData: CabrilloData): MySqlIngestResult = {
-    val adapter = MySQLDataAdapter(cabrilloData)
+  def ingest(logInstance: LogInstance): LogInstance = {
+    val adapter = MySQLDataAdapter(logInstance)
 
-    val callsign = adapter.callsign
+    val callsign = logInstance.stationLog.callSign
 
     val query = for {
       maybeHighestVersion <- Entries.filter(_.callsign === callsign).map(_.logVersion).max.result
@@ -43,6 +42,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     }
     val eventualInt = db.run(query)
     MySqlIngestResult( Await.result[Int](eventualInt, 10 seconds))
+    logInstance //todo handle logVersion
   }
 
   def entries: Future[Seq[EntriesRow]] = {
@@ -76,14 +76,14 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       //      EntryTables(entriesRow.head, soaps, contacts)
       entriesRow.headOption.map { er: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.EntriesRow =>
         val contactRows: Seq[Row] = contacts.map((c: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.ContactsRow) => {
-          val exchanges: Array[String] = c.exch.split(org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter.exchSeperator)
+//          val exchanges: Array[String] = c.exch.split(org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter.exchSeperator)
           val instant = LocalDateTime.of(c.contactDate.toLocalDate, c.contactTime.toLocalTime)
           Row(
             //"Freq", "Mode", "Sent", "Received")
             c.freq,
             Mode(c.qsoMode),
-            Cell(exchanges(0)).withCssClass("exchange"),
-            Cell(exchanges(1)).withCssClass("exchange"),
+            Cell("todo").withCssClass("exchange"),
+            Cell(c.exch).withCssClass("exchange"),
             instant
           )
         }

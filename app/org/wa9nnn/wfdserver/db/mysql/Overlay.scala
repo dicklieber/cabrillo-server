@@ -5,10 +5,10 @@ import org.wa9nnn.wfdserver.util.BiMap
 
 object Overlay extends BiMap[Int, String](
   0 -> "N/A",
-  1 -> "ONE",
-  2 -> "TWO",
-  3 -> "LIMITED",
-  4 -> "UNLIMITED",
-  5 -> "SWL"
+  1 -> "CLASSIC",
+  2 -> "ROOKIE",
+  3 -> "TB-WIRES",
+  4 -> "NOVICE-TECH",
+  5 -> "OVER-50"
 )
 

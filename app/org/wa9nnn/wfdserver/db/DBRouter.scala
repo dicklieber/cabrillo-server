@@ -7,7 +7,7 @@ import com.typesafe.config.Config
 import javax.inject.{Inject, Singleton}
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.wfdserver.CallSignId
-import org.wa9nnn.wfdserver.db.mongodb.{DBReal => MongoDB}
+import org.wa9nnn.wfdserver.db.mongodb.{LogInstanceAdapter, DBReal => MongoDB}
 import org.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.util.JsonLogging
@@ -39,7 +39,9 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
   }
 
   def ingest(cabrilloData: CabrilloData): DbIngestResult = {
-    dbs.values.map(_.ingest(cabrilloData)).head // use Key from last one, mongodb)0
+    val logInstance: LogInstance =  LogInstanceAdapter(cabrilloData) //todo before Mongo-specific stuff
+
+    dbs.values.map(_.ingest(logInstance)).head // use Key from last one, mongodb)0
   }
 
   private def db(name: Option[String]): DBService = {
@@ -76,10 +78,10 @@ object DBRouter {
 trait DBService {
   /**
    *
-   * @param cabrilloData in coming.
-   * @return database key for this data.
+   * @param logInstance in coming.
+   * @return LogInstance with logVersion.
    */
-  def ingest(cabrilloData: CabrilloData): DbIngestResult
+  def ingest(logInstance: LogInstance): LogInstance
 
   def callSignIds: Future[Seq[CallSignId]]
 

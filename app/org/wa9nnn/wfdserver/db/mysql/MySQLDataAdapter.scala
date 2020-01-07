@@ -2,18 +2,19 @@
 package org.wa9nnn.wfdserver.db.mysql
 
 import com.typesafe.scalalogging.LazyLogging
-import org.wa9nnn.cabrillo.model.CabrilloData
-import org.wa9nnn.cabrillo.parsers.QSO_WFD
 import org.wa9nnn.wfdserver
-import org.wa9nnn.wfdserver.db.Adapter
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter._
+import org.wa9nnn.wfdserver.db.{Categories, LogInstance, StationLog}
+
 /**
- * Knows how to adapt a [[CabrilloData]] to the case classes need to interact with a SQL database.
+ * Knows how to adapt a [[LogInstance]] to the  slick generated case classes needed to interact with a SQL database.
  *
- * @param cabrilloData from file.
+ * @param logInstance from file.
  */
-case class MySQLDataAdapter(override val cabrilloData: CabrilloData) extends Adapter() with LazyLogging {
+case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
+
+  private val stationLog: StationLog = logInstance.stationLog
+  private val categories: Categories = logInstance.stationLog.categories
 
   /**
    * Most of the columns are optional with in [[EntriesRow]] is a scala Optional
@@ -25,63 +26,58 @@ case class MySQLDataAdapter(override val cabrilloData: CabrilloData) extends Ada
   def entryRow(logVersion: Option[Int]): EntriesRow = EntriesRow(
     id = 0, // will come from DB
     logVersion = Some(logVersion.getOrElse(-1) + 1),
-    callsign = "CALLSIGN",
-    contest = "CONTEST",
-    assisted = ("CATEGORY-ASSISTED", "ASSISTED"),
-    bandId = Band("CATEGORY-BAND"),
-    modeId = Mode("CATEGORY-MODE"),
-    operators = str("OPERATORS").map(_.split(" ").length),
-    operatorTypeId = Operator("CATEGORY-OPERATOR"),
-    powerId = Power("CATEGORY-POWER"),
-    stationId = Station("CATEGORY-STATION"),
-    timeId = Time("CATEGORY-TIME"),
-    transmitterId = Transmitter("CATEGORY-TRANSMITTER"),
-    overlayId = Overlay(str("CATEGORY-OVERLAY")),
-    certificate = ("CERTIFICATE", "YES"),
-    claimedScore = "CLAIMED-SCORE",
-    club = "CLUB",
-    createdBy = "CREATED-BY",
-    email = "EMAIL",
-    gridLocator = "GRID-LOCATOR",
-    location = "LOCATION",
-    name = "NAME",
-    address = Address(cabrilloData),
-    city = "ADDRESS-CITY",
-    stateProvince = "ADDRESS-STATE-PROVINCE",
-    postalcode = "ADDRESS-POSTALCODE",
-    country = "ADDRESS-COUNTRY"
+    callsign = Some(stationLog.callSign),
+    contest = Some("WFD"), //todo do we need this in LogInstance
+    assisted = categories.assisted.map(_ == "ASSISTED"),
+    bandId = Band(categories.band),
+    modeId = Mode(categories.mode),
+    operators = categories.operator.map(_.split(" ").length),
+    operatorTypeId = Operator(categories.operator),
+    powerId = Power(categories.power),
+    stationId = Station(categories.station),
+    timeId = Time(categories.time),
+    transmitterId = Transmitter(categories.transmitter), //"CATEGORY-TRANSMITTER"),
+    overlayId = Overlay(categories.overlay),
+    certificate = stationLog.certificate.map(_ == "YES"), // ("CERTIFICATE", "YES"),
+    claimedScore = stationLog.claimedScore,
+    club = stationLog.club,
+    createdBy = stationLog.createdBy,
+    email = stationLog.email,
+    gridLocator = stationLog.gridLocator,
+    location = stationLog.location,
+    name = stationLog.name,
+    address = stationLog.address.map(_.mkString("\n").take(75)).headOption,
+    city = stationLog.city,
+    stateProvince = stationLog.stateProvince,
+    postalcode = stationLog.postalCode,
+    country = stationLog.country
   )
 
   def contactsRows(entryId: Int): Seq[ContactsRow] = {
-    def row(qso: QSO_WFD): ContactsRow = {
+    def row(qso: org.wa9nnn.wfdserver.db.Qso): ContactsRow = {
       ContactsRow(
         id = 0, // autoinc
         entryId = entryId,
-        freq = qso.freq,
-        qsoMode = Mode(qso.mode),
-        contactDate = qso.stamp,
-        contactTime = qso.stamp,
-        callsign = qso.sent.callsign,
-        exch = qso.sent.category + " " + qso.sent.section + exchSeperator + qso.received.toString(),
+        freq = qso.b,
+        qsoMode = Mode(qso.m),
+        contactDate = new java.sql.Date( qso.ts.toEpochMilli),
+        contactTime = new  java.sql.Time( qso.ts.toEpochMilli),
+        callsign = qso.r.cs,
+        exch =  qso.r.ex,
         transmitter = 0 //todo how parse this
-
       )
     }
 
-    cabrilloData.apply("QSO").flatMap { tv =>
-      tv match {
-        case qso: QSO_WFD =>
+    logInstance.qsos.flatMap { qso =>
+
           Seq(row(qso))
-        case _ =>
-          Seq.empty
       }
     }
-  }
 
   def soapboxes(entryId: Int): Iterable[wfdserver.db.mysql.Tables.SoapboxesRow] = {
     for {
-      soapbox <- cabrilloData("SOAPBOX")
-      body = soapbox.body.trim
+      soapbox <-  stationLog.soapBoxes
+      body = soapbox.trim
       if !body.isEmpty
     } yield {
       SoapboxesRow(0, Some(entryId), Some(body))
@@ -89,8 +85,6 @@ case class MySQLDataAdapter(override val cabrilloData: CabrilloData) extends Ada
   }
 }
 
-object MySQLDataAdapter {
-  val exchSeperator = '|'
-}
+
 
 

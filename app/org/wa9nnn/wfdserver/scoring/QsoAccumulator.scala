@@ -3,7 +3,7 @@ package org.wa9nnn.wfdserver.scoring
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import org.wa9nnn.wfdserver.db.mongodb.QSO
+import org.wa9nnn.wfdserver.db.Qso
 import org.wa9nnn.wfdserver.htmlTable._
 
 import scala.collection.concurrent.TrieMap
@@ -13,7 +13,7 @@ class QsoAccumulator {
   private val modeCountMap = new TrieMap[String, AtomicInteger]()
   private val bandCountMap = new TrieMap[String, AtomicInteger]()
 
-  def apply(qso: QSO): Unit = {
+  def apply(qso: Qso): Unit = {
     val modeBand = qso.modeBand
     modeBands += modeBand
     modeCountMap.getOrElseUpdate(modeBand.mode, new AtomicInteger()).incrementAndGet()

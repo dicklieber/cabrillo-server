@@ -1,6 +1,5 @@
 package org.wa9nnn.wfdserver.db
 
-import org.wa9nnn.wfdserver.db.mongodb.QSO
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowsSource, Table}
 
 /**
@@ -14,6 +13,6 @@ case class EntryViewData(stationLog: RowsSource, contacts: Seq[Row], callSign: S
   }
 
   val contactsTable: Table = {
-    Table(QSO.header(contacts.length), contacts:_*).withCssClass("resultTable")
+    Table(Qso.header(contacts.length), contacts:_*).withCssClass("resultTable")
   }
 }

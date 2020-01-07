@@ -1,7 +1,7 @@
 
 package org.wa9nnn.wfdserver.scoring
 
-import org.wa9nnn.wfdserver.db.mongodb.LogInstance
+import org.wa9nnn.wfdserver.db.LogInstance
 import org.wa9nnn.wfdserver.htmlTable.{Cell, SectionedRowCollector, Table}
 
 object ScoringEngine {
