@@ -41,7 +41,8 @@ class BulkLoader (loader: Loader, config: Config) extends Actor with DefaultInst
                 Files.move(file, to)
                 val fileName: String = file.getFileName.toFile.getName
                 val resultJsonFile = failedDir.resolve(fileName + ".json")
-                Files.writeString(resultJsonFile, Json.prettyPrint(Json.toJson(resultWithData.result)))
+                val json = Json.prettyPrint(Json.toJson(resultWithData.result))
+                Files.write(resultJsonFile, json.getBytes)
             }
             bulkLoadMeter.mark()
           } catch {

@@ -13,7 +13,7 @@ object SaveWithBackup extends JsonLogging {
     val backupPath = newFile.resolveSibling(newFile.getFileName.toString + ".backup")
     if (Files.exists(newFile))
       Files.move(newFile, backupPath, StandardCopyOption.REPLACE_EXISTING)
-    Files.writeString(newFile, data)
+    Files.write(newFile, data.getBytes)
 
     assert(Files.exists(newFile), "Didn't save file!")
   }
