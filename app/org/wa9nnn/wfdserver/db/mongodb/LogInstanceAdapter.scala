@@ -57,6 +57,7 @@ object LogInstanceAdapter {
         club = "CLUB",
         certificate = "CERTIFICATE",
         location = s("LOCATION"),
+        arrlSection = "ARRL-SECTION",
         category = s("CATEGORY"),
         categories = Categories(
           operator = "CATEGORY-OPERATOR",

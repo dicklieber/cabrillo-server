@@ -7,7 +7,7 @@ import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData, LogInstance}
+import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData, LogInstance, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, Table}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -41,7 +41,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       entryId
     }
     val eventualInt = db.run(query)
-    MySqlIngestResult( Await.result[Int](eventualInt, 10 seconds))
+    MySqlIngestResult(Await.result[Int](eventualInt, 10 seconds))
     logInstance //todo handle logVersion
   }
 
@@ -52,13 +52,9 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
   def callSignIds: Future[Seq[CallSignId]] = {
     //todo this is crude, gets all entire EntriedRows, but I killed too many hour trying to get Slick to return just the columns we need.
-    entries.map { s =>
-      (for {
-        er <- s
-        if er.callsign.isDefined
-      } yield {
-        CallSignId(er.callsign.get, er.logVersion.getOrElse(0), er.id)
-      }).sortBy(r => (r.callsign, r.logVersion))
+    entries.map { s: Seq[mysql.Tables.EntriesRow] =>
+      s.map { er => CallSignId(er.callsign, er.logVersion, er.id) }
+        .sorted
     }
   }
 
@@ -72,11 +68,11 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       soapboxes <- Soapboxes.filter(_.entryId === entryId).result
       contacts <- Contacts.filter(_.entryId === entryId).result
     } yield {
-      val soaps: Seq[String] = soapboxes.iterator.flatMap(_.soapbox).toSeq
+      val soaps: Seq[String] = soapboxes.map(_.soapbox)
       //      EntryTables(entriesRow.head, soaps, contacts)
       entriesRow.headOption.map { er: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.EntriesRow =>
         val contactRows: Seq[Row] = contacts.map((c: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.ContactsRow) => {
-//          val exchanges: Array[String] = c.exch.split(org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter.exchSeperator)
+          //          val exchanges: Array[String] = c.exch.split(org.wa9nnn.wfdserver.db.mysql.MySQLDataAdapter.exchSeperator)
           val instant = LocalDateTime.of(c.contactDate.toLocalDate, c.contactTime.toLocalTime)
           Row(
             //"Freq", "Mode", "Sent", "Received")
@@ -88,7 +84,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
           )
         }
         )
-        EntryViewData(EntriesRowSource(er, soaps), contactRows, er.callsign.get, er.club)
+        EntryViewData(EntriesRowSource(er, soaps), contactRows, er.callsign, Some(er.club))
       }
     }
     )
@@ -104,7 +100,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
 }
 
-case class MySqlIngestResult(intId:Int)  extends DbIngestResult {
+case class MySqlIngestResult(intId: Int) extends DbIngestResult {
   override def id: String = intId.toString
 }
 

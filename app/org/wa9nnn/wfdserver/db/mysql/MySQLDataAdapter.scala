@@ -25,62 +25,67 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
    */
   def entryRow(logVersion: Option[Int]): EntriesRow = EntriesRow(
     id = 0, // will come from DB
-    logVersion = Some(logVersion.getOrElse(-1) + 1),
-    callsign = Some(stationLog.callSign),
-    contest = Some("WFD"), //todo do we need this in LogInstance
-    assisted = categories.assisted.map(_ == "ASSISTED"),
-    bandId = Band(categories.band),
-    modeId = Mode(categories.mode),
-    operators = categories.operator.map(_.split(" ").length),
-    operatorTypeId = Operator(categories.operator),
-    powerId = Power(categories.power),
-    stationId = Station(categories.station),
-    timeId = Time(categories.time),
-    transmitterId = Transmitter(categories.transmitter), //"CATEGORY-TRANSMITTER"),
-    overlayId = Overlay(categories.overlay),
-    certificate = stationLog.certificate.map(_ == "YES"), // ("CERTIFICATE", "YES"),
-    claimedScore = stationLog.claimedScore,
-    club = stationLog.club,
-    createdBy = stationLog.createdBy,
-    email = stationLog.email,
-    gridLocator = stationLog.gridLocator,
-    location = stationLog.location,
-    name = stationLog.name,
-    address = stationLog.address.map(_.mkString("\n").take(75)).headOption,
-    city = stationLog.city,
-    stateProvince = stationLog.stateProvince,
-    postalcode = stationLog.postalCode,
-    country = stationLog.country
+    logVersion = logVersion.getOrElse(-1) + 1,
+    callsign = stationLog.callSign,
+    contest = "WFD", //todo do we need this in LogInstance
+    assistedId = categories.assisted.contains("ASSISTED"),
+    bandId = Band(categories.band).getOrElse(0),
+    modeId = Mode(categories.mode).getOrElse(0),
+    operators = categories.operator.map(_.split(" ").length).getOrElse(0),
+    operatorTypeId = OperatorType(categories.operator).getOrElse(0),
+    powerId = Power(categories.power).getOrElse(0),
+    stationId = Station(categories.station).getOrElse(0),
+    timeId = Time(categories.time).getOrElse(0),
+    transmitterId = Transmitter(categories.transmitter).getOrElse(0), //"CATEGORY-TRANSMITTER"),
+    overlayId = Overlay(categories.overlay).getOrElse(0),
+    certificate = stationLog.certificate.contains("YES"), // ("CERTIFICATE", "YES"),
+    claimedScore = stationLog.claimedScore.getOrElse(0),
+    club = stationLog.club.getOrElse(""),
+    createdBy = stationLog.createdBy.getOrElse(""),
+    email = stationLog.email.getOrElse(""),
+    gridLocator = stationLog.gridLocator.getOrElse(""),
+    location = stationLog.location.getOrElse(""),
+    name = stationLog.name.getOrElse(""),
+    address = stationLog.address.map(_.mkString("\n").take(75)).headOption.getOrElse(""),
+    city = stationLog.city.getOrElse(""),
+    stateProvince = stationLog.stateProvince.getOrElse(""),
+    postalcode = stationLog.postalCode.getOrElse(""),
+    country = stationLog.country.getOrElse(""),
+    arrlSection = stationLog.arrlSection.getOrElse(""),
+    category = stationLog.location.getOrElse("")
   )
 
   def contactsRows(entryId: Int): Seq[ContactsRow] = {
     def row(qso: org.wa9nnn.wfdserver.db.Qso): ContactsRow = {
+      val strings = qso.s.ex.split(" ")
       ContactsRow(
         id = 0, // autoinc
         entryId = entryId,
         freq = qso.b,
         qsoMode = Mode(qso.m),
-        contactDate = new java.sql.Date( qso.ts.toEpochMilli),
-        contactTime = new  java.sql.Time( qso.ts.toEpochMilli),
+        contactDate = new java.sql.Date(qso.ts.toEpochMilli),
+        contactTime = new java.sql.Time(qso.ts.toEpochMilli),
         callsign = qso.r.cs,
-        exch =  qso.r.ex,
-        transmitter = 0 //todo how parse this
+        exch = qso.r.ex,
+        transmitter = 0,
+        category = strings(0),
+        sect = strings(1) //todo how parse this
       )
     }
 
     logInstance.qsos.flatMap { qso =>
 
-          Seq(row(qso))
-      }
+      Seq(row(qso))
     }
+  }
 
   def soapboxes(entryId: Int): Iterable[wfdserver.db.mysql.Tables.SoapboxesRow] = {
     for {
-      soapbox <-  stationLog.soapBoxes
+      soapbox <- stationLog.soapBoxes
       body = soapbox.trim
       if !body.isEmpty
     } yield {
-      SoapboxesRow(0, Some(entryId), Some(body))
+      SoapboxesRow(0, entryId, body)
     }
   }
 }

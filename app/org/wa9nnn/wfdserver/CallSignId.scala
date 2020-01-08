@@ -10,7 +10,7 @@ import org.wa9nnn.wfdserver.htmlTable.{Cell, CellProvider}
  * @param logVersion  0-N
  * @param entryId Key
  */
-case class CallSignId(callsign: String, logVersion: Int, entryId: String) extends CellProvider {
+case class CallSignId(callsign: String, logVersion: Int, entryId: String) extends CellProvider with Ordered[CallSignId] {
   override def toCell: Cell = {
     val u = controllers.routes.AdminController.submission(this)
     Cell(s"$callsign:$logVersion")
@@ -18,6 +18,13 @@ case class CallSignId(callsign: String, logVersion: Int, entryId: String) extend
   }
 
   override def toString: String = s"$callsign|$logVersion|$entryId"
+
+  override def compare(that: CallSignId): Int = {
+    var ret = this.callsign compareTo(that.callsign)
+    if(ret == 0)
+      ret = this.logVersion .compareTo(that.logVersion)
+    ret
+  }
 }
 
 object CallSignId {

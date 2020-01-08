@@ -12,46 +12,58 @@ SET time_zone = "+00:00";
 
 -- Table structure for table `bands`
 CREATE TABLE `bands` (
-  `id` int(11) NOT NULL,
-  `name` varchar(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                         `id` int(11) NOT NULL,
+                         `name` varchar(11) NOT NULL,
+                         PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Insert data for table `bands`
 INSERT INTO `bands` (`id`, `name`) VALUES
-	(0, 'ALL'),
-	(1, '160M'),
-	(2, '80M'),
-	(3, '40M'),
-	(4, '20M'),
-	(5, '15M'),
-	(6, '10M'),
-	(7, '6M'),
-	(8, '4M'),
-	(9, '2M'),
-	(10, '222'),
-	(11, '432'),
-	(12, '902'),
-	(13, '1.2G'),
-	(14, '2.3G'),
-	(15, '3.4G'),
-	(16, '5.7G'),
-	(17, '10G'),
-	(18, '24G'),
-	(19, '47G'),
-	(20, '75G'),
-	(21, '123G'),
-	(22, '134G'),
-	(23, '241G'),
-	(24, 'Light'),
-	(25, 'VHF-3-BAND'),
-	(26, 'VHF-FM-ONLY');
+(0, 'ALL'),
+(1, '160M'),
+(2, '80M'),
+(3, '40M'),
+(4, '20M'),
+(5, '15M'),
+(6, '10M'),
+(7, '6M'),
+(8, '4M'),
+(9, '2M'),
+(10, '222'),
+(11, '432'),
+(12, '902'),
+(13, '1.2G'),
+(14, '2.3G'),
+(15, '3.4G'),
+(16, '5.7G'),
+(17, '10G'),
+(18, '24G'),
+(19, '47G'),
+(20, '75G'),
+(21, '123G'),
+(22, '134G'),
+(23, '241G'),
+(24, 'Light'),
+(25, 'VHF-3-BAND'),
+(26, 'VHF-FM-ONLY');
+
+-- Table structure for table `assisted`
+CREATE TABLE `assisted` (
+                            `id` int(11) NOT NULL,
+                            `name` varchar(12) NOT NULL,
+                            PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert data for table `assisted`
+INSERT INTO `assisted` (`id`, `name`) VALUES
+(1, 'ASSISTED'),
+(2, 'NON-ASSISTED');
 
 -- Table structure for table `modes`
 CREATE TABLE `modes` (
-  `id` int(11) NOT NULL,
-  `name` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                         `id` int(11) NOT NULL,
+                         `name` varchar(10) NOT NULL,
+                         PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Insert data for table `modes`
@@ -64,11 +76,26 @@ INSERT INTO `modes` (`id`, `name`) VALUES
 (6, 'MIXED'),
 (0, 'N/A');
 
+-- Table structure for table `qso_modes`
+CREATE TABLE `qso_modes` (
+                             `id` int(11) NOT NULL,
+                             `name` varchar(2) NOT NULL,
+                             PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert data for table `modes`
+INSERT INTO `qso_modes` (`id`, `name`) VALUES
+(1, 'CW'),
+(2, 'PH'),
+(3, 'FM'),
+(4, 'RY'),
+(5, 'DG');
+
 -- Table structure for table `operator_types`
 CREATE TABLE `operator_types` (
-  `id` int(11) NOT NULL,
-  `name` varchar(9) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                                  `id` int(11) NOT NULL,
+                                  `name` varchar(9) NOT NULL,
+                                  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table `operator_types`
@@ -80,73 +107,73 @@ INSERT INTO `operator_types` (`id`, `name`) VALUES
 
 -- Table structure for table `powers`
 CREATE TABLE `powers` (
-  `id` int(11) NOT NULL,
-  `name` varchar(4) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                          `id` int(11) NOT NULL,
+                          `name` varchar(4) NOT NULL,
+                          PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Insert data for table `powers`
 INSERT INTO `powers` (`id`, `name`) VALUES
-	(1, 'HIGH'),
-	(2, 'LOW'),
-	(3, 'QRP'),
-	(0, 'ALL');
+(1, 'HIGH'),
+(2, 'LOW'),
+(3, 'QRP'),
+(0, 'ALL');
 
 -- Table structure for table `stations`
 CREATE TABLE `stations` (
-  `id` int(11) NOT NULL,
-  `name` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                            `id` int(11) NOT NULL,
+                            `name` varchar(15) NOT NULL,
+                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table `stations`
 INSERT INTO `stations` (`id`, `name`) VALUES
-	(1, 'FIXED'),
-	(2, 'MOBILE'),
-	(3, 'PORTABLE'),
-	(4, 'ROVER'),
-	(5, 'ROVER-LIMITED'),
-	(6, 'ROVER-UNLIMITED'),
-	(7, 'EXPEDITION'),
-	(8, 'HQ'),
-	(9, 'SCHOOL'),
-	(0, 'N/A');
+(1, 'FIXED'),
+(2, 'MOBILE'),
+(3, 'PORTABLE'),
+(4, 'ROVER'),
+(5, 'ROVER-LIMITED'),
+(6, 'ROVER-UNLIMITED'),
+(7, 'EXPEDITION'),
+(8, 'HQ'),
+(9, 'SCHOOL'),
+(0, 'N/A');
 
 -- Table structure for table `times`
 CREATE TABLE `times` (
-  `id` int(11) NOT NULL,
-  `name` varchar(8) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                         `id` int(11) NOT NULL,
+                         `name` varchar(8) NOT NULL,
+                         PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Insert data for table `times`
 INSERT INTO `times` (`id`, `name`) VALUES
-	(1, '6-HOURS'),
-	(2, '12-HOURS'),
-	(3, '24-HOURS'),
-	(0, 'N/A');
+(1, '6-HOURS'),
+(2, '12-HOURS'),
+(3, '24-HOURS'),
+(0, 'N/A');
 
 -- Table structure for table `transmitters`
 CREATE TABLE `transmitters` (
-  `id` int(11) NOT NULL,
-  `name` varchar(9) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                                `id` int(11) NOT NULL,
+                                `name` varchar(9) NOT NULL,
+                                PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Insert data for table `transmitters`
 INSERT INTO `transmitters` (`id`, `name`) VALUES
-	(1, 'ONE'),
-	(2, 'TWO'),
-	(3, 'LIMITED'),
-	(4, 'UNLIMITED'),
-	(5, 'SWL'),
-	(0, 'N/A');
+(1, 'ONE'),
+(2, 'TWO'),
+(3, 'LIMITED'),
+(4, 'UNLIMITED'),
+(5, 'SWL'),
+(0, 'N/A');
 
 -- Table structure for table `overlays`
 CREATE TABLE `overlays` (
-  `id` int(11) NOT NULL,
-  `name` varchar(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                            `id` int(11) NOT NULL,
+                            `name` varchar(11) NOT NULL,
+                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Insert data for table `overlays`
@@ -160,9 +187,9 @@ INSERT INTO `overlays` (`id`, `name`) VALUES
 
 -- Table structure for table `arrl_sections`
 CREATE TABLE `arrl_sections` (
-  `abbrev` varchar(20) DEFAULT NULL,
-  `name` varchar(30) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL
+                                 `abbrev` varchar(20) NOT NULL,
+                                 `name` varchar(30) NOT NULL,
+                                 `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- Insert data for table `arrl_sections`
@@ -253,103 +280,118 @@ INSERT INTO `arrl_sections` (`abbrev`, `name`, `description`) VALUES
 
 -- Table structure for table `soapboxes`
 CREATE TABLE `soapboxes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entry_id` int(11) DEFAULT NULL,
-  `soapbox` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                             `id` int(11) NOT NULL AUTO_INCREMENT,
+                             `entry_id` int(11) NOT NULL,
+                             `soapbox` varchar(255) NOT NULL,
+                             PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table structure for table `addresses`
+CREATE TABLE `addresses` (
+                             `id` int(11) NOT NULL AUTO_INCREMENT,
+                             `entry_id` int(11) NOT NULL,
+                             `address` varchar(255) NOT NULL,
+                             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table structure for table `offtime`
 CREATE TABLE `offtimes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entry_id` int(11) DEFAULT NULL,
-  `soapbox` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                            `id` int(11) NOT NULL AUTO_INCREMENT,
+                            `entry_id` int(11) NOT NULL,
+                            `soapbox` varchar(255) NOT NULL,
+                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table structure for table `entry`
 CREATE TABLE `entries` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `log_version` int(11) DEFAULT NULL,
-  `callsign` varchar(20) DEFAULT NULL,
-  `contest` varchar(20) DEFAULT NULL,
-  `assisted` tinyint(1) DEFAULT NULL,
-  `band_id` int(11) DEFAULT NULL,
-  `mode_id` int(11) DEFAULT NULL,
-  `operators` int(11) DEFAULT NULL,
-  `operator_type_id` int(11) DEFAULT NULL,
-  `power_id` int(11) DEFAULT NULL,
-  `station_id` int(11) DEFAULT NULL,
-  `time_id` int(11) DEFAULT NULL,
-  `transmitter_id` int(11) DEFAULT NULL,
-  `overlay_id` int(11) DEFAULT NULL,
-  `certificate` tinyint(1) DEFAULT NULL,
-  `claimed_score` int(11) DEFAULT NULL,
-  `club` varchar(255) DEFAULT NULL,
-  `created_by` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `grid_locator` varchar(6) DEFAULT NULL,
-  `location` varchar(25) DEFAULT NULL,
-  `name` varchar(75) DEFAULT NULL,
-  `address` varchar(75) DEFAULT NULL,
-  `city` varchar(75) DEFAULT NULL,
-  `state_province` varchar(75) DEFAULT NULL,
-  `postalcode` varchar(75) DEFAULT NULL,
-  `country` varchar(75) DEFAULT NULL,
-  PRIMARY KEY (`id`)  
+                           `id` int(11) NOT NULL AUTO_INCREMENT,
+                           `log_version` int(11) NOT NULL,
+                           `callsign` varchar(20) NOT NULL,
+                           `contest` varchar(20) NOT NULL,
+                           `assisted_id` tinyint(1) NOT NULL,
+                           `band_id` int(11) NOT NULL,
+                           `mode_id` int(11) NOT NULL,
+                           `operators` int(11) NOT NULL,
+                           `operator_type_id` int(11) NOT NULL,
+                           `power_id` int(11) NOT NULL,
+                           `station_id` int(11) NOT NULL,
+                           `time_id` int(11) NOT NULL,
+                           `transmitter_id` int(11) NOT NULL,
+                           `overlay_id` int(11) NOT NULL,
+                           `certificate` tinyint(1) NOT NULL,
+                           `claimed_score` int(11) NOT NULL,
+                           `club` varchar(255) NOT NULL,
+                           `created_by` varchar(255) NOT NULL,
+                           `email` varchar(255) NOT NULL,
+                           `grid_locator` varchar(6) NOT NULL,
+                           `location` varchar(25) NOT NULL,
+                           `name` varchar(75) NOT NULL,
+                           `address` varchar(75) NOT NULL,
+                           `city` varchar(75) NOT NULL,
+                           `state_province` varchar(75) NOT NULL,
+                           `postalcode` varchar(75) NOT NULL,
+                           `country` varchar(75) NOT NULL,
+                           `arrl_section` varchar(20) NOT NULL, 		-- arrl_section abbrev
+                           `category` varchar(10) NOT NULL,			-- WFD category
+                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table structure for table `contacts`
 CREATE TABLE `contacts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entry_id` int(11) NOT NULL,
-  `freq` varchar(25) NOT NULL,
-  `qso_mode` int(11) NOT NULL,
-  `contact_date` date NOT NULL,
-  `contact_time` time NOT NULL,
-  `callsign` varchar(25) NOT NULL,
-  `exch` varchar(25) NOT NULL,
-  `transmitter` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+                            `id` int(11) NOT NULL AUTO_INCREMENT,
+                            `entry_id` int(11) NOT NULL,
+                            `freq` varchar(25) NOT NULL,
+                            `qso_mode` int(11) NOT NULL,
+                            `contact_date` date NOT NULL,
+                            `contact_time` time NOT NULL,
+                            `callsign` varchar(25) NOT NULL,
+                            `exch` varchar(25) NOT NULL,
+                            `category` varchar(25) NOT NULL,
+                            `sect` varchar(25) NOT NULL,
+                            `transmitter` int(11) NOT NULL,
+                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Foreign keys for tables
 ALTER TABLE entries
-ADD CONSTRAINT FK_band_id
-	FOREIGN KEY (band_id) REFERENCES bands(id);
+    ADD CONSTRAINT FK_assisted_id
+        FOREIGN KEY (assisted_id) REFERENCES assisted(id);
 ALTER TABLE entries
-ADD CONSTRAINT FK_mode_id
-	FOREIGN KEY (mode_id) REFERENCES modes(id);
+    ADD CONSTRAINT FK_band_id
+        FOREIGN KEY (band_id) REFERENCES bands(id);
 ALTER TABLE entries
-ADD CONSTRAINT FK_operator_type_id
-	FOREIGN KEY (operator_type_id) REFERENCES operator_types(id);
+    ADD CONSTRAINT FK_mode_id
+        FOREIGN KEY (mode_id) REFERENCES modes(id);
 ALTER TABLE entries
-ADD CONSTRAINT FK_power_id
-	FOREIGN KEY (power_id) REFERENCES powers(id);
+    ADD CONSTRAINT FK_operator_type_id
+        FOREIGN KEY (operator_type_id) REFERENCES operator_types(id);
 ALTER TABLE entries
-ADD CONSTRAINT FK_station_id
-	FOREIGN KEY (station_id) REFERENCES stations(id);
+    ADD CONSTRAINT FK_power_id
+        FOREIGN KEY (power_id) REFERENCES powers(id);
 ALTER TABLE entries
-ADD CONSTRAINT FK_time_id
-	FOREIGN KEY (time_id) REFERENCES times(id);
+    ADD CONSTRAINT FK_station_id
+        FOREIGN KEY (station_id) REFERENCES stations(id);
 ALTER TABLE entries
-ADD CONSTRAINT FK_transmitter_id
-	FOREIGN KEY (transmitter_id) REFERENCES transmitters(id);
+    ADD CONSTRAINT FK_time_id
+        FOREIGN KEY (time_id) REFERENCES times(id);
 ALTER TABLE entries
-ADD CONSTRAINT FK_overlay_id
-	FOREIGN KEY (overlay_id) REFERENCES overlays(id);
+    ADD CONSTRAINT FK_transmitter_id
+        FOREIGN KEY (transmitter_id) REFERENCES transmitters(id);
+ALTER TABLE entries
+    ADD CONSTRAINT FK_overlay_id
+        FOREIGN KEY (overlay_id) REFERENCES overlays(id);
 
 ALTER TABLE soapboxes
-	ADD CONSTRAINT FK_entry_soapbox
-	FOREIGN KEY (entry_id) REFERENCES entries(id);
+    ADD CONSTRAINT FK_entry_soapbox
+        FOREIGN KEY (entry_id) REFERENCES entries(id);
 
 ALTER TABLE contacts
-	ADD CONSTRAINT FK_entry_contact
-	FOREIGN KEY (entry_id) REFERENCES entries(id);
+    ADD CONSTRAINT FK_entry_contact
+        FOREIGN KEY (entry_id) REFERENCES entries(id);
 
 ALTER TABLE offtimes
-	ADD CONSTRAINT FK_entry_offtime
-	FOREIGN KEY (entry_id) REFERENCES entries(id);
+    ADD CONSTRAINT FK_entry_offtime
+        FOREIGN KEY (entry_id) REFERENCES entries(id);
 
 COMMIT;
 

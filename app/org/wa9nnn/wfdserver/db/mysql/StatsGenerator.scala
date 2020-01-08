@@ -51,7 +51,7 @@ class Aggregator {
 
   def apply(entriesRow: EntriesRow): Unit = {
     entryCount += 1
-    entriesRow.location.foreach { e => locationCounts.apply(e) }
+    locationCounts.apply(entriesRow.location)
   }
 
   def result: Seq[Row] = {

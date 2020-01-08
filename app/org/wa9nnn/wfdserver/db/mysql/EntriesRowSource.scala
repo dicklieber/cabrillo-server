@@ -10,21 +10,22 @@ import org.wa9nnn.wfdserver.htmlTable.{Row, RowsSource}
  */
 case class EntriesRowSource(entriesRow: EntriesRow, soapboxes: Seq[String]) extends RowsSource {
   private val e: mysql.Tables.EntriesRow = entriesRow
+  private val soapBoxRows: Seq[Row] = soapboxes.map(Row("SOAPBOX", _))
   private val rows = Seq(
     Row("entryId", e.id),
     Row("logVersion", e.logVersion),
     Row("callsign", e.callsign),
     Row("contest", e.contest),
-    Row("assisted", e.assisted),
-    Row("band", Band(e.bandId, "??")),
-    Row("mode", Mode(e.modeId, "??")),
-    Row("operators", e.operators.getOrElse("??")),
-    Row("operatorType", Operator(e.operatorTypeId, "??")),
-    Row("power", Power(e.powerId, "??")),
-    Row("time", Time(e.timeId, "??")),
-    Row("transmitter", Transmitter(e.transmitterId, "??")),
-    Row("overlay", Overlay(e.overlayId, "??")),
-    Row("certificate", e.certificate.getOrElse(false)),
+    Row("assisted", Assisted(e.assistedId)),
+    Row("band", Band(e.bandId)),
+    Row("mode", Mode(e.modeId)),
+    Row("operators", e.operators),
+    Row("operatorType", OperatorType(e.operatorTypeId)),
+    Row("power", Power(e.powerId)),
+    Row("time", Time(e.timeId)),
+    Row("transmitter", Transmitter(e.transmitterId)),
+    Row("overlay", Overlay(e.overlayId)),
+    Row("certificate", e.certificate),
     Row("claimedScore", e.claimedScore),
     Row("club", e.club),
     Row("createdBy", e.createdBy),
@@ -35,7 +36,7 @@ case class EntriesRowSource(entriesRow: EntriesRow, soapboxes: Seq[String]) exte
     Row("stateProvince", e.stateProvince),
     Row("postalcode", e.postalcode),
     Row("country", e.country)
-  ) ++ soapboxes.map(Row("SOAPBOX", _))
+  ) ++ soapBoxRows
 
   override def toRows(includeNone: Boolean, prefix: String): Seq[Row] = {
     rows

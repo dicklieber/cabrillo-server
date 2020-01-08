@@ -42,6 +42,7 @@ case class StationLog(
                        club: Option[String],
                        createdBy: Option[String],
                        location: Option[String],
+                       arrlSection: Option[String],
                        category: String,
                        certificate: Option[String],
                        address:List[String],
