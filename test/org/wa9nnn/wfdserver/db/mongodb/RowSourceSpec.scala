@@ -3,8 +3,8 @@ package org.wa9nnn.wfdserver.db.mongodb
 import java.time.Instant
 
 import org.specs2.mutable.Specification
-import org.wa9nnn.wfdserver.db.{Categories, StationLog}
 import org.wa9nnn.wfdserver.htmlTable.TextRenderer
+import org.wa9nnn.wfdserver.model.{Categories, StationLog}
 
 class RowSourceSpec extends Specification {
   implicit def x(s: String): Option[String] = Some(s)
@@ -51,7 +51,9 @@ class RowSourceSpec extends Specification {
         stateProvince = None,
         postalCode = None,
         country = None,
-        gridLocator = None
+        gridLocator = None,
+        arrlSection = Some("IL")
+
       )
       val rows = stationLog.toRows()
       rows must haveLength(27)

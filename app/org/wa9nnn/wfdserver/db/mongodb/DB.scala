@@ -3,6 +3,7 @@ package org.wa9nnn.wfdserver.db.mongodb
 
 import com.typesafe.config.Config
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
+import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.mongodb.scala._
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
@@ -10,9 +11,10 @@ import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Projections._
 import org.wa9nnn.wfdserver.CallSignId
-import org.wa9nnn.wfdserver.db.{Exchange, _}
+import org.wa9nnn.wfdserver.db._
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
 import org.wa9nnn.wfdserver.htmlTable.{Header, RowsSource, Table}
+import org.wa9nnn.wfdserver.model.{Categories, Exchange, LogInstance, Qso, StationLog}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -21,10 +23,12 @@ import scala.language.postfixOps
  *
  * @param config mongodb section of application.conf
  */
-class DBReal(config: Config) extends DBService {
+class DB(config: Config) extends DBService {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  private val customCodecs = fromProviders(
+  private val customCodecs: CodecRegistry = fromProviders(
+    // These tell the Scala MongoDB driver which case classes we will be using.
+    // This lets Mongo automagically map between scala case classes and mongos BSON document objects.
     classOf[LogInstance],
     classOf[Categories],
     classOf[StationLog],

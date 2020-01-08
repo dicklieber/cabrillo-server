@@ -1,13 +1,13 @@
 
-package org.wa9nnn.wfdserver.db.mongodb
+package org.wa9nnn.wfdserver.db
 
 import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
 import org.wa9nnn.cabrillo.model.{CabrilloData, TagValue}
 import org.wa9nnn.cabrillo.parsers.QSO_WFD
-import org.wa9nnn.wfdserver.db._
+import org.wa9nnn.wfdserver.model
+import org.wa9nnn.wfdserver.model.{Categories, Exchange, LogInstance, Qso, StationLog}
 
 object LogInstanceAdapter {
-
   /**
    *
    * Converts a [[CabrilloData]] to a [[LogInstance]].
@@ -29,25 +29,9 @@ object LogInstanceAdapter {
       cabrilloData.apply(tag).headOption.map(_.body).getOrElse("")
     }
 
-//    implicit def bol(t: (Tag, String)): Option[Boolean] = {
-//      cabrilloData.apply(t._1).headOption.map(_.body.toUpperCase() == t._2)
-//    }
-//
     implicit def intO(tag: Tag): Option[Int] = {
       cabrilloData.apply(tag).headOption.map(_.body.toInt)
     }
-
-    def int(tag: Tag): Int = {
-      cabrilloData.apply(tag).headOption.map(_.body.toInt).get
-    }
-
-//    implicit def asDate(stamp: Instant): java.sql.Date = {
-//      new java.sql.Date(stamp.toEpochMilli)
-//    }
-//
-//    implicit def asTime(stamp: Instant): java.sql.Time = {
-//      new java.sql.Time(stamp.toEpochMilli)
-//    }
 
     def callsign: String = cabrilloData.apply("CALLSIGN").head.body
 
@@ -101,7 +85,7 @@ object LogInstanceAdapter {
         )
       }
     }
-    LogInstance(
+    model.LogInstance(
       logVersion = 0,
       qsoCount = qsos.length,
       qsos = qsos,

@@ -1,6 +1,7 @@
 package org.wa9nnn.wfdserver.db
 
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowsSource, Table}
+import org.wa9nnn.wfdserver.model.Qso
 
 /**
  * All info about an entry as html [[Table]]s that can be rendered on an HTML page.

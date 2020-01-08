@@ -11,23 +11,25 @@ import play.api.mvc.{Request, Result}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+/**
+ * Defines the interface between the DeadBolt authorization framework and this server.
+ * The Login controller places a [[WfdSubject]] into the Play session getSubject, below, retrieves it
+ */
 class WfdDeadboltHandler extends DeadboltHandler {
 
-  override def beforeAuthCheck[A](request: Request[A]): Future[Option[Result]] = Future {
-    None
-  }
 
-  override def getDynamicResourceHandler[A](request: Request[A]): Future[Option[DynamicResourceHandler]] = Future {
-    None
-  }
-
+  /**
+   * Gets the current subject e.g. the current user.
+   *
+   * @return a future for an option containing the current subject
+   */
   override def getSubject[A](request: AuthenticatedRequest[A]): Future[Option[Subject]] =
     Future {
       request.subject.orElse {
         // replace request.session.get("userId") with how you identify the user
         request.session.get(sessionKey) match {
           case Some(jsonWfdSubject) =>
-            Some(WfdSubject.fromJson(jsonWfdSubject)) //todo use Credential class
+            Some(WfdSubject.fromJson(jsonWfdSubject))
           // get from database, identity platform, cache, etc, if some
           // identifier is present in the request
           case _ => None
@@ -37,12 +39,13 @@ class WfdDeadboltHandler extends DeadboltHandler {
 
   override def onAuthFailure[A](request: AuthenticatedRequest[A]): Future[Result] = {
     Future(Redirect(routes.LoginController.login()))
-    //    getSubject(request).map(maybeSubject => maybeSubject.map(subject => (true, denied(Some(subject))))
-    //      .getOrElse {
-    //        (false, login()(request))
-    //      })
-    //      .map(subjectPresentAndContent =>
-    //        if (subjectPresentAndContent._1) Results.Forbidden(subjectPresentAndContent._2)
-    //        else Results.Unauthorized(subjectPresentAndContent._2))
   }
+  override def beforeAuthCheck[A](request: Request[A]): Future[Option[Result]] = Future {
+    None
+  }
+
+  override def getDynamicResourceHandler[A](request: Request[A]): Future[Option[DynamicResourceHandler]] = Future {
+    None
+  }
+
 }

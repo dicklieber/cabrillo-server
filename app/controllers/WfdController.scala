@@ -6,8 +6,9 @@ import akka.actor.ActorSystem
 import javax.inject._
 import org.wa9nnn.cabrillo.ResultWithData
 import org.wa9nnn.wfdserver.Loader
-import org.wa9nnn.wfdserver.db.{DbIngestResult, LogInstance}
+import org.wa9nnn.wfdserver.db.DbIngestResult
 import org.wa9nnn.wfdserver.htmlTable.Table
+import org.wa9nnn.wfdserver.model.LogInstance
 import org.wa9nnn.wfdserver.util.JsonLogging
 import play.api.libs.Files
 import play.api.mvc._

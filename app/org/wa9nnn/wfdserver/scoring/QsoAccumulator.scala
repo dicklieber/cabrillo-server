@@ -3,8 +3,8 @@ package org.wa9nnn.wfdserver.scoring
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import org.wa9nnn.wfdserver.db.Qso
 import org.wa9nnn.wfdserver.htmlTable._
+import org.wa9nnn.wfdserver.model.Qso
 
 import scala.collection.concurrent.TrieMap
 

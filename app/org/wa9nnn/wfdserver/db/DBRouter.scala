@@ -7,14 +7,20 @@ import com.typesafe.config.Config
 import javax.inject.{Inject, Singleton}
 import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.wfdserver.CallSignId
-import org.wa9nnn.wfdserver.db.mongodb.{LogInstanceAdapter, DBReal => MongoDB}
+import org.wa9nnn.wfdserver.db.mongodb.{DB => MongoDB}
 import org.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
 import org.wa9nnn.wfdserver.htmlTable.Table
+import org.wa9nnn.wfdserver.model.LogInstance
 import org.wa9nnn.wfdserver.util.JsonLogging
 import play.api.mvc.{AnyContent, Request, Session}
 
 import scala.concurrent.Future
 
+/**
+ * Converts a [[CabrilloData]] to a [[LogInstance]] and invokes all the enabled datebases.
+ * @param config all configuration.
+ * @param injector guice
+ */
 @Singleton
 class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging {
   private val dbs: Map[String, DBService] = {
@@ -87,6 +93,10 @@ trait DBService {
 
   def entry(entryId: String): Future[Option[EntryViewData]]
 
+  /**
+   * Actual state vari depending on the database used.
+   * @return
+   */
   def stats: Future[Table]
 }
 

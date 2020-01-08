@@ -14,6 +14,7 @@ object BiMap {
 }
 
 /**
+ * A bi-directional map. Allows lookups of X to Y oe Y to X.
  *
  * @param map a map
  * @tparam X key
@@ -50,7 +51,7 @@ class BiMap[X, Y](map: Map[X, Y]) {
     }
   }
 
-  def apply(x:Option[X], default:Y):Y = {
+  def apply(x: Option[X], default: Y): Y = {
     x.map(map(_)).getOrElse(default)
   }
 

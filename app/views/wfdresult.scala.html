@@ -6,109 +6,118 @@
         scoringResultTable: Table)(implicit request: play.api.mvc.Request[AnyContent])
 
 
-@main("Cabrillo Check Results") {
-    <table>
-        <tr>
-            <td>
-                <table class="resultTable">
-                    <tr class ="sectionHeader" >
-                        <th colspan="2" class="section">Process</th>
-                    </tr>
-                    <tr>
-                        <th class="rowHeader">File</th>
-                        <td class="number">@fileName</td>
-                    </tr>
-                    <tr>
-                        <th class="rowHeader">CallSign</th>
-                        <td class="number">@result.callSign</td>
-                    </tr>
-                    <tr>
-                        <th class="rowHeader">Errors</th>
-                        <td  @if(result.tagsWithErrors.isEmpty) {
-                        class ="happyCell number"
-                    } else {
-                        class ="sadCell number"
-                    }
-                        >
-                        @result.tagsWithErrors.size
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="rowHeader">Unknown Tags</th>
-                        <td  @if(result.unknownTags.isEmpty) {
-                        class ="happyCell number"
-                    } else {
-                        class ="sadCell number"
-                    }
-                        >
-                        @result.unknownTags.size
-                        </td>
-                    </tr>
-                    @autoEntryId.map { entryId =>
+    @main("Cabrillo Check Results") {
+        <table>
+            <tr>
+                <td>
+                    <table class="resultTable">
+                        <tr class ="sectionHeader" >
+                            <th colspan="2" class="section">Process</th>
+                        </tr>
                         <tr>
-                            <th class="rowHeader">Saved with ID</th>
-                            <td class="number">@entryId</td>
+                            <th class="rowHeader">File</th>
+                            <td class="number">@fileName</td>
                         </tr>
-
-                    }
-                    <tr>
-                        <th class="rowHeader">Duration</th>
-                        <td class="number">@org.wa9nnn.wfdserver.DurationFormat.apply(result.duration)</td>
-                    </tr>
-                </table>
-
-            </td>
-            <td rowspan="2">
-            @renderTable(scoringResultTable)
-            </td>
-        </tr>
-        <tr>
-            <td>
-            @if(result.tagsWithErrors.nonEmpty || result.unknownTags.nonEmpty) {
-                <table class="resultTable">
-                    @if(result.tagsWithErrors.nonEmpty) {
-                        <tr class ="sectionHeader" >
-                            <th colspan="4" class="section">Errors</th>
+                        <tr>
+                            <th class="rowHeader">CallSign</th>
+                            <td class="number">@result.callSign</td>
                         </tr>
-                        <tr class ="sectionHeader">
-                            <th>Line</th>
-                            <th>Tag</th>
-                            <th>Cause</th>
-                            <th>Body</th>
-                        </tr>
-                        @for(e <- result.tagsWithErrors) {
-                            <tr><td> @Html(NumberOrBlank(e.lineNumber)
-                            ) </td>
-                                <td> @e.tag </td>
-                                <td> @e.cause </td>
-                                <td class="bodyValue"> @e.body </td>
-                            </tr>
+                        <tr>
+                            <th class="rowHeader">Errors</th>
+                            <td  @if(result.tagsWithErrors.isEmpty) {
+                            class ="happyCell number"
+                        } else {
+                            class ="sadCell number"
                         }
-                    }
-
-                    @if(result.unknownTags.nonEmpty) {
-                        <tr class ="sectionHeader" >
-                            <th colspan="4" class="section" title="Tags that may be allowed but will be ignored.">
-                                Unknown Tags</th>
+                            >
+                            @result.tagsWithErrors.size
+                            </td>
                         </tr>
-                        <tr class ="sectionHeader">
-                            <th>Line</th>
-                            <th>Tag</th>
-                            <th>Cause</th>
-                            <th>Body</th>
-                        </tr>
-                        @for(e <- result.unknownTags) {
-                            <tr><td> @e.lineNumber </td>
-                                <td> @e.tag </td>
-                                <td> @e.cause </td>
-                                <td class="bodyValue"> @e.body </td>
-                            </tr>
+                        <tr>
+                            <th class="rowHeader">Unknown Tags</th>
+                            <td  @if(result.unknownTags.isEmpty) {
+                            class ="happyCell number"
+                        } else {
+                            class ="sadCell number"
                         }
-                    }
-                </table>
-            }
-            </td>
-        </tr>
-    </table>
+                            >
+                            @result.unknownTags.size
+                            </td>
+                        </tr>
+                        @autoEntryId.map { entryId =>
+                            <tr>
+                                <th class="rowHeader">Saved with ID</th>
+                                <td class="number">@entryId</td>
+                            </tr>
 
-}
+                        }
+                        <tr>
+                            <th class="rowHeader">Duration</th>
+                            <td class="number">@org.wa9nnn.wfdserver.DurationFormat.apply(result.duration)</td>
+                        </tr>
+                    </table>
+
+                </td>
+                <td rowspan="2" >
+                    <div class="provisionalOverlay">
+                        @renderTable(scoringResultTable) <br/>
+                        <div class="provisional">
+                            <h2>This grand total is provisional!</h2>
+                            <p>
+                                Your final score may be lower once unmatched and "busted" QSOs are removed.
+                                This wont happen until the log submission period is over that the final scoring is performed.
+                            </p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                @if(result.tagsWithErrors.nonEmpty || result.unknownTags.nonEmpty) {
+                    <table class="resultTable">
+                        @if(result.tagsWithErrors.nonEmpty) {
+                            <tr class ="sectionHeader" >
+                                <th colspan="4" class="section">Errors</th>
+                            </tr>
+                            <tr class ="sectionHeader">
+                                <th>Line</th>
+                                <th>Tag</th>
+                                <th>Cause</th>
+                                <th>Body</th>
+                            </tr>
+                            @for(e <- result.tagsWithErrors) {
+                                <tr><td> @Html(NumberOrBlank(e.lineNumber)
+                                ) </td>
+                                    <td> @e.tag </td>
+                                    <td> @e.cause </td>
+                                    <td class="bodyValue"> @e.body </td>
+                                </tr>
+                            }
+                        }
+
+                        @if(result.unknownTags.nonEmpty) {
+                            <tr class ="sectionHeader" >
+                                <th colspan="4" class="section" title="Tags that may be allowed but will be ignored.">
+                                    Unknown Tags</th>
+                            </tr>
+                            <tr class ="sectionHeader">
+                                <th>Line</th>
+                                <th>Tag</th>
+                                <th>Cause</th>
+                                <th>Body</th>
+                            </tr>
+                            @for(e <- result.unknownTags) {
+                                <tr><td> @e.lineNumber </td>
+                                    <td> @e.tag </td>
+                                    <td> @e.cause </td>
+                                    <td class="bodyValue"> @e.body </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                }
+                </td>
+            </tr>
+        </table>
+
+    }

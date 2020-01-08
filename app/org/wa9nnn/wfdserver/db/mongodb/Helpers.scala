@@ -9,6 +9,9 @@ import org.mongodb.scala._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
+/**
+ * Add some simplicity to the [[Observable]] stuff returned by teh Scala MongoDB driver.
+ */
 object Helpers {
 
   implicit class DocumentObservable[C](val observable: Observable[Document]) extends ImplicitObservable[Document] {
@@ -30,14 +33,6 @@ object Helpers {
      * @return db results as mapped.
      */
     def mapResults[R](f: C => R): Seq[R] = Await.result(observable.map(f(_)).toFuture(), Duration(10, TimeUnit.SECONDS))
-
-//    /**
-//     *
-//     * @param f method that take the C from the Db and maps to an R to be returned.
-//     * @tparam R type of result as in Seq[R].
-//     * @return db results as mapped.
-//     */
-//    def mapResults[R](f: C => R): Seq[R] = Await.result(observable.map(f(_)).toFuture(), Duration(10, TimeUnit.SECONDS))
 
     def results(): Seq[C] = Await.result(observable.toFuture(), Duration(10, TimeUnit.SECONDS))
     def headResult(): C = Await.result(observable.head(), Duration(10, TimeUnit.SECONDS))

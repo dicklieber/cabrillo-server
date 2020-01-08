@@ -3,6 +3,7 @@ package org.wa9nnn.wfdserver.db.mongodb
 import org.apache.commons.io.IOUtils
 import org.specs2.mutable.Specification
 import org.wa9nnn.cabrillo.Cabrillo
+import org.wa9nnn.wfdserver.db.LogInstanceAdapter
 
 class LogInstanceAdapterSpec extends Specification {
   implicit def f(file: String): Array[Byte] = IOUtils.resourceToByteArray(file)

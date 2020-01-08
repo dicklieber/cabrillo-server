@@ -1,8 +1,8 @@
 
 package org.wa9nnn.wfdserver.scoring
 
-import org.wa9nnn.wfdserver.db.LogInstance
 import org.wa9nnn.wfdserver.htmlTable.{Cell, SectionedRowCollector, Table}
+import org.wa9nnn.wfdserver.model.LogInstance
 
 object ScoringEngine {
   def apply(li: LogInstance): ScoringResult = {

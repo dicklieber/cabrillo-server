@@ -12,6 +12,7 @@ import scala.util.Using
 
 /**
  * Handles credentials persistence.
+ * Credentials live in a JSON file whoses location is set the configuration.
  */
 @Singleton
 class CredentialsDao @Inject()(config: Config) extends JsonLogging {
@@ -54,13 +55,13 @@ class CredentialsDao @Inject()(config: Config) extends JsonLogging {
     saveAndRead(users.delete(userId))
   }
 
-  def saveAndRead(newusers :Users): Unit = {
+  private def saveAndRead(newusers :Users): Unit = {
    val sJson = Json.prettyPrint( Json.toJson(newusers))
     SaveWithBackup(credentialsFilePath, sJson)
     readFile()
   }
 
-  def readFile(): Unit = {
+ private  def readFile(): Unit = {
     if(Files.exists(credentialsFilePath)) {
       Using(Files.newInputStream(credentialsFilePath)) { inputStream =>
         users = Json.parse(inputStream).as[Users]

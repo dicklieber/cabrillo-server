@@ -3,10 +3,10 @@ package org.wa9nnn.wfdserver.scoring
 import java.time.Instant
 
 import org.specs2.mutable.Specification
-import org.wa9nnn.wfdserver.db.{Exchange, Qso}
+import org.wa9nnn.wfdserver.model.{Exchange, Qso}
 
 class QsoAccumulatorSpec extends Specification {
-  val exchange = Exchange("WA9NNN", "2I IL")
+  private val exchange = Exchange("WA9NNN", "2I IL")
 
   "QsoAccumulatorSpec" >> {
     "happy" in {

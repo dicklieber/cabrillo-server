@@ -7,8 +7,9 @@ import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData, LogInstance, mysql}
+import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, Table}
+import org.wa9nnn.wfdserver.model.LogInstance
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.MySQLProfile.api._
