@@ -9,12 +9,11 @@ version := "1.3-SNAPSHOT"
 
 organization := "org.wa9nnn"
 
-maintainer := "wa9nnn@u505.com"
 
 
 RoutesKeys.routesImport += "org.wa9nnn.wfdserver.play.Binders._"
 
-lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin).settings(
+lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin, LinuxPlugin).settings(
   buildInfoKeys ++= Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion,
     git.gitCurrentTags, git.gitCurrentBranch, git.gitHeadCommit, git.gitHeadCommitDate, git.baseVersion,
     BuildInfoKey.action("buildTime") {
@@ -30,6 +29,17 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 resolvers += "Akka Snapshot Repository" at "https://repo.akka.io/snapshots/"
 
 scalaVersion := "2.13.1"
+
+scalacOptions in(Compile, doc) ++= Seq("-verbose", "-target:jvm-1.8")
+
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
+initialize := {
+  val _ = initialize.value
+  val javaVersion = sys.props("java.specification.version")
+  if (javaVersion != "1.8")
+    sys.error("Java 1.8 is required for this project. Found " + javaVersion + " instead")
+}
+
 
 libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
   "com.github.dicklieber" %% "cabrillo" % "0.3.3-SNAPSHOT",
@@ -53,8 +63,18 @@ libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
 
 )
 
+//RPM
+packageSummary in Linux := "wfdserver"
 
-//bintrayReleaseOnPublish in ThisBuild := false
+rpmVendor := "wa9nnn"
 
-//unmanagedResourceDirectories in Test <+= baseDirectory(_ / "target/web/public/test")
+packageDescription := """Checks and ingests cabrillo files into a database."""
 
+
+rpmLicense := Some("None")
+
+rpmRelease := {
+  System.currentTimeMillis.toString
+}
+
+//packageArchitecture in Rpm := "x86_64"
