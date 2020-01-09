@@ -4,7 +4,7 @@ package org.wa9nnn.wfdserver
 import java.nio.file.{Files, Path, Paths}
 import java.util.UUID
 
-import com.typesafe.config.Config
+import com.github.racc.tscg.TypesafeConfig
 import javax.inject.{Inject, Singleton}
 import org.wa9nnn.wfdserver.util.JsonLogging
 
@@ -12,12 +12,16 @@ import scala.util.Using
 
 /**
  * Saves a file, seq of strings to a file.
+ * This is essential for operation.
+ * If the "wfd.saveCabrilloDirectory" in application.conf cannot be created or is not writable,
+ * then the server will be abruptly terminated, System.exit(1)!
  *
- * @param config  containing wfd.saveCabrilloDirectory
+ * @param carrilloDirectory  where to save fraw cabrillo files at.
  */
 @Singleton
-class FileSaver @Inject()(config: Config) extends JsonLogging {
-  val fileSaveDirectory: Path = Paths.get(config.getString("wfd.saveCabrilloDirectory"))
+class FileSaver @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory") carrilloDirectory: String) extends JsonLogging {
+  val fileSaveDirectory: Path = Paths.get(carrilloDirectory)
+  //  val fileSaveDirectory: Path = Paths.get(config.getString("wfd.saveCabrilloDirectory"))
   try {
     Files.createDirectories(fileSaveDirectory)
   } catch {
@@ -30,14 +34,29 @@ class FileSaver @Inject()(config: Config) extends JsonLogging {
     System.exit(1)
   }
 
-
-  def apply(bytes: Array[Byte], email: String): Path = {
+  /**
+   *
+   * @param bytes    body of file to be saved.
+   * @param callSign callsign. Base of filename
+   * @return actual path where file was saved.
+   */
+  def apply(bytes: Array[Byte], callSign: String): Path = {
     val uuid = UUID.randomUUID().toString
-    Files.createDirectories(fileSaveDirectory)
+    val ucCallSign = callSign.toUpperCase
+    val safeChars = ucCallSign.replaceAll("/", "")
+    val subDirectory = fileSaveDirectory.resolve(safeChars.take(3))
 
-    val filePath: Path = fileSaveDirectory.resolve(s"$email-$uuid")
+    Files.createDirectories(subDirectory)
+
+    val filePath: Path = subDirectory.resolve(s"$ucCallSign-$uuid")
     Using(Files.newOutputStream(filePath)) { writer =>
       writer.write(bytes)
+      logJson("Save").++(
+        "callSign" -> callSign,
+        "file" -> filePath.toFile.toPath,
+        "size" -> bytes.length)
+        .info()
+
     }
     filePath
   }
