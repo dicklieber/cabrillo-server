@@ -59,6 +59,7 @@ libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
   "com.github.racc" % "typesafeconfig-guice" % "0.1.0",
   "commons-io" % "commons-io" % "2.6",
   "io.dropwizard.metrics" % "metrics-core" % "4.1.2",
+  "com.kenshoo" %% "metrics-play" % "2.7.3_0.8.2",
   "nl.grons" %% "metrics4-scala" % "4.1.1",
   "org.planet42" %% "laika-core" % "0.12.1"
 

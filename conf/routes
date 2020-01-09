@@ -19,8 +19,7 @@ GET         /userCreate            controllers.UserController.create()
 POST        /userUpdate            controllers.UserController.update()
 GET         /sessionControl        controllers.SubmissionControlController.index()
 POST        /sessionControl        controllers.SubmissionControlController.post()
-#POST        /userDelete          controllers.UserController.delete(userId:String)
-
+GET         /metrics               controllers.MetricsController.metrics
 GET         /login                 controllers.LoginController.login
 POST        /loginOp               controllers.LoginController.dologin
 
