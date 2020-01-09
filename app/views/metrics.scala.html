@@ -1,0 +1,9 @@
+@(json:String)(implicit request: play.api.mvc.Request[AnyContent])
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+@main("Metrics") {
+    <h2>Raw metrics</h2>
+    <pre>
+        @Html(json)
+    </pre>
+}

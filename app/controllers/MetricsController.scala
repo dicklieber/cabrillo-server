@@ -20,8 +20,8 @@ class MetricsController @Inject()(
     implicit request: Request[AnyContent] =>
       Future(
         try {
-          Ok(met.toJson)
-            .as("application/json")
+          Ok(views.html.metrics(met.toJson))
+//            .as("application/json")
             .withHeaders("Cache-Control" -> "must-revalidate,no-cache,no-store")
         } catch {
           case ex: MetricsDisabledException =>
