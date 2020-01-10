@@ -5,7 +5,6 @@ import be.objectify.deadbolt.scala.AuthenticatedRequest
 import com.google.inject.Injector
 import com.typesafe.config.Config
 import javax.inject.{Inject, Singleton}
-import org.wa9nnn.cabrillo.model.CabrilloData
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.mongodb.{DB => MongoDB}
 import org.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
@@ -17,8 +16,9 @@ import play.api.mvc.{AnyContent, Request, Session}
 import scala.concurrent.Future
 
 /**
- * Converts a [[CabrilloData]] to a [[LogInstance]] and invokes all the enabled datebases.
- * @param config all configuration.
+ * Invokes all the enabled databases.
+ *
+ * @param config   all configuration.
  * @param injector guice
  */
 @Singleton
@@ -44,9 +44,7 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
     System.exit(1)
   }
 
-  def ingest(cabrilloData: CabrilloData): DbIngestResult = {
-    val logInstance: LogInstance =  LogInstanceAdapter(cabrilloData) //todo before Mongo-specific stuff
-
+  def ingest(logInstance: LogInstance): LogInstance = {
     dbs.values.map(_.ingest(logInstance)).head // use Key from last one, mongodb)0
   }
 
@@ -58,8 +56,8 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
     db(database).callSignIds
   }
 
-  def entry(entryId: String, database: Option[String]): Future[Option[EntryViewData]] = {
-    db(database).entry(entryId)
+  def logInstance(entryId:String, database: Option[String]): Future[Option[LogInstance]] = {
+    db(database).logInstance(entryId)
   }
 
   def stats(database: Option[String]): Future[Table] = {
@@ -91,10 +89,12 @@ trait DBService {
 
   def callSignIds: Future[Seq[CallSignId]]
 
-  def entry(entryId: String): Future[Option[EntryViewData]]
+
+  def logInstance(entryId:String): Future[Option[LogInstance]]
 
   /**
-   * Actual state vari depending on the database used.
+   * Actual stats depend on the database used.
+   *
    * @return
    */
   def stats: Future[Table]

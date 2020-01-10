@@ -1,12 +1,11 @@
 
 package org.wa9nnn.wfdserver.db.mysql
 
-import java.time.Instant
-
 import com.typesafe.scalalogging.LazyLogging
 import org.wa9nnn.wfdserver
 import org.wa9nnn.wfdserver.db.mysql.Tables._
 import org.wa9nnn.wfdserver.model.{Categories, LogInstance, Qso, StationLog}
+import org.wa9nnn.wfdserver.util.TimeConverters._
 
 /**
  * Knows how to adapt a [[LogInstance]] to the  slick generated case classes needed to interact with a SQL database.
@@ -14,13 +13,6 @@ import org.wa9nnn.wfdserver.model.{Categories, LogInstance, Qso, StationLog}
  * @param logInstance from file.
  */
 case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
-  implicit def asDate(stamp: Instant): java.sql.Date = {
-    new java.sql.Date(stamp.toEpochMilli)
-  }
-
-  implicit def asTime(stamp: Instant): java.sql.Time = {
-    new java.sql.Time(stamp.toEpochMilli)
-  }
 
   private val stationLog: StationLog = logInstance.stationLog
   private val categories: Categories = logInstance.stationLog.categories
@@ -68,13 +60,15 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
   def contactsRows(entryId: Int): Seq[ContactsRow] = {
     def row(qso: Qso): ContactsRow = {
       val strings = qso.s.ex.split(" ")
+
+      val (sqlDate, sqlTime) = instantToSql(qso.ts)
       ContactsRow(
         id = 0, // autoinc
         entryId = entryId,
         freq = qso.b,
         qsoMode = Mode(qso.m),
-        contactDate = qso.ts,
-        contactTime = qso.ts,
+        contactDate = sqlDate,
+        contactTime = sqlTime,
         callsign = qso.r.cs,
         exch = qso.r.ex,
         transmitter = 0,

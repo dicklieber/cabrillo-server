@@ -32,6 +32,8 @@ class BiMap[X, Y](map: Map[X, Y]) {
 
   def apply(x: X): Y = map(x)
 
+  def apply(x: X, default:Y): Option[Y] = map.get(x).orElse(Option(default))
+
   def apply(y: Y)(implicit d: BiMap.MethodDistinctor): X = {
     try {
       reverseMap(y)

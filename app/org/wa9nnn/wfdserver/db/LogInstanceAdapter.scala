@@ -1,6 +1,8 @@
 
 package org.wa9nnn.wfdserver.db
 
+import java.time.Instant
+
 import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
 import org.wa9nnn.cabrillo.model.{CabrilloData, TagValue}
 import org.wa9nnn.cabrillo.parsers.QSO_WFD
@@ -69,7 +71,8 @@ object LogInstanceAdapter {
         },
         email = "EMAIL",
         name = "NAME",
-        claimedScore = "CLAIMED-SCORE"
+        claimedScore = "CLAIMED-SCORE",
+        ingested = Instant.now
       )
     }
 

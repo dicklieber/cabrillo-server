@@ -26,7 +26,7 @@ case class StationLog(
                        gridLocator: Option[String],
                        name: Option[String],
                        claimedScore: Option[Int],
-                       ingested: Instant = Instant.now()) extends RowsSource
+                       ingested: Instant = Instant.EPOCH )extends RowsSource
 
 
 

@@ -1,6 +1,6 @@
 @(entry: org.wa9nnn.wfdserver.db.EntryViewData, dbName:String)(implicit request: play.api.mvc.Request[AnyContent])
 
-@main(s"${entry.callSign} ${entry.club}") {
+@main(s"${entry.callSign} ${entry.club.getOrElse("")}") {
     <p>Using @dbName</p>
     <table>
         <tr>

@@ -1,5 +1,6 @@
 package org.wa9nnn.wfdserver.util
 
+import java.sql
 import java.time.format.DateTimeFormatter
 import java.time.{Duration, Instant, ZoneId, ZonedDateTime}
 import java.util.TimeZone
@@ -28,9 +29,34 @@ object TimeConverters {
    */
   @scala.inline
   implicit def instantToString(instant: Instant): String = {
-    fmt.format(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()))
+    fmt.format(ZonedDateTime.ofInstant(instant, ZoneId.of("UTC")))
+    //    fmt.format(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()))
   }
 
+  /**
+   * sql date and time suck!  There's's no good way to combine them
+   *
+   * @param sqlDate stupid java.sql.Date
+   * @param sqlTime stupid  java.sql.Time
+   * @return the java instant
+   */
+  def sqlToInstant(sqlDate: sql.Date, sqlTime: sql.Time): Instant = {
+    // It seems that the3 getTime vale of sql.Time doesn't round-trip through MySQL
+
+    val time: Long = sqlDate.getTime
+    val date: Long = sqlTime.getTime
+    val r = if (time == date) {
+      Instant.ofEpochMilli(date)
+    } else {
+      Instant.ofEpochMilli(date + time)
+    }
+    r
+  }
+
+  def instantToSql(instant: Instant): (sql.Date, sql.Time) = {
+    val milli = instant.toEpochMilli
+    new sql.Date(milli) -> new sql.Time(milli)
+  }
 
   @scala.inline
   implicit def durationToString(duration: Duration): String = {
@@ -44,8 +70,8 @@ object TimeConverters {
   }
 
   def instantDisplayUTCCST(instant: Instant): String = {
-   val sUtc =  fmt.format(ZonedDateTime.ofInstant(instant, TimeZone.getTimeZone("UTC").toZoneId))
-   val scst =  fmt.format(ZonedDateTime.ofInstant(instant, TimeZone.getTimeZone("CST").toZoneId))
+    val sUtc = fmt.format(ZonedDateTime.ofInstant(instant, TimeZone.getTimeZone("UTC").toZoneId))
+    val scst = fmt.format(ZonedDateTime.ofInstant(instant, TimeZone.getTimeZone("CST").toZoneId))
 
     s"$sUtc ($scst)"
   }

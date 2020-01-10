@@ -85,17 +85,9 @@ class DB(config: Config) extends DBService {
       .map { s => s.map(CallSignId(_)) }
   }
 
-  override def entry(entryId: String): Future[Option[EntryViewData]] = {
-    logCollection.find(equal("_id", entryId)).first.toFutureOption().map(_.map { logInstance =>
-      val stationLog = logInstance.stationLog
-      val rowsSource: RowsSource = stationLog
-      EntryViewData(rowsSource,
-        logInstance.qsos.map(_.toRow),
-        stationLog.callSign,
-        stationLog.club)
-    })
+  override def logInstance(entryId: String): Future[Option[LogInstance]] = {
+    logCollection.find(equal("_id", entryId)).first.toFutureOption()
   }
-
 
   override def stats: Future[Table] = {
     val rows = statsGenerator()

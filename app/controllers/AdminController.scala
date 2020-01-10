@@ -3,7 +3,7 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
 import org.wa9nnn.wfdserver.CallSignId
-import org.wa9nnn.wfdserver.db.DBRouter
+import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.db.DBRouter.{dbFromSession, _}
 import org.wa9nnn.wfdserver.htmlTable._
 import play.api.data.Form
@@ -35,11 +35,29 @@ class AdminController @Inject()(cc: ControllerComponents,
       }
   }
 
+//  def submission(callsignId: CallSignId): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
+//    val dbName = dbFromSession
+//    db.entry(callsignId.entryId, dbName).map {
+//      case Some(entry) =>
+//        Ok(views.html.entry(entry, dbName.getOrElse("default")))
+//      case None =>
+//        NotFound("Cannot find ID")
+//    }
+//  }
   def submission(callsignId: CallSignId): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
     val dbName = dbFromSession
-    db.entry(callsignId.entryId, dbName).map {
-      case Some(entry) =>
-        Ok(views.html.entry(entry, dbName.getOrElse("default")))
+    db.logInstance(callsignId.entryId, dbName).map {
+      case Some(logInstance) =>
+        val stationLog = logInstance.stationLog
+        val rowsSource: RowsSource = stationLog
+       val evd = EntryViewData(rowsSource,
+          logInstance.qsos.map(_.toRow),
+          stationLog.callSign,
+          stationLog.club)
+
+
+
+        Ok(views.html.entry(evd, dbName.getOrElse("default")))
       case None =>
         NotFound("Cannot find ID")
     }

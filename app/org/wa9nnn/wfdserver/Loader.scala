@@ -6,33 +6,40 @@ import java.time.Instant
 
 import javax.inject.{Inject, Singleton}
 import nl.grons.metrics4.scala.DefaultInstrumented
-import org.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
-import org.wa9nnn.wfdserver.db.{DBRouter, DbIngestResult}
+import org.wa9nnn.cabrillo.{Cabrillo, Result, ResultWithData}
+import org.wa9nnn.wfdserver.db.{DBRouter, LogInstanceAdapter}
+import org.wa9nnn.wfdserver.model.LogInstance
 import org.wa9nnn.wfdserver.util.JsonLogging
 
 /**
  * Parse, check and if OK ingests a file
  */
 @Singleton
-class Loader @Inject()(fileSaver: FileSaver, db: DBRouter) extends DefaultInstrumented with JsonLogging {
+class Loader @Inject()(fileSaver: CabrilloFileManager, db: DBRouter) extends DefaultInstrumented with JsonLogging {
   private val loadMeter = metrics.meter("loadMeter")
   private val qsosMeter = metrics.meter("qsosMeter")
 
   /**
    *
    * @param path of file.
-   * @return ResultWithData -> logEntryId
+   * @return ResultWithData -> LogInstance
+   * @throws NoCallSignException if no callSign in file.
    */
-  def apply(path: Path, from: String): (ResultWithData, Option[DbIngestResult]) = {
+  def apply(path: Path, from: String): (ResultWithData, Option[LogInstance]) = {
     metrics.timer("Load").time {
-      loadMeter.mark()
       val rawFile: Array[Byte] = Files.readAllBytes(path)
       val resultWithData: ResultWithData = Cabrillo(rawFile)
-      val result = resultWithData.result
-      val saveToPath = fileSaver(rawFile, result.callSign.getOrElse("missing"))
+      val result: Result = resultWithData.result
+      val callSign = if (result.callSign.isEmpty) {
+        logger.error("NoCallSign")
+        throw new NoCallSignException
+      }else{
+        result.callSign.get
+      }
+      val saveToPath = fileSaver(rawFile, callSign)
 
       logJson("result")
-        .++("email" -> result.callSign.getOrElse("missing"))
+        .++("callSign" -> callSign)
         .++("stamp" -> Instant.now())
         .++("from" -> from)
         .++("fileOk" -> (result.tagsWithErrors == 0))
@@ -43,11 +50,15 @@ class Loader @Inject()(fileSaver: FileSaver, db: DBRouter) extends DefaultInstru
         .++("saveTo" -> saveToPath.toString)
         .info()
 
-      val logEntryId: Option[DbIngestResult] = resultWithData.goodData.map { data =>
+      val maybeLogInstance: Option[LogInstance] = resultWithData.goodData.map { cabrilloData =>
         qsosMeter.mark(resultWithData.result.qsoCount)
-        db.ingest(data)
+        val logInstance: LogInstance = LogInstanceAdapter(cabrilloData)
+
+        val li: LogInstance = db.ingest(logInstance)
+        li
       }
-      resultWithData -> logEntryId
+      loadMeter.mark()
+      resultWithData -> maybeLogInstance
     }
   }
 }
