@@ -47,13 +47,17 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
     gridLocator = stationLog.gridLocator.getOrElse(""),
     location = stationLog.location.getOrElse(""),
     name = stationLog.name.getOrElse(""),
-    address = stationLog.address.map(_.mkString("\n").take(75)).headOption.getOrElse(""),
+    address = {
+     val r =  stationLog.address.mkString("\n")
+        .take(75)
+      r
+    },
     city = stationLog.city.getOrElse(""),
     stateProvince = stationLog.stateProvince.getOrElse(""),
     postalcode = stationLog.postalCode.getOrElse(""),
     country = stationLog.country.getOrElse(""),
     arrlSection = stationLog.arrlSection.getOrElse(""),
-    category = stationLog.location.getOrElse("")
+    category = stationLog.category
   )
 
 

@@ -29,7 +29,7 @@ class UserController @Inject()(cc: ControllerComponents,
           )
         }
 
-        val table = Table(Header("Users", "UserId", "Roles"), rows: _*).withCssClass("resultTable")
+        val table = Table(Header("Users", "UserId", "Roles"), rows).withCssClass("resultTable")
         Ok(views.html.users(table))
       }
   }

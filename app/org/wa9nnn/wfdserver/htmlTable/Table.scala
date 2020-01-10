@@ -48,7 +48,7 @@ object Table {
     val rows: Seq[Row] = rowValues.map{ v =>
       Row(Seq(Cell(v)))
     }
-    Table(Header(singleColHeader), rows:_*)
+    Table(Header(singleColHeader), rows)
 
   }
   /**
@@ -64,7 +64,7 @@ object Table {
    * @param header a [[Header]]
    * @param rows   <tbody>
    */
-  def apply(header: Header, rows: Row*): Table = {
+  def apply(header: Header, rows: Seq[Row]): Table = {
     Table(header.rows, rows)
   }
 
@@ -81,7 +81,7 @@ object Table {
     val rows = caseClasses.map { product =>
       Row(product)
     }
-    Table(header, rows: _*)
+    Table(header, rows)
   }
 
 }

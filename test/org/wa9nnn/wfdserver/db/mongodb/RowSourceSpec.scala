@@ -56,13 +56,14 @@ class RowSourceSpec extends Specification {
 
       )
       val rows = stationLog.toRows()
-      rows must haveLength(27)
+      rows must haveLength(28)
 
       val str = TextRenderer(rows)
       str mustEqual ("""||callSign            |WM9W                                        |
                         ||club                |The 220MHz Guys                             |
                         ||createdBy           |fdcluster                                   |
                         ||location            |IL                                          |
+                        ||arrlSection         |IL                                          |
                         ||category            |1H                                          |
                         ||certificate         |                                            |
                         ||city                |                                            |
@@ -85,7 +86,7 @@ class RowSourceSpec extends Specification {
                         ||gridLocator         |                                            |
                         ||name                |dick lieber                                 |
                         ||claimedScore        |142                                         |
-                        ||ingested            |12/31/69 18:00 CST                          |""".stripMargin)
+                        ||ingested            |01/01/70 00:00 UTC                          |""".stripMargin)
 
     }
     "rows skip None" >> {

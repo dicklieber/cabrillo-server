@@ -13,8 +13,8 @@ import org.mongodb.scala.model.Projections._
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db._
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
-import org.wa9nnn.wfdserver.htmlTable.{Header, RowsSource, Table}
-import org.wa9nnn.wfdserver.model.{Categories, Exchange, LogInstance, Qso, StationLog}
+import org.wa9nnn.wfdserver.htmlTable.{Header, Table}
+import org.wa9nnn.wfdserver.model._
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -92,7 +92,7 @@ class DB(config: Config) extends DBService {
   override def stats: Future[Table] = {
     val rows = statsGenerator()
     Future(
-      Table(Header("Statistics", "Item", "Value"), rows: _*).withCssClass("resultTable")
+      Table(Header("Statistics", "Item", "Value"), rows).withCssClass("resultTable")
     )
   }
 }

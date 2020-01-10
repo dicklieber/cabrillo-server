@@ -6,6 +6,8 @@ import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.db.DBRouter.{dbFromSession, _}
 import org.wa9nnn.wfdserver.htmlTable._
+import org.wa9nnn.wfdserver.model.LogInstance
+import org.wa9nnn.wfdserver.scoring.ScoringEngine
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}
@@ -35,29 +37,16 @@ class AdminController @Inject()(cc: ControllerComponents,
       }
   }
 
-//  def submission(callsignId: CallSignId): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
-//    val dbName = dbFromSession
-//    db.entry(callsignId.entryId, dbName).map {
-//      case Some(entry) =>
-//        Ok(views.html.entry(entry, dbName.getOrElse("default")))
-//      case None =>
-//        NotFound("Cannot find ID")
-//    }
-//  }
   def submission(callsignId: CallSignId): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
     val dbName = dbFromSession
     db.logInstance(callsignId.entryId, dbName).map {
       case Some(logInstance) =>
         val stationLog = logInstance.stationLog
-        val rowsSource: RowsSource = stationLog
-       val evd = EntryViewData(rowsSource,
-          logInstance.qsos.map(_.toRow),
-          stationLog.callSign,
-          stationLog.club)
+        val evd = EntryViewData(logInstance)
 
+        val scoringTable: Table = ScoringEngine(logInstance).table
 
-
-        Ok(views.html.entry(evd, dbName.getOrElse("default")))
+        Ok(views.html.entry(evd, scoringTable, dbName.getOrElse("default")))
       case None =>
         NotFound("Cannot find ID")
     }

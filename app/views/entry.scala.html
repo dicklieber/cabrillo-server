@@ -1,13 +1,16 @@
-@(entry: org.wa9nnn.wfdserver.db.EntryViewData, dbName:String)(implicit request: play.api.mvc.Request[AnyContent])
+@import org.wa9nnn.wfdserver.htmlTable.Table
+@(entry: org.wa9nnn.wfdserver.db.EntryViewData,scoringTable: Table, dbName:String)(implicit request: play.api.mvc.Request[AnyContent])
 
-@main(s"${entry.callSign} ${entry.club.getOrElse("")}") {
+@main({entry.title}) {
     <p>Using @dbName</p>
     <table>
+
         <tr>
-            <td>@renderTable(entry.entryTable)</td>
+            <td valign="top">@renderTable(entry.entryTable)</td>
+            <td valign="top" rowspan="2">@renderTable(scoringTable)</td>
         </tr>
         <tr>
-            <td colspan="2">@renderTable(entry.contactsTable)</td>
+            <td valign="top">@renderTable(entry.contactsTable)</td>
         </tr>
     </table>
 

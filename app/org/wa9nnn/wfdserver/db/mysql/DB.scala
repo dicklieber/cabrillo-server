@@ -1,14 +1,12 @@
 
 package org.wa9nnn.wfdserver.db.mysql
 
-import java.time.LocalDateTime
-
 import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, EntryViewData, mysql}
-import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, Table}
+import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, mysql}
+import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.{Categories, LogInstance, Qso, StationLog}
 import org.wa9nnn.wfdserver.{CallSignId, model}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
@@ -64,7 +62,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
   override def stats: Future[Table] = {
     val rows: Future[Seq[Row]] = statsGenerator()
     rows.map(
-      Table(Header("Statistics", "Item", "Value"), _: _*).withCssClass("resultTable")
+      Table(Header("Statistics", "Item", "Value"), _).withCssClass("resultTable")
     )
   }
 
