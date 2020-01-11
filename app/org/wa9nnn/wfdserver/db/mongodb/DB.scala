@@ -1,7 +1,6 @@
 
 package org.wa9nnn.wfdserver.db.mongodb
 
-import com.typesafe.config.Config
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
@@ -10,6 +9,7 @@ import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Projections._
+import org.mongodb.scala.model.Sorts._
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db._
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
@@ -18,18 +18,17 @@ import org.wa9nnn.wfdserver.model._
 
 import scala.concurrent.Future
 import scala.language.postfixOps
-import scala.util.matching.Regex
 
 /**
  *
  * @param connectUri see https://docs.mongodb.com/manual/reference/connection-string/
  */
-class DB(connectUri:String, dbName:String = "wfd-test") extends DBService {
+class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   private val customCodecs: CodecRegistry = fromProviders(
     // These tell the Scala MongoDB driver which case classes we will be using.
-    // This lets Mongo automagically map between scala case classes and mongos BSON document objects.
+    // This lets Mongo automatically map between scala case classes and mongos BSON document objects.
     classOf[LogInstance],
     classOf[Categories],
     classOf[StationLog],
@@ -45,6 +44,8 @@ class DB(connectUri:String, dbName:String = "wfd-test") extends DBService {
   private val logCollection: MongoCollection[LogInstance] = database.getCollection("logs")
   private val previousCollection: MongoCollection[LogInstance] = database.getCollection("replaced")
   private val logDocumentCollection = database.getCollection("logs")
+
+  logCollection.createIndex(ascending("stationLog.callSign")).results()
 
   val statsGenerator: StatsGenerator = new StatsGenerator(database)
 
@@ -82,6 +83,7 @@ class DB(connectUri:String, dbName:String = "wfd-test") extends DBService {
   override def callSignIds: Future[Seq[CallSignId]] = {
     logDocumentCollection.find()
       .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
+      .sort(ascending("stationLog.callSign"))
       .toFuture()
       .map { s => s.map(CallSignId(_)) }
   }
@@ -100,16 +102,18 @@ class DB(connectUri:String, dbName:String = "wfd-test") extends DBService {
   /**
    * ignores case
    *
-   * @param partialCallSign
-   * @return
+   * @param partialCallSign to search for.
+   * @return matching.
    */
   override def search(partialCallSign: String): Future[Seq[CallSignId]] = {
     val ucCallSign = partialCallSign.toUpperCase()
     logDocumentCollection.find(regex("stationLog.callSign", s"""$ucCallSign"""))
       .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
+      .sort(ascending("stationLog.callSign"))
       .toFuture()
       .map { s =>
-        s.map(CallSignId(_)) }
+        s.map(CallSignId(_))
+      }
 
   }
 }

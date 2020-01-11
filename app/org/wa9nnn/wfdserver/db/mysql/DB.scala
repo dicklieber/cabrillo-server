@@ -4,11 +4,12 @@ package org.wa9nnn.wfdserver.db.mysql
 import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
 import org.wa9nnn.cabrillo.requirements.Frequencies
+import org.wa9nnn.wfdserver
 import org.wa9nnn.wfdserver.db.mysql.Tables._
 import org.wa9nnn.wfdserver.db.{DBService, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.{Categories, LogInstance, Qso, StationLog}
-import org.wa9nnn.wfdserver.{CallSignId, model}
+import org.wa9nnn.wfdserver.{CallSignId, db, model}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.MySQLProfile.api._
@@ -44,18 +45,17 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     logInstance //todo handle logVersion
   }
 
-  def entries: Future[Seq[EntriesRow]] = {
-    db.run(Entries.result)
-    //    Await.result[Seq[EntriesRow]](resultingUsers, 10 seconds)
-  }
-
   def callSignIds: Future[Seq[CallSignId]] = {
-    //todo this is crude, gets all entire EntriedRows, but I killed too many hour trying to get Slick to return just the columns we need.
-    entries.map { s: Seq[mysql.Tables.EntriesRow] =>
-      s.map { er => CallSignId(er.callsign, er.logVersion, er.id) }
-        .sorted
-    }
-  }
+    db.run(
+      sql"""SELECT callsign, id, log_version
+           FROM WFD.entries
+           ORDER BY callsign""".as[(String, Int, Int)])
+      .map { rs =>
+        rs.map { case (callSign, id, logVesion) =>
+          CallSignId(callSign, logVesion, id)
+        }
+      }
+ }
 
 
   /**
@@ -65,7 +65,16 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
    * @return
    */
   override def search(partialCallSign: String): Future[Seq[CallSignId]] = {
-    throw new NotImplementedError() //todo
+    db.run(
+      sql"""SELECT callsign, id, log_version
+           FROM WFD.entries
+           WHERE callsign REGEXP ${partialCallSign}
+           ORDER BY callsign""".as[(String, Int, Int)])
+      .map { rs =>
+        rs.map { case (callSign, id, logVesion) =>
+          CallSignId(callSign, logVesion, id)
+        }
+      }
   }
 
   override def stats: Future[Table] = {
@@ -75,7 +84,9 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     )
   }
 
-  private implicit def stringToOptionString(s: String): Option[String] = {
+  private implicit def stringToOptionString(s: String): Option[String]
+
+  = {
     if (s.isEmpty) {
       None
     } else {
@@ -83,14 +94,21 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     }
   }
 
-  private implicit def optionStringToString(s: Option[String]): String = {
-    s.getOrElse("")
-  }
-  private implicit def boolTo(s: Option[String]): String = {
+  private implicit def optionStringToString(s: Option[String]): String
+
+  = {
     s.getOrElse("")
   }
 
-  override def logInstance(sentryId: String): Future[Option[LogInstance]] = {
+  private implicit def boolTo(s: Option[String]): String
+
+  = {
+    s.getOrElse("")
+  }
+
+  override def logInstance(sentryId: String): Future[Option[LogInstance]]
+
+  = {
     val entryId: Int = sentryId.toInt
     db.run(for {
       entriesRow <- Entries.filter(_.id === entryId).result
@@ -107,7 +125,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
           location = er.location,
           arrlSection = er.arrlSection,
           category = er.category,
-          certificate = if(er.certificate) Option("YES") else None,
+          certificate = if (er.certificate) Option("YES") else None,
           address = List(er.address), //todo probably have only one
           city = er.city,
           stateProvince = er.stateProvince,
