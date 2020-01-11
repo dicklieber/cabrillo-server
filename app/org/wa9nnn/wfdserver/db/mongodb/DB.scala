@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 import org.mongodb.scala._
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
-import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Projections._
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db._
@@ -18,12 +18,13 @@ import org.wa9nnn.wfdserver.model._
 
 import scala.concurrent.Future
 import scala.language.postfixOps
+import scala.util.matching.Regex
 
 /**
  *
- * @param config mongodb section of application.conf
+ * @param connectUri see https://docs.mongodb.com/manual/reference/connection-string/
  */
-class DB(config: Config) extends DBService {
+class DB(connectUri:String, dbName:String = "wfd-test") extends DBService {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   private val customCodecs: CodecRegistry = fromProviders(
@@ -39,8 +40,8 @@ class DB(config: Config) extends DBService {
   private val codecRegistry = fromRegistries(customCodecs,
     DEFAULT_CODEC_REGISTRY)
 
-  private val mongoClient: MongoClient = MongoClient()
-  private val database: MongoDatabase = mongoClient.getDatabase("wfd").withCodecRegistry(codecRegistry).withWriteConcern(WriteConcern.MAJORITY)
+  private val mongoClient: MongoClient = MongoClient(connectUri)
+  val database: MongoDatabase = mongoClient.getDatabase(dbName).withCodecRegistry(codecRegistry).withWriteConcern(WriteConcern.MAJORITY)
   private val logCollection: MongoCollection[LogInstance] = database.getCollection("logs")
   private val previousCollection: MongoCollection[LogInstance] = database.getCollection("replaced")
   private val logDocumentCollection = database.getCollection("logs")
@@ -94,5 +95,21 @@ class DB(config: Config) extends DBService {
     Future(
       Table(Header("Statistics", "Item", "Value"), rows).withCssClass("resultTable")
     )
+  }
+
+  /**
+   * ignores case
+   *
+   * @param partialCallSign
+   * @return
+   */
+  override def search(partialCallSign: String): Future[Seq[CallSignId]] = {
+    val ucCallSign = partialCallSign.toUpperCase()
+    logDocumentCollection.find(regex("stationLog.callSign", s"""$ucCallSign"""))
+      .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
+      .toFuture()
+      .map { s =>
+        s.map(CallSignId(_)) }
+
   }
 }

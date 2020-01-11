@@ -3,10 +3,9 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
 import org.wa9nnn.wfdserver.CallSignId
-import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.db.DBRouter.{dbFromSession, _}
+import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.htmlTable._
-import org.wa9nnn.wfdserver.model.LogInstance
 import org.wa9nnn.wfdserver.scoring.ScoringEngine
 import play.api.data.Form
 import play.api.data.Forms._
@@ -33,7 +32,7 @@ class AdminController @Inject()(cc: ControllerComponents,
       val dbName: Option[String] = dbFromSession
       db.callSignIds(dbName).map { callSignIds =>
         val table = MultiColumn(callSignIds.map(_.toCell), 10, s"Submissions (${callSignIds.length})").withCssClass("resultTable")
-        Ok(views.html.entries(table, dbName.getOrElse("default")))
+        Ok(views.html.entries(table, dbName))
       }
   }
 

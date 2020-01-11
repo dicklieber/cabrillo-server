@@ -1,0 +1,49 @@
+
+package org.wa9nnn.wfdserver.db
+
+import org.wa9nnn.wfdserver.CallSignId
+import org.wa9nnn.wfdserver.htmlTable.Table
+import org.wa9nnn.wfdserver.model.LogInstance
+
+import scala.concurrent.Future
+
+/**
+ * Things that can be done by MongoDB or MySQL.
+ */
+trait DBService {
+  /**
+   *
+   * @param logInstance in coming.
+   * @return LogInstance with logVersion.
+   */
+  def ingest(logInstance: LogInstance): LogInstance
+
+  /**
+   *
+   * @return all entries.
+   */
+  def callSignIds: Future[Seq[CallSignId]]
+
+  /**
+   * ignores case
+   * @param partialCallSign
+   * @return
+   */
+  def search(partialCallSign:String): Future[Seq[CallSignId]]
+
+  /**
+   *
+   * @param entryId as returned in a [[CallSignId]] from [[callSignIds]].
+   * @return the LogInstance for the entryId or None.
+   */
+  def logInstance(entryId:String): Future[Option[LogInstance]]
+
+  /**
+   * Actual stats depend on the database used.
+   *
+   * @return
+   */
+  def stats: Future[Table]
+}
+
+

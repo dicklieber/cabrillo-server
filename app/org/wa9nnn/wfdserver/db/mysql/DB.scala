@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.{DBService, DbIngestResult, mysql}
+import org.wa9nnn.wfdserver.db.{DBService, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.{Categories, LogInstance, Qso, StationLog}
 import org.wa9nnn.wfdserver.{CallSignId, model}
@@ -40,8 +40,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       println(maybeHighestVersion)
       entryId
     }
-    val eventualInt = db.run(query)
-    MySqlIngestResult(Await.result[Int](eventualInt, 10 seconds))
+    Await.ready(db.run(query), 10 seconds)
     logInstance //todo handle logVersion
   }
 
@@ -58,6 +57,16 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     }
   }
 
+
+  /**
+   * ignores case
+   *
+   * @param partialCallSign
+   * @return
+   */
+  override def search(partialCallSign: String): Future[Seq[CallSignId]] = {
+    throw new NotImplementedError() //todo
+  }
 
   override def stats: Future[Table] = {
     val rows: Future[Seq[Row]] = statsGenerator()
@@ -151,13 +160,10 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       }
     }
     )
-
   }
 }
 
-case class MySqlIngestResult(intId: Int) extends DbIngestResult {
-  override def id: String = intId.toString
-}
+
 
 
 

@@ -1,0 +1,14 @@
+@import org.wa9nnn.wfdserver.htmlTable.Table
+@(table: Table, searchForm: Form[SearchCriterion], dbName: Option[String])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+@import helper._
+
+
+@main("Search") {
+    <p>Using @{dbName.getOrElse("")}</p>
+
+    @form(action = routes.SearchController.search()){
+       @inputText(searchForm("partialCallSign"))
+        <input type="submit" name="cmd" value="Search"/>
+    }
+    @renderTable(table)
+}

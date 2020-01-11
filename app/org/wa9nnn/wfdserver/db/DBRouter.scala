@@ -25,7 +25,8 @@ import scala.concurrent.Future
 class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging {
   private val dbs: Map[String, DBService] = {
     val builder = Map.newBuilder[String, DBService]
-    builder += "MongoDB" -> new MongoDB(config.getConfig("mongodb"))
+    val uri = config.getString("mongodb.mongoURI")
+    builder += "MongoDB" -> new MongoDB(uri, "wfd")
     try {
       val slickConfig = config.getConfig("slick.dbs.default")
       if (slickConfig.getBoolean("enable")) {
@@ -56,6 +57,10 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
     db(database).callSignIds
   }
 
+  def search(partialCallsign:String, database: Option[String]): Future[Seq[CallSignId]] = {
+    db(database).search(partialCallsign)
+  }
+
   def logInstance(entryId:String, database: Option[String]): Future[Option[LogInstance]] = {
     db(database).logInstance(entryId)
   }
@@ -79,27 +84,4 @@ object DBRouter {
   }
 }
 
-trait DBService {
-  /**
-   *
-   * @param logInstance in coming.
-   * @return LogInstance with logVersion.
-   */
-  def ingest(logInstance: LogInstance): LogInstance
 
-  def callSignIds: Future[Seq[CallSignId]]
-
-
-  def logInstance(entryId:String): Future[Option[LogInstance]]
-
-  /**
-   * Actual stats depend on the database used.
-   *
-   * @return
-   */
-  def stats: Future[Table]
-}
-
-trait DbIngestResult {
-  def id: String
-}

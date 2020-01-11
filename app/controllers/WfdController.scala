@@ -4,19 +4,18 @@ import java.nio.file.{Path, Paths}
 
 import akka.actor.ActorSystem
 import javax.inject._
-import nl.grons.metrics4.scala.{DefaultInstrumented, InstrumentedBuilder}
+import nl.grons.metrics4.scala.DefaultInstrumented
 import org.wa9nnn.cabrillo.ResultWithData
 import org.wa9nnn.wfdserver.Loader
-import org.wa9nnn.wfdserver.db.DbIngestResult
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model.LogInstance
+import org.wa9nnn.wfdserver.scoring.ScoringEngine
 import org.wa9nnn.wfdserver.util.JsonLogging
 import play.api.libs.Files
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
-import org.wa9nnn.wfdserver.scoring.{ScoringEngine, ScoringResult}
 
 @Singleton
 class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, loader: Loader)(implicit exec: ExecutionContext)
@@ -35,12 +34,11 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           val filename: Path = Paths.get(picture.filename).getFileName
 
           val path = Paths.get(picture.ref.toURI)
-          val (resultWithData: ResultWithData, maybeLogEntryId: Option[DbIngestResult]) = loader(path, request.connection.remoteAddress.toString)
+          val (resultWithData: ResultWithData, maybeLogEntryId: Option[LogInstance]) = loader(path, request.connection.remoteAddress.toString)
           val scoringResultTable: Table = maybeLogEntryId.map {
-            case li: LogInstance =>
+            li: LogInstance =>
               ScoringEngine(li).table
           }.getOrElse(Table("Couldn't Score", ""))
-
 
           Ok(views.html.wfdresult(resultWithData.result, filename.toString, maybeLogEntryId.map(_.id), scoringResultTable)(request.asInstanceOf[Request[AnyContent]]))
 
@@ -50,6 +48,4 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
         }
     }
   }
-
-
 }

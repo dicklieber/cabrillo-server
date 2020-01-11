@@ -1,8 +1,7 @@
 @import org.wa9nnn.wfdserver.htmlTable.Table
-@(table: Table, dbName: String)(implicit request: play.api.mvc.Request[AnyContent])
-
+@(table: Table, dbName: Option[String])(implicit request: play.api.mvc.Request[AnyContent])
 
     @main("Submissions") {
-        <p>Using @dbName</p>
+        <p>Using @dbName.getOrElse("default")</p>
         @renderTable(table)
     }
