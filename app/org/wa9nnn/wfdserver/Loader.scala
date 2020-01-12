@@ -36,7 +36,7 @@ class Loader @Inject()(fileSaver: CabrilloFileManager, db: DBRouter) extends Def
       }else{
         result.callSign.get
       }
-      val saveToPath = fileSaver(rawFile, callSign)
+      val saveToPath = fileSaver.save(rawFile, callSign)
 
       logJson("result")
         .++("callSign" -> callSign)

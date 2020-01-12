@@ -2,17 +2,18 @@
 package org.wa9nnn.wfdserver
 
 import java.nio.file.{Files, Path, Paths}
-import java.util.UUID
 
 import com.github.racc.tscg.TypesafeConfig
 import javax.inject.{Inject, Singleton}
-import org.wa9nnn.wfdserver.util.JsonLogging
+import org.wa9nnn.wfdserver.htmlTable.{Header, Table}
+import org.wa9nnn.wfdserver.util.{FileInfo, JsonLogging}
 
 import scala.jdk.CollectionConverters._
 import scala.util.{Try, Using}
 
 /**
- * Saves a file, seq of strings to a file.
+ * Manages archive of uploaded Cabrillo files.
+ *
  * This is essential for operation.
  * If the "wfd.saveCabrilloDirectory" in application.conf cannot be created or is not writable,
  * then the server will be abruptly terminated, System.exit(1)!
@@ -24,8 +25,8 @@ import scala.util.{Try, Using}
 @Singleton
 class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory") carrilloDirectory: String) extends JsonLogging {
 
-  val fileSaveDirectory: Path = Paths.get(carrilloDirectory)
-  //  val fileSaveDirectory: Path = Paths.get(config.getString("wfd.saveCabrilloDirectory"))
+  implicit val fileSaveDirectory: Path = Paths.get(carrilloDirectory)
+
   try {
     Files.createDirectories(fileSaveDirectory)
   } catch {
@@ -42,37 +43,23 @@ class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory")
    *
    * @param bytes    body of file to be saved.
    * @param callSign callsign. Base of filename
-   * @return actual path where file was saved.
+   * @return details of save.
    */
-  def apply(bytes: Array[Byte], callSign: String): Path = {
-    val uuid = UUID.randomUUID().toString
-    val subDirectory = subdir(callSign)
+  def save(bytes: Array[Byte], callSign: String): FileInfo = {
 
-    Files.createDirectories(subDirectory)
+    val fileInfo = FileInfo(callSign)
+    val path = fileInfo.path(fileSaveDirectory)
+    Files.createDirectories(path.getParent)
 
-    val filePath: Path = subDirectory.resolve(s"$callSign-$uuid")
-    Using(Files.newOutputStream(filePath)) { writer =>
+    Using(Files.newOutputStream(path)) { writer =>
       writer.write(bytes)
       logJson("Save").++(
         "callSign" -> callSign,
-        "file" -> filePath.toFile.toPath,
+        "file" -> path.toFile.toPath,
         "size" -> bytes.length)
         .info()
-
     }
-    filePath
-  }
-
-  /**
-   * handles sharding based on 1st 3 or so chars of the callSign.
-   * Removes slashes and may return less than 3 if that aren't enough.
-   * @param callSign of interest.
-   * @return
-   */
-  private def subdir(callSign: String) = {
-    val ucCallSign = callSign.toUpperCase
-    val safeChars = ucCallSign.replaceAll("/", "")
-    fileSaveDirectory.resolve(safeChars.take(3))
+    fileInfo
   }
 
   /**
@@ -80,9 +67,10 @@ class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory")
    * @param callSign of interest
    * @return paths relative to the fileSaveDirectory.
    */
-  def find(callSign: String): Seq[Path] = {
-    val subDir = subdir(callSign)
-    if(Files.exists(subDir)) {
+  def find(callSign: String): Seq[FileInfo] = {
+    val subDir = fileSaveDirectory.resolve(FileInfo.subDir(callSign))
+
+    if (Files.exists(subDir)) {
       val callSignWithDash = callSign + "-"
       Files.list(subDir)
         .iterator
@@ -90,25 +78,38 @@ class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory")
         .filter {
           _.getFileName.toString.startsWith(callSignWithDash)
         }
-        .map {
-          fileSaveDirectory.relativize
+        .map { p =>
+          FileInfo(p)
         }
         .toSeq
-    }else{
+    } else {
       Seq.empty
     }
   }
 
   /**
    *
-   * @param relativePath as returned by paths.
+   * @param callSign of interest.
+   * @return table of all the files saved for this callsign with links to download them.
+   */
+  def table(callSign: String): Table = {
+    Table(Header("Cabrillo Files", "CallSign", "Stamp"),
+      find(callSign)
+        .sorted
+        .map(_.toRow))
+      .withCssClass("resultTable")
+  }
+
+  /**
+   *
+   * @param key as returned FileInfo.key.
    * @return bytes of file or an exception.
    */
-  def read(relativePath: Path): Try[Array[Byte]] = {
-    Try(
-
-      Files.readAllBytes(fileSaveDirectory.resolve(relativePath))
-    )
+  def read(key: String): Try[Array[Byte]] = {
+    Try {
+      val fileInfo = FileInfo.fromKey(key)
+      Files.readAllBytes(fileInfo.path(fileSaveDirectory))
+    }
   }
 
 }

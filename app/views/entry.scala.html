@@ -1,19 +1,29 @@
 @import org.wa9nnn.wfdserver.htmlTable.Table
-@(entry: org.wa9nnn.wfdserver.db.EntryViewData,scoringTable: Table, dbName:String)(implicit request: play.api.mvc.Request[AnyContent])
+@(entry: org.wa9nnn.wfdserver.db.EntryViewData,
+        filesTable: Table,
+        scoringTable: Table,
+        dbName: String)(implicit request: play.api.mvc.Request[AnyContent])
 
-@main({entry.title}) {
-    <p>Using @dbName</p>
-    <table>
-
-        <tr>
-            <td valign="top">@renderTable(entry.entryTable)</td>
-            <td valign="top" rowspan="2">@renderTable(scoringTable)</td>
-        </tr>
-        <tr>
-            <td valign="top">@renderTable(entry.contactsTable)</td>
-        </tr>
-    </table>
-
-
-
-}
+    @main(entry.title) {
+        <p>Using @dbName</p>
+        <table>
+            <tr>
+                <th>Source</th>
+                <th>Persisted</th>
+                <th>Score</th>
+            </tr>
+            <tr>
+                <td class="help">Original cabrillo files. Top should be the one used.</td>
+                <td class="help">Data stored in database for this station.</td>
+                <td class="help">Provisional score. i.e. before matching QSOs</td>
+            </tr>
+            <tr>
+                <td valign="top" rowspan="2">@renderTable(filesTable)</td>
+                <td valign="top">@renderTable(entry.entryTable)</td>
+                <td valign="top" rowspan="2">@renderTable(scoringTable)</td>
+            </tr>
+            <tr>
+                <td valign="top">@renderTable(entry.contactsTable)</td>
+            </tr>
+        </table>
+    }

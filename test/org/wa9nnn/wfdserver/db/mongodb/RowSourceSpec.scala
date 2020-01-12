@@ -86,7 +86,7 @@ class RowSourceSpec extends Specification {
                         ||gridLocator         |                                            |
                         ||name                |dick lieber                                 |
                         ||claimedScore        |142                                         |
-                        ||ingested            |01/01/70 00:00 UTC                          |""".stripMargin)
+                        ||ingested            |01/01/70 00:00 UTC (12/31/69 18:00 CST)     |""".stripMargin)
 
     }
     "rows skip None" >> {

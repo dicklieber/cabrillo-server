@@ -144,6 +144,13 @@ table th {
     font-style: italic;
     opacity: 75;
 }
+.help{
+    font-size: small;
+    color: darkgrey;
+    font-weight: lighter;
+    font-style: italic;
+    opacity: 75;
+}
 
 .bodyValue {
     font-family: monospace;

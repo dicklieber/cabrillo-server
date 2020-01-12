@@ -139,7 +139,7 @@ object Cell {
             case Instant.MAX =>
               new Cell("\u03C9")
             case ok =>
-              new Cell(tc.instantToString(ok))
+              new Cell(tc.instantDisplayUTCCST(ok))
           }).withCssClass("number")
         case i: Int =>
           new Cell(java.text.NumberFormat.getIntegerInstance.format(i), cssClass = Seq("number"))

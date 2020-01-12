@@ -2,7 +2,7 @@ package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
-import org.wa9nnn.wfdserver.CallSignId
+import org.wa9nnn.wfdserver.{CabrilloFileManager, CallSignId}
 import org.wa9nnn.wfdserver.db.DBRouter.{dbFromSession, _}
 import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.htmlTable._
@@ -19,6 +19,7 @@ import scala.concurrent.Future
 @Singleton
 class AdminController @Inject()(cc: ControllerComponents,
                                 db: DBRouter,
+                                cabrilloFileManager: CabrilloFileManager,
                                 actionBuilder: ActionBuilders
                                )
   extends AbstractController(cc)
@@ -40,12 +41,11 @@ class AdminController @Inject()(cc: ControllerComponents,
     val dbName = dbFromSession
     db.logInstance(callsignId.entryId, dbName).map {
       case Some(logInstance) =>
-        val stationLog = logInstance.stationLog
-        val evd = EntryViewData(logInstance)
-
+        val entryViewData = EntryViewData(logInstance)
+        val filesTable: Table = cabrilloFileManager.table(callsignId.callsign)
         val scoringTable: Table = ScoringEngine(logInstance).table
 
-        Ok(views.html.entry(evd, scoringTable, dbName.getOrElse("default")))
+        Ok(views.html.entry(entryViewData, filesTable, scoringTable, dbName.getOrElse("default")))
       case None =>
         NotFound("Cannot find ID")
     }
