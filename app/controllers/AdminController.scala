@@ -63,7 +63,7 @@ class AdminController @Inject()(cc: ControllerComponents,
    */
   def adminlanding(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
     val dbName = dbFromSession.getOrElse("")
-    Future(Ok(views.html.admin(stuffForm.fill(DbName(dbName)), db, dbName)))
+    Future(Ok(views.html.admin( stuffForm.fill(DbName(dbName)), db, dbName)))
   }
 
   def stuffPost(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>

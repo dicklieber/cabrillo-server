@@ -4,35 +4,37 @@
 @(stuffForm: Form[DbName], dbRouter: DBRouter, dbName: String)(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-@main("Administration") {
-    <table>
-        <tr>
-            <td valign="top">
-                <fieldset>
-                    <legend>Actions</legend>
-@*                    <div class="container">*@
-                        <p ><a href=@routes.SubmissionControlController.index()>Submission Control</a></p>
-                        <p ><a href=@routes.SearchController.index() >Search for Entries by CallSign</a></p>
-                        <p ><a href=@routes.AdminController.callsigns() >All Entries</a></p>
-                        <p ><a href=@routes.StatsController.index() >Statistics</a></p>
-                        <p ><a href=@routes.UserController.index() >User Manger</a></p>
-                        <p ><a href=@routes.BulkLoaderController.index() >Start Bulk Loader</a></p>
-                        <p ><a href=@routes.MetricsController.metrics() >Raw Metrics</a></p>
-@*                    </div>*@
-                </fieldset>
-            </td>
-            <td valign="top">
-                <fieldset>
-                    <legend>Session Settings</legend>
-                    @form(action = routes.AdminController.stuffPost()) {
-                        @select(
-                            field = stuffForm("dbName"),
-                            options = dbRouter.dbNames.map(db => db -> db)
-                        )
-                        <input type="submit" name="Save">
-                        }
-                </fieldset>
-            </td>
-        </tr>
-    </table>
-}
+    @main("Administration") {
+        <table>
+            <tr>
+                <td valign="top">
+                    <fieldset>
+                        <legend>Actions</legend>
+
+                        <table class="menu">
+                            @for(mi <- org.wa9nnn.wfdserver.AdminMenu.menuItems){
+                                <tr>
+                                    <td class="help">@{mi.help}</td>
+                                    <td> <button onclick="window.location.href = '@{mi.call.url}';">@{mi.button}</button></td>
+                                </tr>
+                            }
+                        </table>
+
+                    </fieldset>
+                </td>
+                <td valign="top">
+                    <fieldset>
+                        <legend>Session Settings</legend>
+                        <p class="help">When a cabrillo file is ingested, it's persisted both MongoDB and MySQL. This changes which database is used when viewing data in admin pages.</p>
+                        @form(action = routes.AdminController.stuffPost()) {
+                            @select(
+                                field = stuffForm("dbName"),
+                                options = dbRouter.dbNames.map(db => db -> db)
+                            )
+                            <input type="submit" name="Save">
+                            }
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    }

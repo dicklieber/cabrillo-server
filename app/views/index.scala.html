@@ -1,27 +1,26 @@
 @import org.wa9nnn.wfdserver.contest.CurrentSubmissionState
 
+
 @(submissionState: CurrentSubmissionState)(implicit request: play.api.mvc.Request[AnyContent])
 
-    @helper.form(action = routes.WfdController.upload, Symbol("enctype") -> "multipart/form-data") {
+@main("Winter Field Day 2019 Cabrillo File Submitter") {
+    @helper.form(action = routes.WfdController.upload, Symbol("enctype") -> "multipart/form-data", Symbol("id") -> "form") {
 
-        @main("Winter Field Day 2019 Cabrillo File Submitter") {
-            <h2>@submissionState.message.h2</h2>
-            @if(submissionState.submissionsAllowed) {
-                <table>
-                    <tr>
-                        <td width="300">
-                            <p>Cabrillo file:</p>
-                            <p><input type="file" name="cabrillo"></p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <input type="submit">
-                        </td>
-                    </tr>
-                </table>
-            }
-            <div class="message">@Html(submissionState.message.md)</div>
-            <div class="times">Log Submit Window: @submissionState.times</div>
+        <h2>@submissionState.message.h2</h2>
+        @if(submissionState.submissionsAllowed) {
+            <table class ="submit">
+                <tr>
+                    <td width="300">
+                        <label for="file" class="fileLabel" >
+                            Select Cabrillo file to upload
+                        </label>
+                        <p><input type="file" id="file" name="cabrillo" onchange="this.form.submit()" class="inputfile file-upload"></p>
+                    </td>
+                </tr>
+
+            </table>
         }
-    } @import views.html.helper.form
+        <div class="message">@Html(submissionState.message.md)</div>
+        <div class="times">Log Submit Window: @submissionState.times</div>
+    }
+} @import views.html.helper.form

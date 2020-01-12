@@ -14,6 +14,36 @@
     background: none;
 }
 
+.menu button {
+    display: block;
+    width: 100%;
+    border: none;
+    background-color: lightblue;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+    display: none;
+}
+.fileLabel{
+    display: block;
+    width: 100%;
+    border: none;
+    background-color: lightblue;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+
 .experimental {
     background: pink;
     color: black;
@@ -140,6 +170,7 @@ table th {
 .parenthetic {
     font-size: small;
     color: darkgrey;
+    color: darkgrey;
     font-weight: lighter;
     font-style: italic;
     opacity: 75;
@@ -150,6 +181,8 @@ table th {
     font-weight: lighter;
     font-style: italic;
     opacity: 75;
+    width: 20em;
+    justify-content: left;
 }
 
 .bodyValue {
@@ -169,7 +202,7 @@ table th {
 
 
 .message div {
-    border: 1px solid darkgray;
+    background: lavender;
     justify-content: left;
     height: 10em;
     width: 25em;
@@ -177,12 +210,15 @@ table th {
 }
 
 .message {
-    border: 1px solid darkgray;
+    background: lavender;
     justify-content: left;
     height: 10em;
     width: 25em;
     font-size: inherit;
     padding-top: 0;
+}
+.message a {
+    color: inherit;
 }
 
 
