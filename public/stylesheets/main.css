@@ -132,6 +132,7 @@ table th {
 .resultTable {
     border-collapse: collapse;
     padding-bottom: 1em;
+
 }
 
 .resultTable th {
@@ -147,6 +148,7 @@ table th {
 .resultTable td {
     border: 1px solid black;
     padding: 2px;
+    vertical-align:top
 }
 
 /*.resultTable table {*/

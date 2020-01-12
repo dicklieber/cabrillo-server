@@ -93,9 +93,8 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
   }
 
   override def stats: Future[Table] = {
-    val rows = statsGenerator()
     Future(
-      Table(Header("Statistics", "Item", "Value"), rows).withCssClass("resultTable")
+      statsGenerator()
     )
   }
 
