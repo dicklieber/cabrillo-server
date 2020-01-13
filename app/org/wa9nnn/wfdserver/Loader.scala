@@ -16,6 +16,8 @@ import org.wa9nnn.wfdserver.util.JsonLogging
  */
 @Singleton
 class Loader @Inject()(fileSaver: CabrilloFileManager, db: DBRouter) extends DefaultInstrumented with JsonLogging {
+  setLoggerName("cabrillo")
+
   private val loadMeter = metrics.meter("loadMeter")
   private val qsosMeter = metrics.meter("qsosMeter")
 
@@ -33,7 +35,7 @@ class Loader @Inject()(fileSaver: CabrilloFileManager, db: DBRouter) extends Def
       val callSign = if (result.callSign.isEmpty) {
         logger.error("NoCallSign")
         throw new NoCallSignException
-      }else{
+      } else {
         result.callSign.get
       }
       val saveToPath = fileSaver.save(rawFile, callSign)
@@ -44,6 +46,7 @@ class Loader @Inject()(fileSaver: CabrilloFileManager, db: DBRouter) extends Def
         .++("from" -> from)
         .++("fileOk" -> (result.tagsWithErrors == 0))
         .++("lines" -> result.linesInFile)
+        .++("size" -> rawFile.length)
         .++("errorTags" -> result.tagsWithErrors.size)
         .++("unknownTags" -> result.unknownTags.size)
         .++("duration" -> result.duration)

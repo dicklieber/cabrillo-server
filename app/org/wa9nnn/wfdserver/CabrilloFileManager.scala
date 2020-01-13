@@ -24,6 +24,7 @@ import scala.util.{Try, Using}
  */
 @Singleton
 class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory") carrilloDirectory: String) extends JsonLogging {
+  setLoggerName("cabrillo")
 
   implicit val fileSaveDirectory: Path = Paths.get(carrilloDirectory)
 
@@ -53,11 +54,11 @@ class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory")
 
     Using(Files.newOutputStream(path)) { writer =>
       writer.write(bytes)
-      logJson("Save").++(
-        "callSign" -> callSign,
-        "file" -> path.toFile.toPath,
-        "size" -> bytes.length)
-        .info()
+//      logJson("Save").++(
+//        "callSign" -> callSign,
+//        "file" -> path.toFile.toPath,
+//        "size" -> bytes.length)
+//        .info()
     }
     fileInfo
   }
