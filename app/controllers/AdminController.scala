@@ -27,7 +27,7 @@ class AdminController @Inject()(cc: ControllerComponents,
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
 
-  def callsigns(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+  def callSigns(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request: Request[AnyContent] =>
       request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey).getOrElse()
       val dbName: Option[String] = dbFromSession
@@ -72,6 +72,15 @@ class AdminController @Inject()(cc: ControllerComponents,
     Future(Ok(views.html.admin(stuffForm.fill(DbName(dbName)), db, dbName)).withSession(dbToSession(dbName)))
   }
 
+  def recent() : Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+    implicit request: Request[AnyContent] =>
+      request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey).getOrElse()
+      val dbName: Option[String] = dbFromSession
+      db.recent(dbName).map { callSignIds =>
+        val table = MultiColumn(callSignIds.map(_.toCell), 10, s"Submissions (${callSignIds.length})").withCssClass("resultTable")
+        Ok(views.html.entries(table, dbName))
+      }
+  }
 }
 
 case class DbName(dbName: String)

@@ -35,6 +35,10 @@ class DBSpec extends Specification {
         val callSignIds = Await.result[Seq[CallSignId]](db.search("NNN"), 1 minute)
         callSignIds must beEmpty
       }
+      "recent" in {
+        val callSignIds = Await.result[Seq[CallSignId]](db.recent, 1 minute)
+        callSignIds must not be empty // pretty lame test a we onlhy have one
+      }
 
     }
   }

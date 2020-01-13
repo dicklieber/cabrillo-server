@@ -115,4 +115,16 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
       }
 
   }
+
+  override def recent: Future[Seq[CallSignId]] = {
+    logDocumentCollection.find()
+      .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
+      .sort(descending("stationLog.ingested"))
+      .limit(recentLimit)
+      .toFuture()
+      .map { s =>
+        s.map(CallSignId(_))
+      }
+
+  }
 }

@@ -55,7 +55,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
           CallSignId(callSign, logVesion, id)
         }
       }
- }
+  }
 
 
   /**
@@ -77,6 +77,20 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       }
   }
 
+  override def recent: Future[Seq[CallSignId]] = {
+    db.run(
+      sql"""SELECT callsign, id, log_version
+           FROM WFD.entries
+           ORDER BY id DESC
+           LIMIT $recentLimit""".as[(String, Int, Int)])
+      .map { rs =>
+        rs.map { case (callSign, id, logVesion) =>
+          CallSignId(callSign, logVesion, id)
+        }
+      }
+
+  }
+
   override def stats: Future[Table] = {
     val rows: Future[Seq[Row]] = statsGenerator()
     rows.map(
@@ -84,9 +98,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     )
   }
 
-  private implicit def stringToOptionString(s: String): Option[String]
-
-  = {
+  private implicit def stringToOptionString(s: String): Option[String] = {
     if (s.isEmpty) {
       None
     } else {
@@ -94,21 +106,15 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     }
   }
 
-  private implicit def optionStringToString(s: Option[String]): String
-
-  = {
+  private implicit def optionStringToString(s: Option[String]): String = {
     s.getOrElse("")
   }
 
-  private implicit def boolTo(s: Option[String]): String
-
-  = {
+  private implicit def boolTo(s: Option[String]): String = {
     s.getOrElse("")
   }
 
-  override def logInstance(sentryId: String): Future[Option[LogInstance]]
-
-  = {
+  override def logInstance(sentryId: String): Future[Option[LogInstance]] = {
     val entryId: Int = sentryId.toInt
     db.run(for {
       entriesRow <- Entries.filter(_.id === entryId).result

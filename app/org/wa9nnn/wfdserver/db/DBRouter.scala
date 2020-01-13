@@ -57,6 +57,10 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
     db(database).callSignIds
   }
 
+  def recent(database: Option[String]): Future[Seq[CallSignId]] = {
+    db(database).recent
+   }
+
   def search(partialCallsign:String, database: Option[String]): Future[Seq[CallSignId]] = {
     db(database).search(partialCallsign)
   }
