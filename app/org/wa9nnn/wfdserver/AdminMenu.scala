@@ -12,7 +12,7 @@ object AdminMenu {
     MenuItem(routes.AdminController.recent(), "Recent", """Last 25 submissions."""),
     MenuItem(routes.StatsController.index(), """Statistics""", """Various aggregate information."""),
     MenuItem(routes.UserController.index(), """User Manager""", """Edit who has access to the admin pages."""),
-    MenuItem(routes.BulkLoaderController.index(), "Start bulk loader", """Bulk load from a directory accessible from the server. Actual direction is configured in application.conf: wfd.bulkLoad.directory"""),
+    MenuItem(routes.BulkLoaderController.status(), "Bulk loader", """Bulk load from a directory accessible from the server. Actual direction is configured in application.conf: wfd.bulkLoad.directory"""),
     MenuItem(routes.MetricsController.metrics(), "Metrics", """Counter, meters, times and JVM stats.""")
   )
 }

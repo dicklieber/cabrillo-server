@@ -1,7 +1,35 @@
-@()(implicit request: play.api.mvc.Request[AnyContent])
+@import org.wa9nnn.wfdserver.bulkloader.BuildLoadStatus
+@(bulkLoadStatus: BuildLoadStatus)(implicit request: play.api.mvc.Request[AnyContent])
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+@if(bulkLoadStatus.isRunning) {
+    <meta http-equiv="refresh" content="3"/>
+}
 
-@main("BulkLoader") {
-   Starting builload from configured directory on server.
-    //todo show progress here
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+<script>
+        $(function () {
+            $("#progressbar").progressbar({
+                value: @bulkLoadStatus.progress,
+                max: @bulkLoadStatus.nFiles
+            });
+        });
+</script>
+
+@main("BulkLoading") {
+    @if(bulkLoadStatus.hasRun) {
+        <div id="progressbar"></div>
+        @renderTable(bulkLoadStatus.table.withCssClass("resultTable"))
+    }
+
+    @if(!bulkLoadStatus.isRunning) {
+
+        <form action="@routes.BulkLoaderController.start()" method="post" class="menu">
+            <input type="submit" name="upvote" value="Start" />
+        </form>
+    }
 }

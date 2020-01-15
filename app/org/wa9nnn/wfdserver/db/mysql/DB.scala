@@ -38,7 +38,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       _ <- Contacts ++= adapter.contactsRows(entryId)
       _ <- Soapboxes ++= adapter.soapboxes(entryId)
     } yield {
-      println(maybeHighestVersion)
+//      println(maybeHighestVersion)
       entryId
     }
     Await.ready(db.run(query), 10 seconds)

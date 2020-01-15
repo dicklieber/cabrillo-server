@@ -24,7 +24,6 @@ class WfdApplicationLoader extends GuiceApplicationLoader {
 }
 
 object WfdConfigFinder {
-  println("dsdfsdfsdfsdffsd")
   val userDir: Path = Paths.get(System.getProperty("user.dir"))
 
   val wfdVarDir: Path = wfdVarFinder
@@ -50,7 +49,6 @@ object WfdConfigFinder {
         val baseWithwfdVarDir = ConfigFactory.empty().withValue("wfd.varDirectory", ConfigValueFactory.fromAnyRef(wfdVarDir.toString)).resolve()
 
         val wfdConfig = baseWithwfdVarDir.withFallback(ConfigFactory.parseFile(conFile.toFile))
-        println(s"Found config file at: $conFile with ${wfdConfig.entrySet().size()} entries.")
         wfdConfig
       } else {
         println("Could not find a wfd.conf")

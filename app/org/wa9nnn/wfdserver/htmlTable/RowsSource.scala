@@ -9,7 +9,7 @@ package org.wa9nnn.wfdserver.htmlTable
 trait RowsSource extends Product {
 
   def toRows(includeNone: Boolean = true, prefix: String = ""): Seq[Row] = {
-    (0 until productArity).iterator.toSeq.flatMap { i =>
+   val rows =  (0 until productArity).iterator.toSeq.flatMap { i =>
       val name = prefix + productElementName(i)
       productElement(i) match {
         case None =>
@@ -27,6 +27,7 @@ trait RowsSource extends Product {
           Seq(Row(name, nonOption))
       }
     }
+    rows
   }
 }
 

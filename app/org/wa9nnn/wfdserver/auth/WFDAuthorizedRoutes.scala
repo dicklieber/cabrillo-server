@@ -6,7 +6,6 @@ import be.objectify.deadbolt.scala.filters.{AuthorizedRoute, AuthorizedRoutes, F
 import javax.inject.Inject
 
 class WFDAuthorizedRoutes @Inject()(filterConstraints: FilterConstraints) extends AuthorizedRoutes {
-  println("WFDAuthorizedRoutes ctor")
   override val routes: Seq[AuthorizedRoute] = Seq(
     AuthorizedRoute(Get, "/netcontrol", filterConstraints.subjectPresent, handler = None),
     AuthorizedRoute(Any, "/view/$foo<[^/]+>/$bar<[^/]+>", filterConstraints.restrict(allOfGroup("someRole")), handler = None)
