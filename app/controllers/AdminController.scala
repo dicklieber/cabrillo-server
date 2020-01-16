@@ -2,11 +2,12 @@ package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
-import org.wa9nnn.wfdserver.{CabrilloFileManager, CallSignId}
-import org.wa9nnn.wfdserver.db.DBRouter.{dbFromSession, _}
+import org.wa9nnn.wfdserver.auth.{SubjectAccess, WfdSubject}
+import org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey
 import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.htmlTable._
 import org.wa9nnn.wfdserver.scoring.ScoringEngine
+import org.wa9nnn.wfdserver.{CabrilloFileManager, CallSignId}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}
@@ -22,7 +23,7 @@ class AdminController @Inject()(cc: ControllerComponents,
                                 cabrilloFileManager: CabrilloFileManager,
                                 actionBuilder: ActionBuilders
                                )
-  extends AbstractController(cc)
+  extends AbstractController(cc) with SubjectAccess
     with play.api.i18n.I18nSupport {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
@@ -59,26 +60,31 @@ class AdminController @Inject()(cc: ControllerComponents,
 
   /**
    *
-   * @return landing page for admin (netcontrol)
+   * @return landing page for admin
    */
   def adminlanding(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
-    val dbName = dbFromSession.getOrElse("")
-    Future(Ok(views.html.admin( stuffForm.fill(DbName(dbName)), db, dbName)))
+    val dbName = subject.dbName
+    Future(Ok(views.html.admin(stuffForm.fill(DbName(dbName)), db, dbName)))
   }
 
-  def stuffPost(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
-    val userData = stuffForm.bindFromRequest.get
-    val dbName = userData.dbName
-    Future(Ok(views.html.admin(stuffForm.fill(DbName(dbName)), db, dbName)).withSession(dbToSession(dbName)))
-  }
-
-  def recent() : Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+  def stuffPost(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request: Request[AnyContent] =>
-      request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey).getOrElse()
-      val dbName: Option[String] = dbFromSession
-      db.recent(dbName).map { callSignIds =>
+
+      val userData = stuffForm.bindFromRequest.get
+      val dbName = userData.dbName
+      val updatedSubject = subject.copy(dbName = dbName)
+
+
+      val result: Result = Ok(views.html.admin(stuffForm.fill(DbName(dbName)), db, dbName))
+      val withNewSubject: Result = result.withSession(sessionKey -> updatedSubject.toJson)
+      Future(withNewSubject)
+  }
+
+  def recent(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+    implicit request: Request[AnyContent] =>
+      db.recent().map { callSignIds =>
         val table = MultiColumn(callSignIds.map(_.toCell), 10, s"Submissions (${callSignIds.length})").withCssClass("resultTable")
-        Ok(views.html.entries(table, dbName))
+        Ok(views.html.entries(table))
       }
   }
 }

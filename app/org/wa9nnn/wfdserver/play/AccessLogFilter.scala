@@ -2,12 +2,14 @@ package org.wa9nnn.wfdserver.play
 
 import javax.inject.Inject
 import akka.stream.Materializer
+import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey
 import org.wa9nnn.wfdserver.util.{JsonLogging, LogJson}
 import play.api.Logging
 import play.api.mvc._
 
+import scala.util.control.Exception.{allCatch, _}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
@@ -23,9 +25,7 @@ class AccessLogFilter @Inject()(implicit val mat: Materializer, ec: ExecutionCon
       val remoteAddress = requestHeader.remoteAddress
       val user = requestHeader.session.get(sessionKey) match {
         case Some(jsonWfdSubject) =>
-          WfdSubject.fromJson(jsonWfdSubject).identifier
-        // get from database, identity platform, cache, etc, if some
-        // identifier is present in the request
+          allCatch opt WfdSubject.fromJson(jsonWfdSubject).identifier
         case _ => "-"
       }
 

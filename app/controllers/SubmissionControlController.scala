@@ -1,17 +1,15 @@
 
 package controllers
 
-import java.time.{LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
+import java.time.{LocalDateTime, ZoneId, ZoneOffset}
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.google.inject.Inject
 import javax.inject.Singleton
-import org.wa9nnn.wfdserver.auth.UserPasswordRoles
 import org.wa9nnn.wfdserver.contest.{Message, SubmissionConfig, SubmissionControlDao, Times}
-import org.wa9nnn.wfdserver.db.DBRouter.dbFromSession
-import play.api.data.{Form, Mapping}
+import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents, Request}
+import play.api.mvc._
 
 import scala.concurrent.Future
 
@@ -38,7 +36,6 @@ class SubmissionControlController @Inject()(cc: ControllerComponents, actionBuil
 
   def index(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request: Request[AnyContent] =>
-      request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey).getOrElse()
 
       val sc = submissionControlDao.get
       val value = ControlUi(sc)

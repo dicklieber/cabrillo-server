@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils
 import org.specs2.mutable.Specification
 import org.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
 import org.wa9nnn.wfdserver.CallSignId
+import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db.LogInstanceAdapter
 
 import scala.concurrent.duration._
@@ -13,6 +14,7 @@ import scala.concurrent.Await
 class DBSpec extends Specification {
   implicit def f(file: String): Array[Byte] = IOUtils.resourceToByteArray(file)
 
+  implicit val subject: WfdSubject = WfdSubject("test")
   val db = new DB("mongodb://localhost")
   db.database.drop()
   "DBSpec" should {

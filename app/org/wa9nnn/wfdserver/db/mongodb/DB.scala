@@ -11,9 +11,10 @@ import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Projections._
 import org.mongodb.scala.model.Sorts._
 import org.wa9nnn.wfdserver.CallSignId
+import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db._
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
-import org.wa9nnn.wfdserver.htmlTable.{Header, Table}
+import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model._
 
 import scala.concurrent.Future
@@ -80,7 +81,7 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
     logInstance
   }
 
-  override def callSignIds: Future[Seq[CallSignId]] = {
+  override def callSignIds()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     logDocumentCollection.find()
       .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
       .sort(ascending("stationLog.callSign"))
@@ -88,11 +89,11 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
       .map { s => s.map(CallSignId(_)) }
   }
 
-  override def logInstance(entryId: String): Future[Option[LogInstance]] = {
+  override def logInstance(entryId: String)(implicit subject:WfdSubject): Future[Option[LogInstance]] = {
     logCollection.find(equal("_id", entryId)).first.toFutureOption()
   }
 
-  override def stats: Future[Table] = {
+  override def stats()(implicit subject:WfdSubject): Future[Table] = {
     Future(
       statsGenerator()
     )
@@ -104,7 +105,7 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
    * @param partialCallSign to search for.
    * @return matching.
    */
-  override def search(partialCallSign: String): Future[Seq[CallSignId]] = {
+  override def search(partialCallSign: String)(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     val ucCallSign = partialCallSign.toUpperCase()
     logDocumentCollection.find(regex("stationLog.callSign", s"""$ucCallSign"""))
       .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
@@ -116,7 +117,7 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
 
   }
 
-  override def recent: Future[Seq[CallSignId]] = {
+  override def recent()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     logDocumentCollection.find()
       .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
       .sort(descending("stationLog.ingested"))

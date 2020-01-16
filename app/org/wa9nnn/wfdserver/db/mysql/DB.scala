@@ -4,12 +4,12 @@ package org.wa9nnn.wfdserver.db.mysql
 import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
 import org.wa9nnn.cabrillo.requirements.Frequencies
-import org.wa9nnn.wfdserver
+import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db.mysql.Tables._
 import org.wa9nnn.wfdserver.db.{DBService, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.{Categories, LogInstance, Qso, StationLog}
-import org.wa9nnn.wfdserver.{CallSignId, db, model}
+import org.wa9nnn.wfdserver.{CallSignId, model}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.MySQLProfile.api._
@@ -45,7 +45,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     logInstance //todo handle logVersion
   }
 
-  def callSignIds: Future[Seq[CallSignId]] = {
+  def callSignIds()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     db.run(
       sql"""SELECT callsign, id, log_version
            FROM WFD.entries
@@ -61,23 +61,23 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
   /**
    * ignores case
    *
-   * @param partialCallSign
-   * @return
+   * @param partialCallSign to search for.
+   * @return results of search.
    */
-  override def search(partialCallSign: String): Future[Seq[CallSignId]] = {
+  override def search(partialCallSign: String)(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     db.run(
       sql"""SELECT callsign, id, log_version
            FROM WFD.entries
            WHERE callsign REGEXP ${partialCallSign}
            ORDER BY callsign""".as[(String, Int, Int)])
       .map { rs =>
-        rs.map { case (callSign, id, logVesion) =>
-          CallSignId(callSign, logVesion, id)
+        rs.map { case (callSign, id, logVersion) =>
+          CallSignId(callSign, logVersion, id)
         }
       }
   }
 
-  override def recent: Future[Seq[CallSignId]] = {
+  override def recent()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     db.run(
       sql"""SELECT callsign, id, log_version
            FROM WFD.entries
@@ -91,7 +91,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
   }
 
-  override def stats: Future[Table] = {
+  override def stats()(implicit subject:WfdSubject): Future[Table] = {
     val rows: Future[Seq[Row]] = statsGenerator()
     rows.map(
       Table(Header("Statistics", "Item", "Value"), _).withCssClass("resultTable")
@@ -114,7 +114,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     s.getOrElse("")
   }
 
-  override def logInstance(sentryId: String): Future[Option[LogInstance]] = {
+  override def logInstance(sentryId: String)(implicit subject:WfdSubject): Future[Option[LogInstance]] = {
     val entryId: Int = sentryId.toInt
     db.run(for {
       entriesRow <- Entries.filter(_.id === entryId).result
@@ -159,7 +159,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
           category = stationLog.category,
           section = stationLog.arrlSection.get
         )
-        val qsos = contacts.map { cr: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.ContactsRow =>
+        val qsos: Seq[Qso] = contacts.map { cr: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.ContactsRow =>
           Qso(
             b = Frequencies.check(cr.freq),
             m = Mode(cr.qsoMode),

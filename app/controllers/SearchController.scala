@@ -4,8 +4,8 @@ package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
+import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.db.DBRouter
-import org.wa9nnn.wfdserver.db.DBRouter.dbFromSession
 import org.wa9nnn.wfdserver.htmlTable._
 import play.api.data.Form
 import play.api.data.Forms._
@@ -22,7 +22,8 @@ class SearchController @Inject()(cc: ControllerComponents,
                                  actionBuilder: ActionBuilders
                                 )
   extends AbstractController(cc)
-    with play.api.i18n.I18nSupport {
+    with play.api.i18n.I18nSupport
+    with SubjectAccess{
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
 
@@ -30,29 +31,26 @@ class SearchController @Inject()(cc: ControllerComponents,
     implicit request: Request[AnyContent] =>
       Future {
         val table = MultiColumn(Seq.empty, 10, s"Submissions (0)").withCssClass("resultTable")
-        Ok(views.html.search(table, searchForm, dbName()))
+        Ok(views.html.search(table, searchForm))
       }
   }
 
   def search(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request: Request[AnyContent] =>
-      request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey).getOrElse()
-      val dbName: Option[String] = dbFromSession
-
 
       searchForm.bindFromRequest.fold(
         formWithErrors => {
           // binding failure, you retrieve the form containing errors:
-         Future( BadRequest(views.html.search(tableEmpty, formWithErrors, dbName)))
+         Future( BadRequest(views.html.search(tableEmpty, formWithErrors)))
         },
         userData => {
           /* binding success, you get the actual value. */
           val partialCallSign = userData.partialCallSign
           //          Ok(views.html.search(tableEmpty, userData, dbName))
-          db.search(partialCallSign, dbName).map { callSignIds =>
+          db.search(partialCallSign).map { callSignIds =>
             val table = MultiColumn(callSignIds.map(_.toCell), 10, s"Submissions (${callSignIds.length})").withCssClass("resultTable")
             val form = searchForm.fill(userData)
-            Ok(views.html.search(table, form, dbName))
+            Ok(views.html.search(table, form))
           }
         }
       )
@@ -65,11 +63,6 @@ class SearchController @Inject()(cc: ControllerComponents,
   )
 
   private val tableEmpty = Table(Header("None Found"), Seq.empty)
-
-  def dbName()(implicit request: Request[AnyContent]): Option[String] =
-    request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey)
-
-
 }
 
 case class SearchCriterion(partialCallSign: String)

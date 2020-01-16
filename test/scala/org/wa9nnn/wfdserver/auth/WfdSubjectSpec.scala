@@ -7,7 +7,7 @@ class WfdSubjectSpec extends Specification {
     "round Trip JSON" >> {
       val wfdSubject = WfdSubject("dick")
       val json = wfdSubject.toJson
-      json must beEqualTo("""{"identifier":"dick","roles":[{"name":"UserManager"}]}""")
+      json must beEqualTo("""{"identifier":"dick","roles":[{"name":"UserManager"}],"dbName":""}""")
       val backAgain = WfdSubject.fromJson(json)
       backAgain must beEqualTo(wfdSubject)
     }

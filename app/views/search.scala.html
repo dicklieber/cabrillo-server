@@ -1,10 +1,11 @@
 @import org.wa9nnn.wfdserver.htmlTable.Table
-@(table: Table, searchForm: Form[SearchCriterion], dbName: Option[String])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+@import org.wa9nnn.wfdserver.auth.WfdSubject
+@(table: Table, searchForm: Form[SearchCriterion])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider, subject:WfdSubject)
 @import helper._
 
 
 @main("Search") {
-    <p>Using @{dbName.getOrElse("")}</p>
+    <p>Using @{subject.dbName}</p>
 
     @form(action = routes.SearchController.search()){
        @inputText(searchForm("partialCallSign"))

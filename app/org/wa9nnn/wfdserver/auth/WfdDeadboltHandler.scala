@@ -10,6 +10,7 @@ import play.api.mvc.{Request, Result}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.Exception.allCatch
 
 /**
  * Defines the interface between the DeadBolt authorization framework and this server.
@@ -29,9 +30,7 @@ class WfdDeadboltHandler extends DeadboltHandler {
         // replace request.session.get("userId") with how you identify the user
         request.session.get(sessionKey) match {
           case Some(jsonWfdSubject) =>
-            Some(WfdSubject.fromJson(jsonWfdSubject))
-          // get from database, identity platform, cache, etc, if some
-          // identifier is present in the request
+            allCatch opt WfdSubject.fromJson(jsonWfdSubject)
           case _ => None
         }
       }
