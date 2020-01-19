@@ -93,6 +93,7 @@ object LogInstanceAdapter {
       }
     }
     model.LogInstance(
+      _id = callSign,
       logVersion = 0,
       qsoCount = qsos.length,
       qsos = qsos,

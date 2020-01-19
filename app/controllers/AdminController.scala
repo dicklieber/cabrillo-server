@@ -21,6 +21,7 @@ import scala.concurrent.Future
 class AdminController @Inject()(cc: ControllerComponents,
                                 db: DBRouter,
                                 cabrilloFileManager: CabrilloFileManager,
+                                scoringEngine: ScoringEngine,
                                 actionBuilder: ActionBuilders
                                )
   extends AbstractController(cc) with SubjectAccess
@@ -44,7 +45,7 @@ class AdminController @Inject()(cc: ControllerComponents,
       case Some(logInstance) =>
         val entryViewData = EntryViewData(logInstance)
         val filesTable: Table = cabrilloFileManager.table(callsignId.callSign)
-        val scoringTable: Table = ScoringEngine.provisional(logInstance).table
+        val scoringTable: Table = scoringEngine.provisional(logInstance).table
 
         Ok(views.html.entry(entryViewData, filesTable, scoringTable, dbName.getOrElse("default")))
       case None =>

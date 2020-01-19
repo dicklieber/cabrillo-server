@@ -23,7 +23,7 @@ object QsoPoints {
 }
 
 trait QsOPointer {
-  def qsoPoints()(implicit timeMatcher: TimeMatcher):QsoPoints
+  def points:Int
   def mode:String
   def band:String
   lazy val modeBand: ModeBand = ModeBand(mode, Frequencies.check(band))

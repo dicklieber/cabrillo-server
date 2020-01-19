@@ -11,12 +11,14 @@ class QsoAccumulator {
   private val modeBands = Set.newBuilder[ModeBand]
   private val modeCountMap = new TrieMap[String, AtomicInteger]()
   private val bandCountMap = new TrieMap[String, AtomicInteger]()
+  private var qsoPoints:Int = 0
 
   def apply(qso: QsOPointer): Unit = {
+    qsoPoints += qso.points
     val modeBand = qso.modeBand
     modeBands += modeBand
-    modeCountMap.getOrElseUpdate(modeBand.mode, new AtomicInteger()).incrementAndGet()
-    bandCountMap.getOrElseUpdate(modeBand.band, new AtomicInteger()).incrementAndGet()
+    modeCountMap.getOrElseUpdate(qso.mode, new AtomicInteger()).incrementAndGet()
+    bandCountMap.getOrElseUpdate(qso.band, new AtomicInteger()).incrementAndGet()
   }
 
   def result(powerMultiplier: Int): QsoResult = {

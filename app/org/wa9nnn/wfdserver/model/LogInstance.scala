@@ -13,7 +13,7 @@ import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
  * @param stationLog everything from cabrillo except the QSOs
  * @param qsos       just the QSOs
  */
-case class LogInstance(_id: String = new ObjectId().toHexString,
+case class LogInstance(_id: String ,
                        logVersion: Int,
                        qsoCount: Int,
                        stationLog: StationLog,

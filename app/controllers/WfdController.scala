@@ -18,9 +18,8 @@ import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 
 @Singleton
-class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, loader: Loader)(implicit exec: ExecutionContext)
+class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem, loader: Loader, scoringEngine: ScoringEngine)(implicit exec: ExecutionContext)
   extends AbstractController(cc) with JsonLogging with DefaultInstrumented {
-  setLoggerName("cabrillo")
   private val timer = metrics.timer("WfdController")
 
   def upload: Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { implicit request: Request[MultipartFormData[Files.TemporaryFile]] =>
@@ -37,7 +36,7 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           val (resultWithData: ResultWithData, maybeLogEntryId: Option[LogInstance]) = loader(path, request.connection.remoteAddress.toString)
           val scoringResultTable: Table = maybeLogEntryId.map {
             li: LogInstance =>
-              ScoringEngine.provisional(li).table
+              scoringEngine.provisional(li).table
           }.getOrElse(Table("Couldn't Score", ""))
 
           Ok(views.html.wfdresult(resultWithData.result, filename.toString, maybeLogEntryId.map(_.id), scoringResultTable)(request.asInstanceOf[Request[AnyContent]]))

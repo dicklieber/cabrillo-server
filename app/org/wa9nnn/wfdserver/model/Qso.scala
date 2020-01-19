@@ -6,7 +6,7 @@ import java.time.Instant
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowSource}
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import org.wa9nnn.wfdserver.scoring.{ModeBand, QsOPointer, QsoPoints, TimeMatcher}
+import org.wa9nnn.wfdserver.scoring.{QsOPointer, QsoPoints}
 
 /**
  * This can be persisted in MongoDB and the field names take up space so this is using the really tiny field names to help keep mongo data budget down.
@@ -44,8 +44,7 @@ case class Qso(
     )
   }
 
-
-  override def qsoPoints()(implicit timeMatcher: TimeMatcher): QsoPoints = QsoPoints.mode(mode)
+  override val points: Int = QsoPoints.mode(mode).points
 }
 
 

@@ -68,7 +68,7 @@ class CredentialsDao @Inject()(config: Config) extends JsonLogging {
         logger.info(s"Loaded ${users.size} from $credentialsFilePath")
       }
     }else{
-      logger.error(s"Did not find credentials file at $credentialsFilePath, use defalt user to at lease one admin user.")
+      logger.error(s"Did not find credentials file at $credentialsFilePath, use default user to add at lease one admin user.")
     }
   }
 

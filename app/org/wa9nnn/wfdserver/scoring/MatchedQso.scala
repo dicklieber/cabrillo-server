@@ -11,7 +11,7 @@ import org.wa9nnn.wfdserver.scoring.QsoPoints._
  * @param qso      of station being scored.
  * @param otherQso of station worked.
  */
-case class MatchedQso(qso: Qso, otherQso: Option[Qso]) extends QsOPointer {
+case class MatchedQso(qso: Qso, otherQso: Option[Qso])(implicit timeMatcher: TimeMatcher) extends QsOPointer {
   /**
    * Checks that qso and otherQso, if present, matches the given callSign
    * and the two Qsos are consistent with each other.
@@ -36,9 +36,9 @@ case class MatchedQso(qso: Qso, otherQso: Option[Qso]) extends QsOPointer {
     }
   }
 
-  override def qsoPoints()(implicit timeMatcher: TimeMatcher): QsoPoints = {
-    score()
-  }
+  private val qsoPoints : QsoPoints = score()
+
+  override val points:Int = qsoPoints.points
   /**
    *
    * @param timeMatcher tells if two [[java.time.Instant]]s are close enough together.

@@ -12,7 +12,9 @@ case class  EntryViewData(logInstance: LogInstance) {
   private val qsos: Seq[Qso] = logInstance.qsos
   val entryTable: Table = {
     val rows = logInstance.stationLog.toRows()
-    val r = rows :+ Row("id", logInstance.id)
+    val r = rows :+ Row("logVersion", logInstance.logVersion) :+ Row("id", logInstance.id)
+      .withToolTip("With momgoDB this is the callSign, for MySQL this is a autoinc integer.")
+
     Table(Header("Submitted Log", "Tag", "Value"), r).withCssClass("resultTable")
   }
 

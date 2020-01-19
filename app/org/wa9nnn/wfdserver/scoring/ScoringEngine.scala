@@ -1,10 +1,11 @@
 
 package org.wa9nnn.wfdserver.scoring
 
+import javax.inject.{Inject, Singleton}
 import nl.grons.metrics4.scala.DefaultInstrumented
 import org.wa9nnn.wfdserver.model.{LogInstance, StationLog}
-
-object ScoringEngine extends DefaultInstrumented {
+@Singleton
+class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends DefaultInstrumented {
   private val timer = metrics.timer("Score")
 
   /**
@@ -55,7 +56,8 @@ object ScoringEngine extends DefaultInstrumented {
 
       val soapBoxResult: SoapBoxesResult = SoapBoxParser(stationLog.soapBoxes)
 
-      ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult)
+      val score = -42
+      ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult, score)
     }
   }
 }
