@@ -7,7 +7,7 @@ import org.wa9nnn.wfdserver.model.{LogInstance, Qso}
  * All info about an entry as html [[Table]]s that can be rendered on an HTML page.
  *
  */
-case class EntryViewData(logInstance: LogInstance) {
+case class  EntryViewData(logInstance: LogInstance) {
 
   private val qsos: Seq[Qso] = logInstance.qsos
   val entryTable: Table = {

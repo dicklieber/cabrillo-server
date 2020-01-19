@@ -3,6 +3,7 @@ package org.wa9nnn.wfdserver.model
 
 import org.wa9nnn.cabrillo.parsers.Exchange_WFD
 import org.wa9nnn.wfdserver.htmlTable.Cell
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
 /**
  * May be sent or received
@@ -21,8 +22,12 @@ case class Exchange(cs: String, ex: String) {
 }
 
 object Exchange {
-  def apply(callSign: String, category: String, section: String): Exchange = {
+  def apply(callSign: CallSign, category: String, section: String): Exchange = {
     new Exchange(callSign, s"$category $section")
+  }
+
+  def apply(callCatSect: CallCatSect): Exchange = {
+    apply(callCatSect.callSign, callCatSect.category, callCatSect.arrlSection)
   }
 
   def apply(e: Exchange_WFD): Exchange = {

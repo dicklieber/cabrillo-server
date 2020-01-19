@@ -43,7 +43,7 @@ class AdminController @Inject()(cc: ControllerComponents,
     db.logInstance(callsignId.entryId, dbName).map {
       case Some(logInstance) =>
         val entryViewData = EntryViewData(logInstance)
-        val filesTable: Table = cabrilloFileManager.table(callsignId.callsign)
+        val filesTable: Table = cabrilloFileManager.table(callsignId.callSign)
         val scoringTable: Table = ScoringEngine.provisional(logInstance).table
 
         Ok(views.html.entry(entryViewData, filesTable, scoringTable, dbName.getOrElse("default")))

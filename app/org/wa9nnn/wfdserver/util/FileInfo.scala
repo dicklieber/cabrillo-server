@@ -6,6 +6,7 @@ import java.time.{Clock, Instant}
 
 import controllers.routes
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Row, RowSource}
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
 import scala.jdk.CollectionConverters._
 
@@ -16,7 +17,7 @@ import scala.jdk.CollectionConverters._
  * @param stamp        when it was saved.
  * @param relativePath sub dir and filename.
  */
-case class FileInfo(callSign: String, stamp: Instant, relativePath: Path) extends RowSource  with Ordered[FileInfo] {
+case class FileInfo(callSign: CallSign, stamp: Instant, relativePath: Path) extends RowSource  with Ordered[FileInfo] {
   /*
   unique id for this saved file.
    */
@@ -54,7 +55,7 @@ object FileInfo {
    * @param callSign of interest.
    * @return
    */
-  def subDir(callSign: String): Path = {
+  def subDir(callSign: CallSign): Path = {
     val safeChars = callSign.replaceAll("/", "")
     Paths.get(safeChars.take(3))
   }
@@ -64,7 +65,7 @@ object FileInfo {
    * @param callSign of interest.
    * @param clock    for unit tests so we hae a deterministic time. Normallly use system clock.
    */
-  def apply(callSign: String, clock: Clock = Clock.systemUTC()): FileInfo = {
+  def apply(callSign: CallSign, clock: Clock = Clock.systemUTC()): FileInfo = {
     val ucCallSign = callSign.toUpperCase //todo where best to do this?
     val now = Instant.now(clock)
     val fileName = s"$ucCallSign-${instantToHex(now)}.cbr"

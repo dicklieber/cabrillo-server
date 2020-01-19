@@ -8,7 +8,8 @@ import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db.mysql.Tables._
 import org.wa9nnn.wfdserver.db.{DBService, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
-import org.wa9nnn.wfdserver.model.{Categories, LogInstance, Qso, StationLog}
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import org.wa9nnn.wfdserver.model.{CallCatSect, Categories, LogInstance, Qso, StationLog}
 import org.wa9nnn.wfdserver.{CallSignId, model}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -125,12 +126,10 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
       entriesRow.headOption.map { er =>
         val callSign = er.callsign
         val stationLog = StationLog(
-          callSign = callSign,
+          callCatSect = CallCatSect(callSign, er.category, er.arrlSection),
           club = er.club,
           createdBy = er.createdBy,
           location = er.location,
-          arrlSection = er.arrlSection,
-          category = er.category,
           certificate = if (er.certificate) Option("YES") else None,
           address = List(er.address), //todo probably have only one
           city = er.city,
@@ -154,11 +153,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
           name = er.name,
           claimedScore = Option(er.claimedScore)
         )
-        val sent = model.Exchange(
-          callSign = stationLog.callSign.get,
-          category = stationLog.category,
-          section = stationLog.arrlSection.get
-        )
+        val sent = model.Exchange(stationLog.callCatSect)
         val qsos: Seq[Qso] = contacts.map { cr: _root_.org.wa9nnn.wfdserver.db.mysql.Tables.ContactsRow =>
           Qso(
             b = Frequencies.check(cr.freq),
@@ -186,7 +181,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     )
   }
 
-  override def getLatest(callSign: String)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
+  override def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
     throw new NotImplementedError() //todo
   }
 }

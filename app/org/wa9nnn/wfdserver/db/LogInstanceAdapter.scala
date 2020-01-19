@@ -7,7 +7,8 @@ import org.wa9nnn.cabrillo.model.CabrilloTypes.Tag
 import org.wa9nnn.cabrillo.model.{CabrilloData, TagValue}
 import org.wa9nnn.cabrillo.parsers.QSO_WFD
 import org.wa9nnn.wfdserver.model
-import org.wa9nnn.wfdserver.model.{Categories, Exchange, LogInstance, Qso, StationLog}
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import org.wa9nnn.wfdserver.model.{CallCatSect, Categories, Exchange, LogInstance, Qso, StationLog}
 
 object LogInstanceAdapter {
   /**
@@ -35,16 +36,19 @@ object LogInstanceAdapter {
       cabrilloData.apply(tag).headOption.map(_.body.toInt)
     }
 
-    def callsign: String = cabrilloData.apply("CALLSIGN").head.body
+    def callSign: CallSign = cabrilloData.apply("CALLSIGN").head.body
 
     val stationLog: StationLog = {
+     val callCatSect =  CallCatSect(
+        callSign = callSign,
+        category = s("CATEGORY"),
+        arrlSection = s("ARRL-SECTION")
+      )
       StationLog(
-        callSign = callsign,
+        callCatSect = callCatSect,
         club = "CLUB",
         certificate = "CERTIFICATE",
         location = s("LOCATION"),
-        arrlSection = "ARRL-SECTION",
-        category = s("CATEGORY"),
         categories = Categories(
           operator = "CATEGORY-OPERATOR",
           station = "CATEGORY-STATION",

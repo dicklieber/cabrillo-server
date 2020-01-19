@@ -5,6 +5,7 @@ import java.time.Instant
 
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowSource}
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.scoring.{ModeBand, QsOPointer, QsoPoints, TimeMatcher}
 
 /**

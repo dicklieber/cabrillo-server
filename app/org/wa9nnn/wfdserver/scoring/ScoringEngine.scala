@@ -2,18 +2,23 @@
 package org.wa9nnn.wfdserver.scoring
 
 import nl.grons.metrics4.scala.DefaultInstrumented
-import org.wa9nnn.wfdserver.htmlTable.{Cell, SectionedRowCollector, Table}
 import org.wa9nnn.wfdserver.model.{LogInstance, StationLog}
 
 object ScoringEngine extends DefaultInstrumented {
   private val timer = metrics.timer("Score")
 
+  /**
+   * Provisional scoring is done at ingestion time. e.i. without matching to other stations.
+   *
+   * @param li               as persisted.
+   * @return
+   */
   def provisional(li: LogInstance): ScoringResult = {
-    calcScore(li.stationLog, li.qsos) //todo filter qsos by matching.
+    calcScore(li.stationLog, li.qsos)
   }
 
   /**
-   * Provisional scoring is done at ingestion time. e.i. without matching to other stations.
+   * Official scoring is done after all logs have been submitted. Qsos are compared against worked stations.
    *
    * @param li               as persisted.
    * @param receivedQsoCache matches up with other stations
@@ -50,7 +55,7 @@ object ScoringEngine extends DefaultInstrumented {
 
       val soapBoxResult: SoapBoxesResult = SoapBoxParser(stationLog.soapBoxes)
 
-      ScoringResult(stationLog.callSign, soapBoxResult, qsoResult)
+      ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult)
     }
   }
 }

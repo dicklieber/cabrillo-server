@@ -1,6 +1,7 @@
 package org.wa9nnn.wfdserver.scoring
 
 import org.wa9nnn.wfdserver.model.Qso
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.scoring.QsoPoints._
 
 /**
@@ -18,7 +19,7 @@ case class MatchedQso(qso: Qso, otherQso: Option[Qso]) extends QsOPointer {
    * @param callSign owner.
    * @return true if belongs
    */
-  def validate(callSign: String): Unit = {
+  def validate(callSign: CallSign): Unit = {
     try {
       if (callSign != qso.sentCallSign) throw new QsoPairException(s"T1: qso.receivedCallSign: ${qso.receivedCallSign} != callSign: $callSign")
 

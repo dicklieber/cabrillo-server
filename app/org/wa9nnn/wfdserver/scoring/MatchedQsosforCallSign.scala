@@ -1,7 +1,9 @@
 
 package org.wa9nnn.wfdserver.scoring
 
-case class MatchedQsosforCallSign(callSign: String, qsoPairs: Seq[MatchedQso]) {
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
+
+case class MatchedQsosforCallSign(callSign: CallSign, qsoPairs: Seq[MatchedQso]) {
 
   def validate: Seq[Throwable] = {
 

@@ -2,6 +2,7 @@
 package org.wa9nnn.wfdserver.model
 
 import org.mongodb.scala.bson.ObjectId
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
 /**
  * Object persisted in MongoDB and used for scoring.
@@ -19,4 +20,6 @@ case class LogInstance(_id: String = new ObjectId().toHexString,
                        qsos: Seq[Qso]
                       ) {
    def id: String = _id
+
+  def callSign:CallSign =  stationLog.callSign
 }

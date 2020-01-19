@@ -15,6 +15,7 @@ import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db._
 import org.wa9nnn.wfdserver.db.mongodb.Helpers._
 import org.wa9nnn.wfdserver.htmlTable.Table
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.model._
 
 import scala.concurrent.Future
@@ -32,6 +33,7 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
     // This lets Mongo automatically map between scala case classes and mongos BSON document objects.
     classOf[LogInstance],
     classOf[Categories],
+    classOf[CallCatSect],
     classOf[StationLog],
     classOf[Exchange],
     classOf[Qso],
@@ -83,8 +85,8 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
 
   override def callSignIds()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     logDocumentCollection.find()
-      .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
-      .sort(ascending("stationLog.callSign"))
+      .projection(include("stationLog.callCatSect.callSign", "stationLog.logVersion", "_id"))
+      .sort(ascending("stationLog.callCatSect.callSign"))
       .toFuture()
       .map { s => s.map(CallSignId(_)) }
   }
@@ -92,7 +94,7 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
   override def logInstance(entryId: String)(implicit subject:WfdSubject): Future[Option[LogInstance]] = {
     logCollection.find(equal("_id", entryId)).first.toFutureOption()
   }
-  override def getLatest(callSign: String)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
+  override def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
     logCollection.find(equal("stationLog.callSign", callSign)).first().toFutureOption()
   }
 
@@ -110,9 +112,9 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
    */
   override def search(partialCallSign: String)(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
     val ucCallSign = partialCallSign.toUpperCase()
-    logDocumentCollection.find(regex("stationLog.callSign", s"""$ucCallSign"""))
-      .projection(include("stationLog.callSign", "stationLog.logVersion", "_id"))
-      .sort(ascending("stationLog.callSign"))
+    logDocumentCollection.find(regex("stationLog.callCatSect.callSign", s"""$ucCallSign"""))
+      .projection(include("stationLog.callCatSect.callSign", "stationLog.logVersion", "_id"))
+      .sort(ascending("stationLog.callCatSect.callSign"))
       .toFuture()
       .map { s =>
         s.map(CallSignId(_))

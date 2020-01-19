@@ -26,12 +26,12 @@ class DBSpec extends Specification {
       "search happy path" in {
         val callSignIds = Await.result[Seq[CallSignId]](db.search("4"), 1 minute)
         callSignIds must haveLength(1)
-        callSignIds.head.callsign must beEqualTo(logInstance.stationLog.callSign)
+        callSignIds.head.callSign must beEqualTo(logInstance.stationLog.callSign)
       }
       "case" in {
         val callSignIds = Await.result[Seq[CallSignId]](db.search("l"), 1 minute)
         callSignIds must haveLength(1)
-        callSignIds.head.callsign must beEqualTo(logInstance.stationLog.callSign)
+        callSignIds.head.callSign must beEqualTo(logInstance.stationLog.callSign)
       }
       "no match" in {
         val callSignIds = Await.result[Seq[CallSignId]](db.search("NNN"), 1 minute)

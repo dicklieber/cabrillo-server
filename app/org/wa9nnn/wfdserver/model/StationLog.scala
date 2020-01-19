@@ -3,17 +3,16 @@ package org.wa9nnn.wfdserver.model
 import java.time.Instant
 
 import org.wa9nnn.wfdserver.htmlTable.RowsSource
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
 /**
  * Non-QSO Cabrillo fields.
  */
 case class StationLog(
-                       callSign: String,
+                       callCatSect:CallCatSect,
                        club: Option[String],
                        createdBy: Option[String],
                        location: Option[String],
-                       arrlSection: Option[String],
-                       category: String,
                        certificate: Option[String],
                        address:List[String],
                        city:Option[String],
@@ -26,12 +25,16 @@ case class StationLog(
                        gridLocator: Option[String],
                        name: Option[String],
                        claimedScore: Option[Int],
-                       ingested: Instant = Instant.EPOCH )extends RowsSource
+                       ingested: Instant = Instant.EPOCH )extends RowsSource {
+  def callSign:CallSign = callCatSect.callSign
+}
 
 
+case class CallCatSect(callSign:CallSign, category:String, arrlSection:String) extends RowsSource
 
-
-
+object WfdTypes {
+  type CallSign = String
+}
 
 
 

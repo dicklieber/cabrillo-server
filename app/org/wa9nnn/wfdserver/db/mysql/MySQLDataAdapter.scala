@@ -21,7 +21,7 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
    * Most of the columns are optional with in [[EntriesRow]] is a scala Optional
    * the opt method will get the 1st named tag and wrap in an Option
    *
-   * @param logVersion None if there is no existing entry for this callsign otherwise Some(highest logVersion in db)
+   * @param logVersion None if there is no existing entry for this callSign otherwise Some(highest logVersion in db)
    * @return
    */
   def entryRow(logVersion: Option[Int]): EntriesRow = EntriesRow(
@@ -56,8 +56,8 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
     stateProvince = stationLog.stateProvince.getOrElse(""),
     postalcode = stationLog.postalCode.getOrElse(""),
     country = stationLog.country.getOrElse(""),
-    arrlSection = stationLog.arrlSection.getOrElse(""),
-    category = stationLog.category
+    arrlSection = stationLog.callCatSect.arrlSection,
+    category = stationLog.callCatSect.category
   )
 
 

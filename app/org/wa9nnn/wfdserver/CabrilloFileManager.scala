@@ -6,6 +6,7 @@ import java.nio.file.{Files, Path, Paths}
 import com.github.racc.tscg.TypesafeConfig
 import javax.inject.{Inject, Singleton}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Table}
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.util.{FileInfo, JsonLogging}
 
 import scala.jdk.CollectionConverters._
@@ -43,10 +44,10 @@ class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory")
   /**
    *
    * @param bytes    body of file to be saved.
-   * @param callSign callsign. Base of filename
+   * @param callSign Base of filename
    * @return details of save.
    */
-  def save(bytes: Array[Byte], callSign: String): FileInfo = {
+  def save(bytes: Array[Byte], callSign: CallSign): FileInfo = {
 
     val fileInfo = FileInfo(callSign)
     val path = fileInfo.path(fileSaveDirectory)
@@ -68,7 +69,7 @@ class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory")
    * @param callSign of interest
    * @return paths relative to the fileSaveDirectory.
    */
-  def find(callSign: String): Seq[FileInfo] = {
+  def find(callSign: CallSign): Seq[FileInfo] = {
     val subDir = fileSaveDirectory.resolve(FileInfo.subDir(callSign))
 
     if (Files.exists(subDir)) {
@@ -93,7 +94,7 @@ class CabrilloFileManager @Inject()(@TypesafeConfig("wfd.saveCabrilloDirectory")
    * @param callSign of interest.
    * @return table of all the files saved for this callsign with links to download them.
    */
-  def table(callSign: String): Table = {
+  def table(callSign: CallSign): Table = {
     Table(Header("Cabrillo Files", "CallSign", "Stamp"),
       find(callSign)
         .sorted
