@@ -92,6 +92,9 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
   override def logInstance(entryId: String)(implicit subject:WfdSubject): Future[Option[LogInstance]] = {
     logCollection.find(equal("_id", entryId)).first.toFutureOption()
   }
+  override def getLatest(callSign: String)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
+    logCollection.find(equal("stationLog.callSign", callSign)).first().toFutureOption()
+  }
 
   override def stats()(implicit subject:WfdSubject): Future[Table] = {
     Future(
@@ -128,4 +131,5 @@ class DB(connectUri: String, dbName: String = "wfd-test") extends DBService {
       }
 
   }
+
 }

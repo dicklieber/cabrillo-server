@@ -37,7 +37,7 @@ class WfdController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem
           val (resultWithData: ResultWithData, maybeLogEntryId: Option[LogInstance]) = loader(path, request.connection.remoteAddress.toString)
           val scoringResultTable: Table = maybeLogEntryId.map {
             li: LogInstance =>
-              ScoringEngine(li).table
+              ScoringEngine.provisional(li).table
           }.getOrElse(Table("Couldn't Score", ""))
 
           Ok(views.html.wfdresult(resultWithData.result, filename.toString, maybeLogEntryId.map(_.id), scoringResultTable)(request.asInstanceOf[Request[AnyContent]]))

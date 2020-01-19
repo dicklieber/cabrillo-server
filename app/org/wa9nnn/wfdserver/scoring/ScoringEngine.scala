@@ -3,17 +3,44 @@ package org.wa9nnn.wfdserver.scoring
 
 import nl.grons.metrics4.scala.DefaultInstrumented
 import org.wa9nnn.wfdserver.htmlTable.{Cell, SectionedRowCollector, Table}
-import org.wa9nnn.wfdserver.model.LogInstance
+import org.wa9nnn.wfdserver.model.{LogInstance, StationLog}
 
 object ScoringEngine extends DefaultInstrumented {
   private val timer = metrics.timer("Score")
 
-  def apply(li: LogInstance): ScoringResult = {
+  def provisional(li: LogInstance): ScoringResult = {
+    calcScore(li.stationLog, li.qsos) //todo filter qsos by matching.
+  }
+
+  /**
+   * Provisional scoring is done at ingestion time. e.i. without matching to other stations.
+   *
+   * @param li               as persisted.
+   * @param receivedQsoCache matches up with other stations
+   * @return
+   */
+  def official(li: LogInstance, receivedQsoCache: ReceivedQsoCache): ScoringResult = {
+    val matchedQsos = li.qsos.map { qso =>
+      MatchedQso(qso, receivedQsoCache.apply(qso))
+    }
+
+    calcScore(li.stationLog, matchedQsos)
+  }
+
+  /**
+   *
+   * @param stationLog from a [[LogInstance]]
+   * @param qsos       either directly from a [[LogInstance]] or filtered.
+   * @return
+   */
+  private def calcScore(stationLog: StationLog, qsos: Seq[QsOPointer]): ScoringResult = {
 
     timer.time {
       val qsoAccumulator = new QsoAccumulator
-      li.qsos.foreach(qsoAccumulator(_))
-      val powerMultiplier = (li.stationLog.categories.power map {
+
+      qsos.foreach(qsoAccumulator(_))
+
+      val powerMultiplier = (stationLog.categories.power map {
         case "QRP" => 4
         case "LOW" => 2
         case _ => 1
@@ -21,28 +48,14 @@ object ScoringEngine extends DefaultInstrumented {
 
       val qsoResult: QsoResult = qsoAccumulator.result(powerMultiplier)
 
-      val soapBoxResult: SoapBoxesResult = SoapBoxParser(li.stationLog.soapBoxes)
+      val soapBoxResult: SoapBoxesResult = SoapBoxParser(stationLog.soapBoxes)
 
-      ScoringResult(li.stationLog.callSign, soapBoxResult, qsoResult)
+      ScoringResult(stationLog.callSign, soapBoxResult, qsoResult)
     }
   }
 }
 
-case class ScoringResult(callSign: String, soapBoxResult: SoapBoxesResult, qsoResult: QsoResult) {
 
-  def table: Table = {
-
-    val sc: SectionedRowCollector = new SectionedRowCollector()
-      .+=("SoapBox/Bonus", SoapBoxAward.columns, soapBoxResult.toRows())
-      .+=("QSOs", qsoResult.toRows(soapBoxResult.awardedBonusPoints))
-
-
-    val csc = Seq(Seq(Cell(s"$callSign Results")
-      .withCssClass("sectionHeader")
-      .withColSpan(4)))
-    Table(csc, sc.rows).withCssClass("resultTable")
-  }
-}
 
 
 

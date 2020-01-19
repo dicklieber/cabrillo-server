@@ -2,7 +2,7 @@ package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
-import org.wa9nnn.wfdserver.auth.{SubjectAccess, WfdSubject}
+import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey
 import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.htmlTable._
@@ -44,7 +44,7 @@ class AdminController @Inject()(cc: ControllerComponents,
       case Some(logInstance) =>
         val entryViewData = EntryViewData(logInstance)
         val filesTable: Table = cabrilloFileManager.table(callsignId.callsign)
-        val scoringTable: Table = ScoringEngine(logInstance).table
+        val scoringTable: Table = ScoringEngine.provisional(logInstance).table
 
         Ok(views.html.entry(entryViewData, filesTable, scoringTable, dbName.getOrElse("default")))
       case None =>

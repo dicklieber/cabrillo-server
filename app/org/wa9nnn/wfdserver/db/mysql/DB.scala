@@ -185,6 +185,10 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     }
     )
   }
+
+  override def getLatest(callSign: String)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
+    throw new NotImplementedError() //todo
+  }
 }
 
 

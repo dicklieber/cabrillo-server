@@ -5,14 +5,16 @@ import java.time.Instant
 
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowSource}
-import org.wa9nnn.wfdserver.scoring.ModeBand
+import org.wa9nnn.wfdserver.scoring.{ModeBand, QsOPointer, QsoPoints, TimeMatcher}
 
 /**
  * This can be persisted in MongoDB and the field names take up space so this is using the really tiny field names to help keep mongo data budget down.
+ * Nicely named defs are provided to make using this class more sensible.
+ * This short names shouldn't leak outside of this class
  *
  * @param b  band as defined in [[Frequencies]]
  * @param m  mode
- * @param ts timestamo
+ * @param ts timestamp
  * @param s  sent
  * @param r  received
  */
@@ -27,12 +29,27 @@ case class Qso(
     rr
   }
 
-  lazy val modeBand: ModeBand = ModeBand(m, Frequencies.check(b))
+  def sentKey: QsoKey = {
+    QsoKey(callSign = s.cs,
+      band = b,
+      mode = m
+    )
+  }
+
+  def receivedKey: QsoKey = {
+    QsoKey(callSign = r.cs,
+      band = b,
+      mode = m
+    )
+  }
+
+
+  override def qsoPoints()(implicit timeMatcher: TimeMatcher): QsoPoints = QsoPoints.mode(mode)
 }
 
 
 
 object Qso {
-  def header(qsoCoount: Int): Header = Header(s"QSO ($qsoCoount)", "Freq", "Mode", "Sent", "Received", "Stamp")
+  def header(qsoCount: Int): Header = Header(s"QSO ($qsoCount)", "Freq", "Mode", "Sent", "Received", "Stamp")
 }
 
