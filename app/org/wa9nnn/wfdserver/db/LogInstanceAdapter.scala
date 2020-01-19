@@ -76,6 +76,7 @@ object LogInstanceAdapter {
         email = "EMAIL",
         name = "NAME",
         claimedScore = "CLAIMED-SCORE",
+        logVersion = s("START-OF-LOG"),
         ingested = Instant.now
       )
     }
@@ -94,7 +95,6 @@ object LogInstanceAdapter {
     }
     model.LogInstance(
       _id = callSign,
-      logVersion = 0,
       qsoCount = qsos.length,
       qsos = qsos,
       stationLog = stationLog

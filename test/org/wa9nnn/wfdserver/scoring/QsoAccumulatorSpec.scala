@@ -11,7 +11,7 @@ class QsoAccumulatorSpec extends Specification {
   "QsoAccumulatorSpec" >> {
     "happy" in {
       val QsoAccumulator = new QsoAccumulator
-      val qso = Qso("7100", "CW", Instant.EPOCH, exchange, exchange)
+      val qso = Qso("40M", "CW", Instant.EPOCH, exchange, exchange)
       QsoAccumulator(qso)
       val result = QsoAccumulator.result(1)
       result.qsoPoints must beEqualTo (2)
@@ -19,8 +19,8 @@ class QsoAccumulatorSpec extends Specification {
     }
     "one band two modes" in {
       val QsoAccumulator = new QsoAccumulator
-      QsoAccumulator(Qso("7100", "CW", Instant.EPOCH, exchange, exchange))
-      QsoAccumulator(Qso("7100", "DI", Instant.EPOCH, exchange, exchange))
+      QsoAccumulator(Qso("40M", "CW", Instant.EPOCH, exchange, exchange))
+      QsoAccumulator(Qso("40M", "DI", Instant.EPOCH, exchange, exchange))
       val result = QsoAccumulator.result(1)
       result.qsoPoints must beEqualTo (4)
       result.bandModeMultiplier must beEqualTo (2)
@@ -29,8 +29,8 @@ class QsoAccumulatorSpec extends Specification {
     }
     "two band three modes" in {
       val QsoAccumulator = new QsoAccumulator
-      QsoAccumulator(Qso("7100", "CW", Instant.EPOCH, exchange, exchange))
-      QsoAccumulator(Qso("7100", "DI", Instant.EPOCH, exchange, exchange))
+      QsoAccumulator(Qso("40M", "CW", Instant.EPOCH, exchange, exchange))
+      QsoAccumulator(Qso("40M", "DI", Instant.EPOCH, exchange, exchange))
       QsoAccumulator(Qso("20M", "PH", Instant.EPOCH, exchange, exchange))
       val result = QsoAccumulator.result(1)
       result.qsoPoints must beEqualTo (5)

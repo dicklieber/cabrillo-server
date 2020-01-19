@@ -2,12 +2,12 @@ package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject._
+import org.wa9nnn.wfdserver.CabrilloFileManager
 import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey
 import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
 import org.wa9nnn.wfdserver.htmlTable._
 import org.wa9nnn.wfdserver.scoring.ScoringEngine
-import org.wa9nnn.wfdserver.{CabrilloFileManager, CallSignId}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}
@@ -44,7 +44,7 @@ class AdminController @Inject()(cc: ControllerComponents,
     db.logInstance(callsignId.entryId, dbName).map {
       case Some(logInstance) =>
         val entryViewData = EntryViewData(logInstance)
-        val filesTable: Table = cabrilloFileManager.table(callsignId.callSign)
+        val filesTable: Table = cabrilloFileManager.table(logInstance.callSign)
         val scoringTable: Table = scoringEngine.provisional(logInstance).table
 
         Ok(views.html.entry(entryViewData, filesTable, scoringTable, dbName.getOrElse("default")))

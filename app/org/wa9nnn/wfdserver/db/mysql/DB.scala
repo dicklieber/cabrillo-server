@@ -9,7 +9,7 @@ import org.wa9nnn.wfdserver.db.mysql.Tables._
 import org.wa9nnn.wfdserver.db.{DBService, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import org.wa9nnn.wfdserver.model.{CallCatSect, Categories, LogInstance, Qso, StationLog}
+import org.wa9nnn.wfdserver.model._
 import org.wa9nnn.wfdserver.{CallSignId, model}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -19,6 +19,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
+//noinspection SpellCheckingInspection
 //@Singleton
 class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvider, statsGenerator: StatsGenerator)
   extends LazyLogging
@@ -28,36 +29,63 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global //todo probably want one specifically for database
 
+  private def deleteExisting(callSign: CallSign) = {
+    val futureCallSignIds: Future[Vector[CallSignId]] = db.run(
+      sql"""SELECT callsign, id
+           FROM WFD.entries
+           ORDER BY callsign""".as[(String, Int)])
+      .map { rs =>
+        rs.map { case (callSign, id) =>
+          CallSignId(callSign, id)
+        }
+      }
+
+    Await.result[Seq[CallSignId]](futureCallSignIds, 5 seconds)
+      .headOption
+      .foreach { callSignId =>
+        val entryId = callSignId.entryId.toInt
+        //    db.run(Contacts.filter(_.entry_id === entryId).delete)
+
+        val f = (for {
+          _ <- db.run(Contacts.filter(_.entryId === entryId).delete)
+          _ <- db.run(Soapboxes.filter(_.entryId === entryId).delete)
+          _ <- db.run(Entries.filter(_.id === entryId).delete)
+        } yield {
+
+        })
+        Await.ready(f, 5 seconds)
+      }
+  }
+
   def ingest(logInstance: LogInstance): LogInstance = {
     val adapter = MySQLDataAdapter(logInstance)
 
     val callSign = logInstance.stationLog.callSign
 
+    deleteExisting(callSign)
+
     val query = for {
-      maybeHighestVersion <- Entries.filter(_.callsign === callSign).map(_.logVersion).max.result
-      entryId <- Entries returning Entries.map(_.id) += adapter.entryRow(maybeHighestVersion)
+      entryId <- Entries returning Entries.map(_.id) += adapter.entryRow()
       _ <- Contacts ++= adapter.contactsRows(entryId)
       _ <- Soapboxes ++= adapter.soapboxes(entryId)
     } yield {
-//      println(maybeHighestVersion)
       entryId
     }
     Await.ready(db.run(query), 10 seconds)
-    logInstance //todo handle logVersion
+    logInstance
   }
 
-  def callSignIds()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
+  def callSignIds()(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
     db.run(
-      sql"""SELECT callsign, id, log_version
+      sql"""SELECT callsign, id
            FROM WFD.entries
-           ORDER BY callsign""".as[(String, Int, Int)])
+           ORDER BY callsign""".as[(String, Int)])
       .map { rs =>
-        rs.map { case (callSign, id, logVesion) =>
-          CallSignId(callSign, logVesion, id)
+        rs.map { case (callSign, id) =>
+          CallSignId(callSign, id)
         }
       }
   }
-
 
   /**
    * ignores case
@@ -65,34 +93,34 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
    * @param partialCallSign to search for.
    * @return results of search.
    */
-  override def search(partialCallSign: String)(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
+  override def search(partialCallSign: String)(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
     db.run(
-      sql"""SELECT callsign, id, log_version
+      sql"""SELECT callsign, id
            FROM WFD.entries
            WHERE callsign REGEXP ${partialCallSign}
-           ORDER BY callsign""".as[(String, Int, Int)])
+           ORDER BY callsign""".as[(String, Int)])
       .map { rs =>
-        rs.map { case (callSign, id, logVersion) =>
-          CallSignId(callSign, logVersion, id)
+        rs.map { case (callSign, id) =>
+          CallSignId(callSign, id)
         }
       }
   }
 
-  override def recent()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
+  override def recent()(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
     db.run(
-      sql"""SELECT callsign, id, log_version
+      sql"""SELECT callsign, id
            FROM WFD.entries
            ORDER BY id DESC
-           LIMIT $recentLimit""".as[(String, Int, Int)])
+           LIMIT $recentLimit""".as[(String, Int)])
       .map { rs =>
-        rs.map { case (callSign, id, logVesion) =>
-          CallSignId(callSign, logVesion, id)
+        rs.map { case (callSign, id) =>
+          CallSignId(callSign, id)
         }
       }
 
   }
 
-  override def stats()(implicit subject:WfdSubject): Future[Table] = {
+  override def stats()(implicit subject: WfdSubject): Future[Table] = {
     val rows: Future[Seq[Row]] = statsGenerator()
     rows.map(
       Table(Header("Statistics", "Item", "Value"), _).withCssClass("resultTable")
@@ -115,7 +143,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     s.getOrElse("")
   }
 
-  override def logInstance(sentryId: String)(implicit subject:WfdSubject): Future[Option[LogInstance]] = {
+  override def logInstance(sentryId: String)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
     val entryId: Int = sentryId.toInt
     db.run(for {
       entriesRow <- Entries.filter(_.id === entryId).result
@@ -151,6 +179,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
           email = er.email,
           gridLocator = er.gridLocator,
           name = er.name,
+          logVersion = er.logVersion.toString,
           claimedScore = Option(er.claimedScore)
         )
         val sent = model.Exchange(stationLog.callCatSect)
@@ -171,7 +200,6 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
         }
 
         LogInstance(_id = sentryId,
-          logVersion = er.logVersion,
           qsoCount = qsos.length,
           stationLog = stationLog,
           qsos = qsos

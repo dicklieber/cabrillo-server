@@ -10,9 +10,6 @@ version := "1.3"
 organization := "org.wa9nnn"
 
 
-
-RoutesKeys.routesImport += "org.wa9nnn.wfdserver.play.Binders._"
-
 lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin, LinuxPlugin).settings(
   buildInfoKeys ++= Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion,
     git.gitCurrentTags, git.gitCurrentBranch, git.gitHeadCommit, git.gitHeadCommitDate, git.baseVersion,

@@ -4,7 +4,7 @@ import java.time.Instant
 
 import org.specs2.mutable.Specification
 import org.wa9nnn.wfdserver.htmlTable.TextRenderer
-import org.wa9nnn.wfdserver.model.{Categories, StationLog}
+import org.wa9nnn.wfdserver.model.{CallCatSect, Categories, StationLog}
 
 class RowSourceSpec extends Specification {
   implicit def x(s: String): Option[String] = Some(s)
@@ -30,9 +30,8 @@ class RowSourceSpec extends Specification {
     "nested" >> {
 
       val stationLog = StationLog(
-        callSign = "WM9W",
+        callCatSect = CallCatSect( "WM9W","1H", "IL"),
         club = Some("The 220MHz Guys"),
-        category = "1H",
         location = "IL",
         categories = categories,
         soapBoxes = List(
@@ -52,19 +51,19 @@ class RowSourceSpec extends Specification {
         postalCode = None,
         country = None,
         gridLocator = None,
-        arrlSection = Some("IL")
+        logVersion = "3.0"
 
       )
       val rows = stationLog.toRows()
-      rows must haveLength(28)
+      rows must haveLength(29)
 
       val str = TextRenderer(rows)
       str mustEqual ("""||callSign            |WM9W                                        |
+                        ||category            |1H                                          |
+                        ||arrlSection         |IL                                          |
                         ||club                |The 220MHz Guys                             |
                         ||createdBy           |fdcluster                                   |
                         ||location            |IL                                          |
-                        ||arrlSection         |IL                                          |
-                        ||category            |1H                                          |
                         ||certificate         |                                            |
                         ||city                |                                            |
                         ||stateProvince       |                                            |
@@ -86,6 +85,7 @@ class RowSourceSpec extends Specification {
                         ||gridLocator         |                                            |
                         ||name                |dick lieber                                 |
                         ||claimedScore        |142                                         |
+                        ||logVersion          |3.0                                         |
                         ||ingested            |01/01/70 00:00 UTC (12/31/69 18:00 CST)     |""".stripMargin)
 
     }

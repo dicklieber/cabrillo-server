@@ -63,22 +63,14 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
     val maybePrevious: Option[LogInstance] = logCollection.find(equal("_id", callSign))
       .results()
       .headOption
-    val logVersion = maybePrevious.map { previous =>
+     maybePrevious.foreach { previous =>
       // copy to previousCollection, replacing callSign _id with a new ObjecgtId.
       previousCollection.insertOne(previous.copy(_id= new ObjectId().toHexString)).results()
       // delete from main
       logCollection.deleteOne(equal("_id", previous._id)).results()
-      previous.logVersion + 1
-    }.getOrElse(1)
-
-    val logInstanceWithLogVersion = {
-      if (logInstance.logVersion != logVersion) {
-        logInstance.copy(logVersion = logVersion)
-      } else {
-        logInstance
-      }
     }
-    logCollection.insertOne(logInstanceWithLogVersion).results()
+
+    logCollection.insertOne(logInstance).results()
     logInstance
   }
 

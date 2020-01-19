@@ -194,7 +194,7 @@ CREATE TABLE `arrl_sections` (
 
 -- Insert data for table `arrl_sections`
 INSERT INTO `arrl_sections` (`abbrev`, `name`, `description`) VALUES
-('CT', 'Connecticut', 'Call Sign Area 1'),
+('CT', 'Connecticut', 'Ca   ll Sign Area 1'),
 ('EMA', 'Eastern  Massachusetts', 'Call Sign Area 1'),
 ('ME', 'Maine', 'Call Sign Area 1'),
 ('NH', 'New Hampshire', 'Call Sign Area 1'),

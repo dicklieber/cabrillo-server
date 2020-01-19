@@ -21,12 +21,11 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
    * Most of the columns are optional with in [[EntriesRow]] is a scala Optional
    * the opt method will get the 1st named tag and wrap in an Option
    *
-   * @param logVersion None if there is no existing entry for this callSign otherwise Some(highest logVersion in db)
    * @return
    */
-  def entryRow(logVersion: Option[Int]): EntriesRow = EntriesRow(
+  def entryRow(): EntriesRow = EntriesRow(
     id = 0, // will come from DB
-    logVersion = logVersion.getOrElse(-1) + 1,
+    logVersion = stationLog.logVersion.toFloat.toInt,
     callsign = stationLog.callSign,
     contest = "WFD", //todo do we need this in LogInstance
     assistedId = categories.assisted.contains("ASSISTED"),

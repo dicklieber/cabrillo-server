@@ -25,12 +25,15 @@ case class StationLog(
                        gridLocator: Option[String],
                        name: Option[String],
                        claimedScore: Option[Int],
+                       logVersion:String,
                        ingested: Instant = Instant.EPOCH )extends RowsSource {
   def callSign:CallSign = callCatSect.callSign
 }
 
 
 case class CallCatSect(callSign:CallSign, category:String, arrlSection:String) extends RowsSource
+
+
 
 object WfdTypes {
   type CallSign = String
