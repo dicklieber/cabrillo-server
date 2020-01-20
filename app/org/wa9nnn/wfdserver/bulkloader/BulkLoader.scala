@@ -4,6 +4,7 @@ package org.wa9nnn.wfdserver.bulkloader
 import java.time.{Duration, Instant}
 
 import akka.actor.Actor
+import javax.inject.{Inject, Named, Singleton}
 import nl.grons.metrics4.scala.DefaultInstrumented
 import org.wa9nnn.wfdserver.actor.GuiceActorCreator
 import org.wa9nnn.wfdserver.bulkloader.BulkLoader.taskActorName
@@ -14,9 +15,9 @@ import org.wa9nnn.wfdserver.util.JsonLogging
 /**
  * Actual work is delegated to [[BulkLoaderTask]] actor.
  */
-class BulkLoader(guiceActorCreator: GuiceActorCreator) extends Actor with DefaultInstrumented with JsonLogging {
+class BulkLoader (guiceActorCreator: GuiceActorCreator) extends Actor with DefaultInstrumented with JsonLogging {
 
-  private var buildLoadStatus: BuildLoadStatus = BuildLoadStatus()
+  private var bulkLoaderStatus: BuildLoadStatus = BuildLoadStatus()
 
   override def receive: Receive = {
     case StartBulkLoadRequest =>
@@ -28,17 +29,17 @@ class BulkLoader(guiceActorCreator: GuiceActorCreator) extends Actor with Defaul
         }
 
     case bs:StartingBulkLoad=>
-      buildLoadStatus = BuildLoadStatus(started = Instant.now(), nFiles = bs.nFiles)
+      bulkLoaderStatus = BuildLoadStatus(started = Instant.now(), nFiles = bs.nFiles)
 
     case logInstance: LogInstance =>
-      buildLoadStatus = buildLoadStatus.success(logInstance)
+      bulkLoaderStatus = bulkLoaderStatus.success(logInstance)
     case FailedOne =>
-      buildLoadStatus = buildLoadStatus.failure()
+      bulkLoaderStatus = bulkLoaderStatus.failure()
 
     case StatusRequest =>
-      sender ! buildLoadStatus
+      sender ! bulkLoaderStatus
     case BulkLoadDone =>
-      buildLoadStatus = buildLoadStatus.finish
+      bulkLoaderStatus = bulkLoaderStatus.finish
     case x =>
       logger.error(s"unexpected message: $x")
   }
