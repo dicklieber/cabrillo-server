@@ -1,6 +1,19 @@
-@()(implicit request: play.api.mvc.Request[AnyContent])
+@import com.typesafe.config.Config
+@()(implicit request: play.api.mvc.Request[AnyContent], config:Config)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
+    @defining(config.getString("wfd.recaptcha.siteKey")) {captchaSiteKey =>
+        <script src="https://www.google.com/recaptcha/api.js?render=@captchaSiteKey"></script>
+
+        <script>
+                grecaptcha.ready(function() {
+                    grecaptcha.execute('@(captchaSiteKey)', {action: 'register'}).then(function(token) {
+                        $('#captchatoken').val(token)
+                    });
+                });
+        </script>
+    }
 @main("Login") {
     <div id="content">
         <table>
@@ -27,6 +40,7 @@
                                 </tr>
                             </table>
                         </fieldset>
+                        <input type="hidden" id="captchatoken" name="captchatoken" size="1" value=""/>
                     </form>
                     <br/>
                 </td>
