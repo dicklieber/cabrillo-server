@@ -1,6 +1,7 @@
 
 package org.wa9nnn.wfdserver.db.mongodb
 
+import nl.grons.metrics4.scala.{DefaultInstrumented, Timer}
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
@@ -26,8 +27,9 @@ import scala.language.postfixOps
  *
  * @param connectUri see https://docs.mongodb.com/manual/reference/connection-string/
  */
-class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test") extends DBService {
+class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test") extends DBService with DefaultInstrumented {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+  val timer: Timer = metrics.timer("DB-MongoDB")
 
   private val customCodecs: CodecRegistry = fromProviders(
     // These tell the Scala MongoDB driver which case classes we will be using.
@@ -57,42 +59,47 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
    * @return database key for this data. This is always a string. For Mongo it's he hex version of the [[ObjectId]]
    */
   override def ingest(logInstance: LogInstance): LogInstance = {
+    timer.time {
+      val callSign = logInstance.stationLog.callSign
 
-    val callSign = logInstance.stationLog.callSign
+      val maybePrevious: Option[LogInstance] = logCollection.find(equal("_id", callSign))
+        .results()
+        .headOption
+      maybePrevious.foreach { previous =>
+        // copy to previousCollection, replacing callSign _id with a new ObjecgtId.
+        previousCollection.insertOne(previous.copy(_id = new ObjectId().toHexString)).results()
+        // delete from main
+        logCollection.deleteOne(equal("_id", previous._id)).results()
+      }
 
-    val maybePrevious: Option[LogInstance] = logCollection.find(equal("_id", callSign))
-      .results()
-      .headOption
-     maybePrevious.foreach { previous =>
-      // copy to previousCollection, replacing callSign _id with a new ObjecgtId.
-      previousCollection.insertOne(previous.copy(_id= new ObjectId().toHexString)).results()
-      // delete from main
-      logCollection.deleteOne(equal("_id", previous._id)).results()
+      logCollection.insertOne(logInstance).results()
+      logInstance
     }
-
-    logCollection.insertOne(logInstance).results()
-    logInstance
   }
 
   private val callSignIdInclude: Bson = include("stationLog.callCatSect.callSign", "logVersion", "_id")
 
-  override def callSignIds()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
+  override def callSignIds()(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
     logDocumentCollection.find()
       .projection(callSignIdInclude)
       .sort(ascending("_id"))
       .toFuture()
-      .map { s => s.map { CallSignId(_)
-      } }
+      .map { s =>
+        s.map {
+          CallSignId(_)
+        }
+      }
   }
 
-  override def logInstance(entryId: String)(implicit subject:WfdSubject): Future[Option[LogInstance]] = {
+  override def logInstance(entryId: String)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
     logCollection.find(equal("_id", entryId)).first.toFutureOption()
   }
+
   override def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
     logCollection.find(equal("stationLog.callCatSect.callSign", callSign)).first().toFutureOption()
   }
 
-  override def stats()(implicit subject:WfdSubject): Future[Table] = {
+  override def stats()(implicit subject: WfdSubject): Future[Table] = {
     Future(
       statsGenerator()
     )
@@ -104,7 +111,7 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
    * @param partialCallSign to search for.
    * @return matching.
    */
-  override def search(partialCallSign: String)(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
+  override def search(partialCallSign: String)(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
     val ucCallSign = partialCallSign.toUpperCase()
     logDocumentCollection.find(regex("_id", s"""$ucCallSign"""))
       .projection(callSignIdInclude)
@@ -116,7 +123,7 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
 
   }
 
-  override def recent()(implicit subject:WfdSubject): Future[Seq[CallSignId]] = {
+  override def recent()(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
     logDocumentCollection.find()
       .projection(callSignIdInclude)
       .sort(descending("_id"))

@@ -1,8 +1,8 @@
 
 package org.wa9nnn.wfdserver.db.mysql
 
-import com.typesafe.scalalogging.LazyLogging
 import javax.inject._
+import nl.grons.metrics4.scala.{DefaultInstrumented, Timer}
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db.mysql.Tables._
@@ -10,6 +10,7 @@ import org.wa9nnn.wfdserver.db.{DBService, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.model._
+import org.wa9nnn.wfdserver.util.JsonLogging
 import org.wa9nnn.wfdserver.{CallSignId, model}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -20,59 +21,46 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 //noinspection SpellCheckingInspection
-//@Singleton
 class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvider, statsGenerator: StatsGenerator)
-  extends LazyLogging
+  extends JsonLogging
     with HasDatabaseConfigProvider[JdbcProfile]
-    with DBService {
+    with DBService
+    with DefaultInstrumented {
 
+  val timer: Timer = metrics.timer("DB-MySQl")
 
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global //todo probably want one specifically for database
 
   private def deleteExisting(callSign: CallSign) = {
-    val futureCallSignIds: Future[Vector[CallSignId]] = db.run(
-      sql"""SELECT callsign, id
-           FROM WFD.entries
-           ORDER BY callsign""".as[(String, Int)])
-      .map { rs =>
-        rs.map { case (callSign, id) =>
-          CallSignId(callSign, id)
-        }
-      }
+    val f = for {
+      entryId <- db.run(Entries.filter(_.callsign === callSign).result.head.map(_.id))
+      _ <- db.run(Contacts.filter(_.entryId === entryId).delete)
+      _ <- db.run(Soapboxes.filter(_.entryId === entryId).delete)
+      _ <- db.run(Entries.filter(_.id === entryId).delete)
+    } yield {
 
-    Await.result[Seq[CallSignId]](futureCallSignIds, 5 seconds)
-      .headOption
-      .foreach { callSignId =>
-        val entryId = callSignId.entryId.toInt
-        //    db.run(Contacts.filter(_.entry_id === entryId).delete)
-
-        val f = (for {
-          _ <- db.run(Contacts.filter(_.entryId === entryId).delete)
-          _ <- db.run(Soapboxes.filter(_.entryId === entryId).delete)
-          _ <- db.run(Entries.filter(_.id === entryId).delete)
-        } yield {
-
-        })
-        Await.ready(f, 5 seconds)
-      }
+    }
+    Await.ready(f, 5 seconds)
   }
 
   def ingest(logInstance: LogInstance): LogInstance = {
-    val adapter = MySQLDataAdapter(logInstance)
+    timer.time {
+      val adapter = MySQLDataAdapter(logInstance)
 
-    val callSign = logInstance.stationLog.callSign
+      val callSign = logInstance.stationLog.callSign
 
-    deleteExisting(callSign)
+      deleteExisting(callSign)
 
-    val query = for {
-      entryId <- Entries returning Entries.map(_.id) += adapter.entryRow()
-      _ <- Contacts ++= adapter.contactsRows(entryId)
-      _ <- Soapboxes ++= adapter.soapboxes(entryId)
-    } yield {
-      entryId
+      val query = for {
+        entryId <- Entries returning Entries.map(_.id) += adapter.entryRow()
+        _ <- Contacts ++= adapter.contactsRows(entryId)
+        _ <- Soapboxes ++= adapter.soapboxes(entryId)
+      } yield {
+        entryId
+      }
+      Await.ready(db.run(query), 3 minutes)
+      logInstance
     }
-    Await.ready(db.run(query), 10 seconds)
-    logInstance
   }
 
   def callSignIds()(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
@@ -97,7 +85,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     db.run(
       sql"""SELECT callsign, id
            FROM WFD.entries
-           WHERE callsign REGEXP ${partialCallSign}
+           WHERE callsign REGEXP $partialCallSign
            ORDER BY callsign""".as[(String, Int)])
       .map { rs =>
         rs.map { case (callSign, id) =>
