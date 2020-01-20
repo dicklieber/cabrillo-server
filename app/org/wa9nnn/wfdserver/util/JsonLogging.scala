@@ -11,7 +11,7 @@ trait JsonLogging {
    * @param reason value for the reason field.
    */
   def logJson(reason: String): LogJson = {
-    LogJson(logger,  Seq(LogJson.proc("reason", reason)))
+    LogJson(logger, Seq(LogJson.proc("reason", reason)))
   }
 
   /**
@@ -52,6 +52,20 @@ case class LogJson(logger: Logger, fields: Seq[(String, JsValue)]) {
       accum :+ LogJson.proc(label, value)
     }
     copy(fields = resultFields)
+  }
+
+  /**
+   * Adds all the fields from any case class.
+   * @param product any case class
+   * @return a new LogJson
+   */
+  def :+(product: Product): LogJson = {
+    val r: Seq[(String, JsValue)] = for (i <- 0 until  product.productArity) yield {
+      val name = product.productElementName(i)
+      val value =  product.productElement(i)
+      name -> JsString(value.toString)
+    }
+    copy(fields = fields :++ r)
   }
 
 
