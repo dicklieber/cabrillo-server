@@ -1,0 +1,34 @@
+@import org.wa9nnn.wfdserver.scoring.ScoringStatus
+@(scoringStatus: ScoringStatus)(implicit request: play.api.mvc.Request[AnyContent])
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+@if(scoringStatus.isRunning) {
+    <meta http-equiv="refresh" content="3"/>
+}
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+<script>
+        $(function () {
+            $("#progressbar").progressbar({
+                value: @scoringStatus.progress,
+                max: @scoringStatus.nStations
+            });
+        });
+</script>
+
+@main("Scoring") {
+    @if(scoringStatus.hasRun) {
+        <div id="progressbar"></div>
+        @renderTable(scoringStatus.table.withCssClass("resultTable"))
+    }
+
+    @if(!scoringStatus.isRunning) {
+
+        <form action="@routes.ScoringController.start()" method="post" class="menu">
+            <input type="submit" name="upvote" value="Start" />
+        </form>
+    }
+    <a href="@routes.ScoringController.viewScores.url">View Scores</a>
+}

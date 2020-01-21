@@ -18,6 +18,11 @@ GET         /fetch                  controllers.FilesController.download(key:Str
 GET         /submission             controllers.AdminController.submission(entryId:String)
 POST        /bulkLoad/start         controllers.BulkLoaderController.start()
 GET         /bulkLoad/status        controllers.BulkLoaderController.status()
+
+POST        /scoring/start          controllers.ScoringController.start()
+GET         /scoring/status         controllers.ScoringController.status()
+GET         /scoring/view           controllers.ScoringController.viewScores()
+
 GET         /userList               controllers.UserController.index()
 GET         /userEditor             controllers.UserController.edit(userId:String)
 GET         /userCreate             controllers.UserController.create()

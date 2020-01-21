@@ -9,6 +9,7 @@ import net.codingwell.scalaguice.ScalaModule
 import org.wa9nnn.wfdserver.actor.GuiceActorCreator
 import org.wa9nnn.wfdserver.auth.{WFDAuthorizedRoutes, WfdHandlerCache}
 import org.wa9nnn.wfdserver.bulkloader.BulkLoader
+import org.wa9nnn.wfdserver.scoring.ScoringActor
 import play.api.{Configuration, Environment}
 
 class Module(environment: Environment, configuration: Configuration) extends AbstractModule with ScalaModule {
@@ -25,5 +26,15 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
   def provideBulkLoader(guiceActorCreator: GuiceActorCreator, system: ActorSystem): ActorRef = {
     system.actorOf( Props(new BulkLoader(guiceActorCreator)))
   }
+
+ @Provides
+  @Singleton
+  @Named("scoring")
+  def provideScoring(guiceActorCreator: GuiceActorCreator, system: ActorSystem): ActorRef = {
+    system.actorOf( Props(new ScoringActor(guiceActorCreator)))
+  }
+
+
+
 }
 

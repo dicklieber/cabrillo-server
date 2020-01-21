@@ -25,13 +25,13 @@ class MatchedQsoSpec extends Specification {
     "validate" in {
       val matchQso = MatchedQso(ourQso, Some(otherQso))
       matchQso.validate(ourCs)
-      matchQso.score() must beEqualTo(QsoPoints.cw)
+      matchQso.score() must beEqualTo(QsoKind.cw)
     }
 
     "Too far apart in time" in {
       val matchQso = MatchedQso(ourQso, Some(otherQso.copy(ts = ourStamp.plus(3, ChronoUnit.HOURS))))
       matchQso.validate(ourCs)
-      matchQso.score() must beEqualTo(QsoPoints.timeDelta)
+      matchQso.score() must beEqualTo(QsoKind.timeDelta)
     }
 
   }

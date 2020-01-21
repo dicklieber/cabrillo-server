@@ -22,7 +22,7 @@ import scala.concurrent.Future
  * @param injector guice
  */
 @Singleton
-class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging {
+class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging  with DBService {
   private val dbs: Map[String, DBService] = {
     val builder = Map.newBuilder[String, DBService]
     val uri = config.getString("mongodb.mongoURI")
@@ -83,9 +83,20 @@ object DBRouter {
     request.session.get(dbSessionKey)
   }
 
-  def dbToSession(dbName: String)(implicit request: AuthenticatedRequest[AnyContent]): Session = {
-    request.session + (dbSessionKey -> dbName)
+  override def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
+    db.getLatest(callSign)
   }
+
+  override def stationCount()(implicit subject: WfdSubject): Int ={
+    db.stationCount
+  }
+
+  override def dropScoringDb()(implicit subject: WfdSubject): Unit = db.dropScoringDb()
+
+  override def putScore(scoreRecord: ScoreRecord)(implicit subject: WfdSubject): Unit = db.putScore(scoreRecord)
+
+  override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] = db.getScores()
+
 }
 
 

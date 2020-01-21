@@ -3,16 +3,17 @@ package org.wa9nnn.wfdserver.scoring
 
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, MultiColumn, Row, SectionedRowCollector, TableInACell}
 
-case class QsoResult( byBand: Seq[BandCount], byMode: Seq[ModeCount], modeBand: Seq[ModeBand])  {
+case class QsoResult( byBand: Seq[BandCount], byMode: Seq[ModeCount], modeBand: Seq[ModeBand], qsoPoints:Int)  {
+  def qsos:Int = byMode.length
   def bandModeMultiplier: Int = modeBand.length
+//todo qsoPoints needs to be in QsoResult?
+//  def qsoPoints: Int = byMode.foldLeft(0) { case (accum: Int, modeCount) =>
+//    accum + ( modeCount.mode match {
+//      case "PH" => modeCount.count
+//      case _ => modeCount.count * 2
+//    })
 
-  def qsoPoints: Int = byMode.foldLeft(0) { case (accum: Int, modeCount) =>
-    accum + ( modeCount.mode match {
-      case "PH" => modeCount.count
-      case _ => modeCount.count * 2
-    })
-
-  }
+//  }
 
   def toRows(soapBoxTotal:Int): Seq[Row] = {
 

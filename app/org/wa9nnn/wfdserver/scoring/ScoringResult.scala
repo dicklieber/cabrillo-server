@@ -1,6 +1,7 @@
 
 package org.wa9nnn.wfdserver.scoring
 
+import controllers.ScoreRecord
 import org.wa9nnn.wfdserver.htmlTable.{Cell, SectionedRowCollector, Table}
 import org.wa9nnn.wfdserver.model.CallCatSect
 
@@ -13,6 +14,7 @@ import org.wa9nnn.wfdserver.model.CallCatSect
  */
 case class ScoringResult(callCatSect: CallCatSect,  soapBoxResult: SoapBoxesResult, qsoResult: QsoResult, score:Int) {
 
+  def qsos:Int = qsoResult.qsos
   def table: Table = {
 
     val sc: SectionedRowCollector = new SectionedRowCollector()
@@ -25,4 +27,9 @@ case class ScoringResult(callCatSect: CallCatSect,  soapBoxResult: SoapBoxesResu
       .withColSpan(4)))
     Table(csc, sc.rows).withCssClass("resultTable")
   }
+
+  def scoreRecord:ScoreRecord = {
+    ScoreRecord(callCatSect, score)
+  }
 }
+

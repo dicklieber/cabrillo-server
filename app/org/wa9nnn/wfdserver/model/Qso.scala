@@ -6,7 +6,7 @@ import java.time.Instant
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowSource}
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import org.wa9nnn.wfdserver.scoring.{QsOPointer, QsoPoints}
+import org.wa9nnn.wfdserver.scoring.{QsoBase, QsoKind}
 
 /**
  * This can be persisted in MongoDB and the field names take up space so this is using the really tiny field names to help keep mongo data budget down.
@@ -44,7 +44,7 @@ case class Qso(
     )
   }
 
-  override val points: Int = QsoPoints.mode(mode).points
+  override val qsoKind: QsoKind = QsoKind.mode(mode)
 }
 
 

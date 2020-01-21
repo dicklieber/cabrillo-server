@@ -1,6 +1,7 @@
 
 package org.wa9nnn.wfdserver.db
 
+import controllers.ScoreRecord
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.htmlTable.Table
@@ -13,7 +14,7 @@ import scala.concurrent.Future
  * Things that can be done by MongoDB or MySQL.
  */
 trait DBService {
-  def getLatest(callSign: CallSign)(implicit subject:WfdSubject): Future[Option[LogInstance]]
+  def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]]
 
   /**
    *

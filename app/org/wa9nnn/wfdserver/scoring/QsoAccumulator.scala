@@ -11,21 +11,26 @@ class QsoAccumulator {
   private val modeBands = Set.newBuilder[ModeBand]
   private val modeCountMap = new TrieMap[String, AtomicInteger]()
   private val bandCountMap = new TrieMap[String, AtomicInteger]()
-  private var qsoPoints:Int = 0
+  private var qsoScore: Int = 0
+  private var errantQsos: Seq[QsoKind] = Seq.empty
 
-  def apply(qso: QsOPointer): Unit = {
-    qsoPoints += qso.points
+  def apply(qso: QsoBase): Unit = {
+    qsoScore += qso.points
     val modeBand = qso.modeBand
     modeBands += modeBand
     modeCountMap.getOrElseUpdate(qso.mode, new AtomicInteger()).incrementAndGet()
     bandCountMap.getOrElseUpdate(qso.band, new AtomicInteger()).incrementAndGet()
+    if (qso.qsoKind.isErrant) {
+      errantQsos = errantQsos :+ qso.qsoKind
+    }
   }
 
   def result(powerMultiplier: Int): QsoResult = {
     QsoResult(
       byBand = bandCountMap.map { case (band, ai) => BandCount(band, ai.get()) }.toSeq,
       byMode = modeCountMap.map { case (mode, ai) => ModeCount(mode, ai.get()) }.toSeq,
-      modeBand = modeBands.result().toSeq
+      modeBand = modeBands.result().toSeq,
+      qsoScore * powerMultiplier
     )
   }
 }
@@ -46,7 +51,6 @@ case class ModeCount(mode: String, count: Int) extends RowSource with Ordered[Mo
 
   override def compare(that: ModeCount): Int = this.mode compareToIgnoreCase that.mode
 }
-
 
 
 /**

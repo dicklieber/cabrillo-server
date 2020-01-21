@@ -2,7 +2,7 @@ package org.wa9nnn.wfdserver.scoring
 
 import org.wa9nnn.wfdserver.model.Qso
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import org.wa9nnn.wfdserver.scoring.QsoPoints._
+import org.wa9nnn.wfdserver.scoring.QsoKind._
 
 /**
  * that has been matched to th4 matching stations Qso. 
@@ -11,7 +11,7 @@ import org.wa9nnn.wfdserver.scoring.QsoPoints._
  * @param qso      of station being scored.
  * @param otherQso of station worked.
  */
-case class MatchedQso(qso: Qso, otherQso: Option[Qso])(implicit timeMatcher: TimeMatcher) extends QsOPointer {
+case class MatchedQso(qso: Qso, otherQso: Option[Qso])(implicit timeMatcher: TimeMatcher) extends QsoBase {
   /**
    * Checks that qso and otherQso, if present, matches the given callSign
    * and the two Qsos are consistent with each other.
@@ -36,29 +36,28 @@ case class MatchedQso(qso: Qso, otherQso: Option[Qso])(implicit timeMatcher: Tim
     }
   }
 
-  private val qsoPoints : QsoPoints = score()
+   override val qsoKind : QsoKind = score()
 
-  override val points:Int = qsoPoints.points
   /**
    *
    * @param timeMatcher tells if two [[java.time.Instant]]s are close enough together.
    * @return QsoPoints indicating how many points and why.
    */
-  def score()(implicit timeMatcher: TimeMatcher): QsoPoints = {
+  def score()(implicit timeMatcher: TimeMatcher): QsoKind = {
     if (otherQso.isEmpty) {
       missing // not found
     } else {
       val other = otherQso.get
       if (!timeMatcher(qso.ts, other.ts)) {
-        QsoPoints.timeDelta
+        QsoKind.timeDelta
       } else {
         if (qso.band == other.band &&
           qso.mode == other.mode &&
           qso.sentExchange == other.receivedExchange) {
-          QsoPoints.mode(qso.mode)
+          QsoKind.mode(qso.mode)
         }
         else {
-          QsoPoints.unMatched
+          QsoKind.unMatched
         }
       }
     }

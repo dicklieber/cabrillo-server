@@ -39,7 +39,7 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
    * @param qsos       either directly from a [[LogInstance]] or filtered.
    * @return
    */
-  private def calcScore(stationLog: StationLog, qsos: Seq[QsOPointer]): ScoringResult = {
+  private def calcScore(stationLog: StationLog, qsos: Seq[QsoBase]): ScoringResult = {
 
     timer.time {
       val qsoAccumulator = new QsoAccumulator
@@ -56,8 +56,8 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
 
       val soapBoxResult: SoapBoxesResult = SoapBoxParser(stationLog.soapBoxes)
 
-      val score = -42
-      ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult, score)
+//      val score = -42
+      ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult, qsoResult.qsoPoints)
     }
   }
 }

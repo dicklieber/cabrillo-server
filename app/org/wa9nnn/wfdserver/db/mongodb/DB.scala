@@ -1,6 +1,7 @@
 
 package org.wa9nnn.wfdserver.db.mongodb
 
+import controllers.ScoreRecord
 import nl.grons.metrics4.scala.{DefaultInstrumented, Timer}
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.bson.codecs.configuration.CodecRegistry
@@ -19,6 +20,7 @@ import org.wa9nnn.wfdserver.db.mongodb.Helpers._
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.model._
+import org.wa9nnn.wfdserver.scoring._
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -41,6 +43,14 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
     classOf[Exchange],
     classOf[Qso],
     classOf[Agg],
+    classOf[ModeCount],
+    classOf[BandCount],
+    classOf[ModeBand],
+    classOf[SoapBoxAward],
+    classOf[SoapBoxesResult],
+    classOf[ScoreRecord],
+    classOf[QsoResult],
+    classOf[ScoringResult],
   )
   private val codecRegistry = fromRegistries(customCodecs,
     DEFAULT_CODEC_REGISTRY)
@@ -133,6 +143,25 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
         s.map(CallSignId(_))
       }
 
+  }
+  override def stationCount()(implicit subject:WfdSubject): Int = {
+    logDocumentCollection.countDocuments().map(_.toInt).results().head
+  }
+
+  val scoringDatabase: MongoDatabase = mongoClient.getDatabase("wfdscoring").withCodecRegistry(codecRegistry).withWriteConcern(WriteConcern.MAJORITY)
+  private val scoresCollection: MongoCollection[ScoreRecord] = scoringDatabase.getCollection("scores")
+
+
+  override def dropScoringDb()(implicit subject: WfdSubject): Unit = {
+    scoringDatabase.drop().results()
+  }
+
+  override def putScore(scoreRecord: ScoreRecord)(implicit subject: WfdSubject): Unit = {
+    scoresCollection.insertOne(scoreRecord).results()
+  }
+
+  override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] = {
+    scoresCollection.find().sort(ascending("callCatSect.callSign")).toFuture()
   }
 
 }
