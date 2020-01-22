@@ -27,7 +27,7 @@ trait DBService {
    *
    * @return all entries.
    */
-  def callSignIds: Future[Seq[CallSignId]]
+  def callSignIds()(implicit subject: WfdSubject): Future[Seq[CallSignId]]
 
   /**
    * ignores case
@@ -35,23 +35,35 @@ trait DBService {
    * @param partialCallSign to search for.
    * @return
    */
-  def search(partialCallSign: String): Future[Seq[CallSignId]]
+  def search(partialCallSign: String)(implicit subject: WfdSubject): Future[Seq[CallSignId]]
 
-  def recent: Future[Seq[CallSignId]]
+  def recent()(implicit subject: WfdSubject): Future[Seq[CallSignId]]
 
   /**
    *
    * @param entryId as returned in a [[CallSignId]] from [[callSignIds]].
    * @return the LogInstance for the entryId or None.
    */
-  def logInstance(entryId: String): Future[Option[LogInstance]]
+  def logInstance(entryId: String)(implicit subject: WfdSubject): Future[Option[LogInstance]]
+
+
+  def stationCount()(implicit subject: WfdSubject): Int
 
   /**
    * Actual stats depend on the database used.
    *
    * @return
    */
-  def stats: Future[Table]
+  def stats()(implicit subject: WfdSubject): Future[Table]
+
+  /*
+  Scoring use a different database than the other APIs.
+   */
+  def dropScoringDb()(implicit subject: WfdSubject): Unit
+
+  def putScore(scoreRecord: ScoreRecord)(implicit subject: WfdSubject): Unit
+
+  def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]]
 
   protected val recentLimit: Int = 25
 }

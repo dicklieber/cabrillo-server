@@ -1,17 +1,19 @@
 
 package org.wa9nnn.wfdserver.db
 
-import be.objectify.deadbolt.scala.AuthenticatedRequest
 import com.google.inject.Injector
 import com.typesafe.config.Config
+import controllers.ScoreRecord
 import javax.inject.{Inject, Singleton}
 import org.wa9nnn.wfdserver.CallSignId
+import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db.mongodb.{DB => MongoDB}
 import org.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model.LogInstance
+import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import org.wa9nnn.wfdserver.scoring.ScoringResult
 import org.wa9nnn.wfdserver.util.JsonLogging
-import play.api.mvc.{AnyContent, Request, Session}
 
 import scala.concurrent.Future
 
@@ -46,42 +48,41 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
   }
 
 
+  val dbNames: Seq[String] = dbs.keys.toSeq.sorted
+
+
   def ingest(logInstance: LogInstance): LogInstance = {
     dbs.values.map(_.ingest(logInstance)).head // use Key from last one, mongodb)0
   }
 
-  private def db(name: Option[String]): DBService = {
-    name.map(dbs.getOrElse(_, dbs.values.head)).getOrElse(dbs.values.head)
+  private def db()(implicit subject: WfdSubject): DBService = {
+
+    try {
+      dbs.getOrElse(subject.dbName, throw new IllegalArgumentException(s"Unknown dbName: ${subject.dbName}"))
+    } catch {
+      case e: Exception =>
+        dbs(dbNames.head)
+    }
   }
 
-  def callSignIds(database: Option[String]): Future[Seq[CallSignId]] = {
-    db(database).callSignIds
+  def callSignIds()(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
+    db().callSignIds
   }
 
-  def recent(database: Option[String]): Future[Seq[CallSignId]] = {
-    db(database).recent
-   }
-
-  def search(partialCallsign:String, database: Option[String]): Future[Seq[CallSignId]] = {
-    db(database).search(partialCallsign)
+  def recent()(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
+    db().recent
   }
 
-  def logInstance(entryId:String, database: Option[String]): Future[Option[LogInstance]] = {
-    db(database).logInstance(entryId)
+  def search(partialCallsign: String)(implicit subject: WfdSubject): Future[Seq[CallSignId]] = {
+    db.search(partialCallsign)
   }
 
-  def stats(database: Option[String]): Future[Table] = {
-    db(database).stats
+  def logInstance(entryId: String)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
+    db.logInstance(entryId)
   }
 
-  def dbNames: Seq[String] = dbs.keys.toSeq.sorted
-}
-
-object DBRouter {
-  val dbSessionKey = "db"
-
-  def dbFromSession(implicit request: Request[AnyContent]): Option[String] = {
-    request.session.get(dbSessionKey)
+  def stats()(implicit subject: WfdSubject): Future[Table] = {
+    db.stats
   }
 
   override def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
@@ -99,5 +100,7 @@ object DBRouter {
   override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] = db.getScores()
 
 }
+
+
 
 

@@ -31,17 +31,15 @@ class AdminController @Inject()(cc: ControllerComponents,
 
   def callSigns(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request: Request[AnyContent] =>
-      request.session.get(org.wa9nnn.wfdserver.db.DBRouter.dbSessionKey).getOrElse()
-      val dbName: Option[String] = dbFromSession
-      db.callSignIds(dbName).map { callSignIds =>
-        val table = MultiColumn(callSignIds.map(_.toCell), 10, s"Submissions (${callSignIds.length})").withCssClass("resultTable")
-        Ok(views.html.entries(table, dbName))
-      }
+
+    db.callSignIds().map { callSignIds =>
+      val table = MultiColumn(callSignIds.map(_.toCell), 10, s"Submissions (${callSignIds.length})").withCssClass("resultTable")
+      Ok(views.html.entries(table))
+    }
   }
 
-  def submission(callsignId: CallSignId): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
-    val dbName = dbFromSession
-    db.logInstance(callsignId.entryId, dbName).map {
+  def submission(entryId:String): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
+    db.logInstance(entryId).map {
       case Some(logInstance) =>
         val entryViewData = EntryViewData(logInstance)
         val filesTable: Table = cabrilloFileManager.table(logInstance.callSign)

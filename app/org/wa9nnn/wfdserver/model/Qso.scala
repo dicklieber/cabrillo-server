@@ -9,6 +9,7 @@ import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.scoring.{QsoBase, QsoKind}
 
 /**
+ * One QSO record from a Cabrillo file.
  * This can be persisted in MongoDB and the field names take up space so this is using the really tiny field names to help keep mongo data budget down.
  * Nicely named defs are provided to make using this class more sensible.
  * This short names shouldn't leak outside of this class
@@ -24,7 +25,20 @@ case class Qso(
                 m: String,
                 ts: Instant,
                 s: Exchange,
-                r: Exchange) extends RowSource {
+                r: Exchange) extends RowSource  with QsoBase{
+
+  def sentCallSign: CallSign = s.cs
+
+  def receivedCallSign: CallSign = r.cs
+
+  def mode: String = m
+
+  def band: String = b
+
+  def sentExchange: Exchange = s
+
+  def receivedExchange: Exchange = r
+
   def toRow: Row = {
     val rr = Row(b, m, s.toCell, r.toCell, ts)
     rr
@@ -47,9 +61,16 @@ case class Qso(
   override val qsoKind: QsoKind = QsoKind.mode(mode)
 }
 
-
-
 object Qso {
   def header(qsoCount: Int): Header = Header(s"QSO ($qsoCount)", "Freq", "Mode", "Sent", "Received", "Stamp")
 }
 
+/**
+ *
+ * Generated from the  [[Qso.sentKey]] to match up with a [[Qso.receivedKey]] at another station.
+ *
+ * @param callSign sent or received
+ * @param band 20M etc.
+ * @param mode DI etc.
+ */
+case class QsoKey(callSign: CallSign, band: String, mode: String)

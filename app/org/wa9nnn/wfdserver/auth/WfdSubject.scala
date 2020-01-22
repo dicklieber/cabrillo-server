@@ -12,7 +12,7 @@ import play.api.libs.json.{Format, Json}
  * @param identifier name of the user
  * @param roles      what user can do
  */
-case class WfdSubject(identifier: String, roles: List[WfdRole] = List(Roles.USERMANAGER_ROLE)) extends Subject {
+case class WfdSubject(identifier: String, roles: List[WfdRole] = List(Roles.USERMANAGER_ROLE), dbName:String = "") extends Subject {
 
   override def permissions: List[Permission] = List.empty
 
