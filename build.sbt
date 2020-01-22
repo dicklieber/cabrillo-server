@@ -76,3 +76,17 @@ rpmRelease := {
 }
 
 //packageArchitecture in Rpm := "x86_64"
+
+//ReleaseKeys.releaseProcess <<= thisProjectRef apply { ref =>
+//  import ReleaseStateTransformations._
+//  Seq[ReleaseStep](
+//    checkOrganization,
+//    checkSnapshotDependencies,
+//    inquireVersions,
+//    runTest,
+//    setReleaseVersion,
+//    publishArtifacts,
+//    publishReleaseNotes(ref) // we need to forward `thisProjectRef` for proper scoping of the underlying tasks
+//      setNextVersion
+//  )
+//}
