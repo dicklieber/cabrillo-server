@@ -76,18 +76,27 @@ rpmRelease := {
 }
 publishTo := Some(Resolver.file("local-ivy", file("target/ivy-repo/releases")))
 
-//packageArchitecture in Rpm := "x86_64"
 
-//ReleaseKeys.releaseProcess <<= thisProjectRef apply { ref =>
-//  import ReleaseStateTransformations._
-//  Seq[ReleaseStep](
-//    checkOrganization,
-//    checkSnapshotDependencies,
-//    inquireVersions,
-//    runTest,
-//    setReleaseVersion,
-//    publishArtifacts,
-//    publishReleaseNotes(ref) // we need to forward `thisProjectRef` for proper scoping of the underlying tasks
-//      setNextVersion
-//  )
-//}
+import ReleaseTransformations._
+//import posterous.Publish._
+//
+//val publishReleaseNotes = (ref: ProjectRef) => ReleaseStep(
+//  check  = releaseStepTaskAggregated(check in Posterous in ref),   // upfront check
+//  action = releaseStepTaskAggregated(publish in Posterous in ref) // publish release notes
+//)
+
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,              // : ReleaseStep
+  inquireVersions,                        // : ReleaseStep
+  runClean,                               // : ReleaseStep
+  runTest,                                // : ReleaseStep
+  setReleaseVersion,                      // : ReleaseStep
+  commitReleaseVersion,                   // : ReleaseStep, performs the initial git checks
+  tagRelease,                             // : ReleaseStep
+//  publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
+  releaseStepCommand("universal:packageBin"),
+  setNextVersion,                         // : ReleaseStep
+  commitNextVersion,                      // : ReleaseStep
+  pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
+)
