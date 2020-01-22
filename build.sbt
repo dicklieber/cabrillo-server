@@ -74,6 +74,7 @@ rpmLicense := Some("None")
 rpmRelease := {
   System.currentTimeMillis.toString
 }
+publishTo := Some(Resolver.file("local-ivy", file("path/to/ivy-repo/releases")))
 
 //packageArchitecture in Rpm := "x86_64"
 
