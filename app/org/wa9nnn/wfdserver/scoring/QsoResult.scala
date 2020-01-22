@@ -3,21 +3,14 @@ package org.wa9nnn.wfdserver.scoring
 
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, MultiColumn, Row, SectionedRowCollector, TableInACell}
 
-case class QsoResult( byBand: Seq[BandCount], byMode: Seq[ModeCount], modeBand: Seq[ModeBand], qsoPoints:Int)  {
-  def qsos:Int = byMode.length
+case class QsoResult(byBand: Seq[BandCount], byMode: Seq[ModeCount], modeBand: Seq[ModeBand], qsoPoints: Int, errant: Seq[QsoKind], allQsos: Seq[QsoBase]) {
+  def qsos: Int = allQsos.length
+
   def bandModeMultiplier: Int = modeBand.length
-//todo qsoPoints needs to be in QsoResult?
-//  def qsoPoints: Int = byMode.foldLeft(0) { case (accum: Int, modeCount) =>
-//    accum + ( modeCount.mode match {
-//      case "PH" => modeCount.count
-//      case _ => modeCount.count * 2
-//    })
 
-//  }
+  def toRows(soapBoxTotal: Int): Seq[Row] = {
 
-  def toRows(soapBoxTotal:Int): Seq[Row] = {
-
-    val multiplier =  modeBand.length
+    val multiplier = modeBand.length
     val multipliers: Cell = TableInACell(MultiColumn(modeBand.sorted.map(_.toCell), 4).withCssClass("multiplierTable"))
 
     val qsoPointsRow = Row("QSO Points", qsoPoints, "", "Points before multiplier")

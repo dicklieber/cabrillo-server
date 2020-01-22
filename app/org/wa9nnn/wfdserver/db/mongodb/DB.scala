@@ -24,6 +24,7 @@ import org.wa9nnn.wfdserver.scoring._
 
 import scala.concurrent.Future
 import scala.language.postfixOps
+import DB._
 
 /**
  *
@@ -33,27 +34,6 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
   val timer: Timer = metrics.timer("DB-MongoDB")
 
-  private val customCodecs: CodecRegistry = fromProviders(
-    // These tell the Scala MongoDB driver which case classes we will be using.
-    // This lets Mongo automatically map between scala case classes and mongos BSON document objects.
-    classOf[LogInstance],
-    classOf[Categories],
-    classOf[CallCatSect],
-    classOf[StationLog],
-    classOf[Exchange],
-    classOf[Qso],
-    classOf[Agg],
-    classOf[ModeCount],
-    classOf[BandCount],
-    classOf[ModeBand],
-    classOf[SoapBoxAward],
-    classOf[SoapBoxesResult],
-    classOf[ScoreRecord],
-    classOf[QsoResult],
-    classOf[ScoringResult],
-  )
-  private val codecRegistry = fromRegistries(customCodecs,
-    DEFAULT_CODEC_REGISTRY)
 
   private val mongoClient: MongoClient = MongoClient(connectUri)
   val database: MongoDatabase = mongoClient.getDatabase(dbName).withCodecRegistry(codecRegistry).withWriteConcern(WriteConcern.MAJORITY)
@@ -144,7 +124,8 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
       }
 
   }
-  override def stationCount()(implicit subject:WfdSubject): Int = {
+
+  override def stationCount()(implicit subject: WfdSubject): Int = {
     logDocumentCollection.countDocuments().map(_.toInt).results().head
   }
 
@@ -160,8 +141,33 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
     scoresCollection.insertOne(scoreRecord).results()
   }
 
-  override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] = {
+  override def getScores()(implicit subject: WfdSubject): Future[Seq[ScoreRecord]] = {
     scoresCollection.find().sort(ascending("callCatSect.callSign")).toFuture()
   }
+
+}
+
+object DB {
+  private  val customCodecs: CodecRegistry = fromProviders(
+    // These tell the Scala MongoDB driver which case classes we will be using.
+    // This lets Mongo automatically map between scala case classes and mongos BSON document objects.
+    classOf[LogInstance],
+    classOf[Categories],
+    classOf[CallCatSect],
+    classOf[StationLog],
+    classOf[Exchange],
+    classOf[Qso],
+    classOf[Agg],
+    classOf[ModeCount],
+    classOf[BandCount],
+    classOf[ModeBand],
+    classOf[SoapBoxAward],
+    classOf[SoapBoxesResult],
+    classOf[ScoreRecord],
+    classOf[QsoResult],
+    classOf[ScoringResult],
+  )
+   val codecRegistry: CodecRegistry = fromRegistries(customCodecs,
+    DEFAULT_CODEC_REGISTRY)
 
 }

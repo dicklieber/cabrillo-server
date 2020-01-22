@@ -1,6 +1,9 @@
 
 package org.wa9nnn.wfdserver.htmlTable
 
+import org.wa9nnn.wfdserver.scoring.QsoKind
+import org.wa9nnn.wfdserver.util.Counted
+
 /**
  * Adapt a case class to a [[ Seq[Row] ]]
  * Nested case classes that extend [[RowsSource]] will also have their members rendered as Rows.
@@ -9,9 +12,11 @@ package org.wa9nnn.wfdserver.htmlTable
 trait RowsSource extends Product {
 
   def toRows(includeNone: Boolean = true, prefix: String = ""): Seq[Row] = {
-   val rows =  (0 until productArity).iterator.toSeq.flatMap { i =>
+    val rows = (0 until productArity).iterator.toSeq.flatMap { i =>
       val name = prefix + productElementName(i)
       productElement(i) match {
+        case counted:Counted[Any] =>
+          counted.rows
         case None =>
           if (includeNone)
             Seq(Row(name, ""))
@@ -31,7 +36,10 @@ trait RowsSource extends Product {
   }
 }
 
-trait RowSource  {
-  def toRow:Row
+
+
+
+trait RowSource {
+  def toRow: Row
 }
 

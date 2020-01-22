@@ -13,6 +13,7 @@ class QsoAccumulator {
   private val bandCountMap = new TrieMap[String, AtomicInteger]()
   private var qsoScore: Int = 0
   private var errantQsos: Seq[QsoKind] = Seq.empty
+  private var qsos:Seq[QsoBase] = Seq.empty
 
   def apply(qso: QsoBase): Unit = {
     qsoScore += qso.points
@@ -20,6 +21,7 @@ class QsoAccumulator {
     modeBands += modeBand
     modeCountMap.getOrElseUpdate(qso.mode, new AtomicInteger()).incrementAndGet()
     bandCountMap.getOrElseUpdate(qso.band, new AtomicInteger()).incrementAndGet()
+    qsos = qso +: qsos
     if (qso.qsoKind.isErrant) {
       errantQsos = errantQsos :+ qso.qsoKind
     }
@@ -30,7 +32,9 @@ class QsoAccumulator {
       byBand = bandCountMap.map { case (band, ai) => BandCount(band, ai.get()) }.toSeq,
       byMode = modeCountMap.map { case (mode, ai) => ModeCount(mode, ai.get()) }.toSeq,
       modeBand = modeBands.result().toSeq,
-      qsoScore * powerMultiplier
+      qsoScore * powerMultiplier,
+      errantQsos,
+      qsos
     )
   }
 }

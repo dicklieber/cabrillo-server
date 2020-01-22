@@ -11,7 +11,7 @@ case class QsoKind(points: Int, reason: String) {
 object QsoKind {
   val cw: QsoKind = QsoKind(2, "CW")
   val ph: QsoKind = QsoKind(1, "PH")
-  val di: QsoKind = QsoKind(2, "DO")
+  val di: QsoKind = QsoKind(2, "DI")
   val missing: QsoKind = QsoKind(-1, "Missing")
   val unMatched: QsoKind = QsoKind(-1, "Unmatched")
   val timeDelta: QsoKind = QsoKind(-1, "TimeDelta")

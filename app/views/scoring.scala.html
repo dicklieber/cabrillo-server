@@ -25,7 +25,6 @@
     }
 
     @if(!scoringStatus.isRunning) {
-
         <form action="@routes.ScoringController.start()" method="post" class="menu">
             <input type="submit" name="upvote" value="Start" />
         </form>

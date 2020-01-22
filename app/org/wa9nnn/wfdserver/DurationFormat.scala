@@ -2,7 +2,7 @@
 package org.wa9nnn.wfdserver
 
 
-import java.time.Duration
+import java.time.{Duration, Instant}
 
 import scala.language.implicitConversions
 
@@ -51,3 +51,15 @@ object DurationFormat {
   }
 }
 
+/**
+ * Simple timer starts when instantiated.
+ * Stop on 1st invocation toString.
+ * Repeated toString returns same value.
+ * @param start
+ */
+case class Timer(start:Instant = Instant.now){
+  private lazy val sDur = {
+    DurationFormat(Duration.between(start, Instant.now()))
+  }
+  override def toString: String = sDur
+}

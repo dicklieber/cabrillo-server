@@ -45,6 +45,7 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
     System.exit(1)
   }
 
+
   def ingest(logInstance: LogInstance): LogInstance = {
     dbs.values.map(_.ingest(logInstance)).head // use Key from last one, mongodb)0
   }

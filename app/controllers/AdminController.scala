@@ -47,7 +47,9 @@ class AdminController @Inject()(cc: ControllerComponents,
         val filesTable: Table = cabrilloFileManager.table(logInstance.callSign)
         val scoringTable: Table = scoringEngine.provisional(logInstance).table
 
-        Ok(views.html.entry(entryViewData, filesTable, scoringTable, dbName.getOrElse("default")))
+        val t = Table(Header("nothing"), Seq.empty)
+//        Ok(views.html.entry(entryViewData, t, t))
+        Ok(views.html.entry(entryViewData, filesTable, scoringTable))
       case None =>
         NotFound("Cannot find ID")
     }

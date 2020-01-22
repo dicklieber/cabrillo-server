@@ -4,8 +4,10 @@ package org.wa9nnn.wfdserver.scoring
 import javax.inject.{Inject, Singleton}
 import nl.grons.metrics4.scala.DefaultInstrumented
 import org.wa9nnn.wfdserver.model.{LogInstance, StationLog}
+import org.wa9nnn.wfdserver.util.JsonLogging
+
 @Singleton
-class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends DefaultInstrumented {
+class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends DefaultInstrumented with JsonLogging {
   private val timer = metrics.timer("Score")
 
   /**
@@ -18,6 +20,8 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
     calcScore(li.stationLog, li.qsos)
   }
 
+  var soFar: Int = 0
+
   /**
    * Official scoring is done after all logs have been submitted. Qsos are compared against worked stations.
    *
@@ -26,8 +30,21 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
    * @return
    */
   def official(li: LogInstance, receivedQsoCache: ReceivedQsoCache): ScoringResult = {
+    soFar += 1
     val matchedQsos = li.qsos.map { qso =>
-      MatchedQso(qso, receivedQsoCache.apply(qso))
+      val sentKey = qso.sentKey
+      val maybeMatched = receivedQsoCache(sentKey)
+      val mqso = MatchedQso(qso, maybeMatched)
+      if (mqso.otherQso.isEmpty) {
+        //        val receivedCallSign = mqso.qso.receivedCallSign
+        //        val receivedKey = mqso.qso.receivedKey
+        //        val rk = receivedQsoCache.map.get(receivedKey)
+        //        val sk = receivedQsoCache.map.get(sentKey)
+
+        //        logger.debug(s"Unmatched: ${mqso.qso}")
+
+      }
+      mqso
     }
 
     calcScore(li.stationLog, matchedQsos)
@@ -56,7 +73,7 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
 
       val soapBoxResult: SoapBoxesResult = SoapBoxParser(stationLog.soapBoxes)
 
-//      val score = -42
+      //      val score = -42
       ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult, qsoResult.qsoPoints)
     }
   }

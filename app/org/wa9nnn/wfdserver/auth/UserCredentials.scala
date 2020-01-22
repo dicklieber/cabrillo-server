@@ -21,7 +21,7 @@ import UserPassword._
  * @param userId       user
  * @param rawPassword  plain text.
  */
-case class UserPassword(userId: String, rawPassword: String, captchatoken:String) {
+case class UserPassword(userId: String, rawPassword: String, captchatoken:String = "") {
 
   def bcrypt: String = doBrycpt(rawPassword)
 
