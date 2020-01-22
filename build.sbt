@@ -5,7 +5,6 @@ maintainer := "wa9nnn@u505.com"
 
 name := "wfdcheck"
 
-version := "1.5.0-SNAPSHOT  "
 
 organization := "org.wa9nnn"
 
