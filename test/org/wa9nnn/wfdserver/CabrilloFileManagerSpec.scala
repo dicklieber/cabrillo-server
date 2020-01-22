@@ -39,6 +39,7 @@ class CabrilloFileManagerSpec extends Specification with DataTables with Cabrill
 
     "find read" >> { cfm: CabrilloFileManager =>
       val savePath1 = cfm.save(fileBytes, longCallSign)
+      Thread.sleep(250)
       val savePath2 = cfm.save(fileBytes, longCallSign)
       savePath1.stamp must be < savePath2.stamp
       val paths: Seq[FileInfo] = cfm.find(longCallSign)
