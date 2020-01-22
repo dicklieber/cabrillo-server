@@ -41,7 +41,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     } yield {
 
     }
-    Await.ready(f, 5 seconds)
+    Await.ready(f, 3 minutes)
   }
 
   def ingest(logInstance: LogInstance): LogInstance = {

@@ -61,7 +61,7 @@ object SubmissionConfig {
     SubmissionConfig(
       beforeMessage = Message(h2 = "Submission not yet open!", message = """Logs cannot be submitted until the **end** of Winter Field Day."""),
       duringMessage = Message(h2 = "Welcome to submit WFD Log files.", message =
-                """If you make mistake, ou can simply resubmit your cabrillo file here.
+                """If you make mistake, you can simply resubmit your cabrillo file here.
                   |The latest submitted file will be used, overwriting previous submissions.
                   |""".stripMargin),
       afterMessage = Message(h2 = "Winter Field Day Logs no longer accepted!", message = "The log submission period is over. Please come back again next year."),

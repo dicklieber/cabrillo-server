@@ -1,7 +1,19 @@
 @import org.wa9nnn.wfdserver.contest.CurrentSubmissionState
+@import com.typesafe.config.Config
+@(submissionState: CurrentSubmissionState)(implicit request: play.api.mvc.Request[AnyContent], config:Config)
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
+@defining(config.getString("wfd.recaptcha.siteKey")) {captchaSiteKey =>
+    <script src="https://www.google.com/recaptcha/api.js?render=@captchaSiteKey"></script>
 
-@(submissionState: CurrentSubmissionState)(implicit request: play.api.mvc.Request[AnyContent])
+    <script>
+            grecaptcha.ready(function() {
+                grecaptcha.execute('@(captchaSiteKey)', {action: 'register'}).then(function(token) {
+                    $('#captchatoken').val(token)
+                });
+            });
+    </script>
+}
 
 @main("Winter Field Day 2019 Cabrillo File Submitter") {
     @helper.form(action = routes.WfdController.upload, Symbol("enctype") -> "multipart/form-data", Symbol("id") -> "form") {
@@ -15,6 +27,7 @@
                             Select Cabrillo file to upload
                         </label>
                         <p><input type="file" id="file" name="cabrillo" onchange="this.form.submit()" class="inputfile file-upload"></p>
+                        <input type="hidden" id="captchatoken" name="captchatoken" size="1" value=""/>
                     </td>
                 </tr>
 
