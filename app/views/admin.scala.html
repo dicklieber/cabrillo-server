@@ -15,7 +15,7 @@
                         <table class="menu">
                             @for(mi <- org.wa9nnn.wfdserver.AdminMenu.menuItems){
                                 <tr>
-                                    <td class="help">@{mi.help}</td>
+                                    <td class="help">@Html(mi.help)</td>
                                     <td> <button onclick="window.location.href = '@{mi.call.url}';">@{mi.button}</button></td>
                                 </tr>
                             }

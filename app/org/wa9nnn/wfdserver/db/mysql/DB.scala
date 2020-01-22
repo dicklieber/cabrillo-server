@@ -199,14 +199,17 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
   }
 
 
-  override def dropScoringDb()(implicit subject: WfdSubject): Unit =
-    throw new NotImplementedError() //todo
-
-  override def putScore(scofreRecord: ScoreRecord)(implicit subject: WfdSubject): Unit =
-    throw new NotImplementedError() //todo
+  override def dropScoringDb()(implicit subject: WfdSubject): Unit = {
+    // throw new NotImplementedError() //todo
+  }
+  override def putScore(scofreRecord: ScoreRecord)(implicit subject: WfdSubject): Unit = {
+    //throw new NotImplementedError() //todo
+  }
 
   override def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
-    throw new NotImplementedError() //todo
+   Future{
+     None
+   }
   }
 
   override def stationCount()(implicit subject:WfdSubject): Int = {
@@ -214,7 +217,9 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
   }
 
   override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] ={
-    throw new NotImplementedError() //todo
+   Future{
+     Seq.empty
+   }
   }
 
 }

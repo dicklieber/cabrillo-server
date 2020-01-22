@@ -75,14 +75,19 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
 
   override def receive: Receive = {
     case ssr: StartScoringRequest =>
-      started
-        .map(_ => logger.error(s"Scoring already running since $started."))
-        .orElse {
-          start(ssr)
-          context.parent ! ScoringDone
-          context.stop(self)
-          None
-        }
+      try {
+        started
+          .map(_ => logger.error(s"Scoring already running since $started."))
+          .orElse {
+            start(ssr)
+            context.parent ! ScoringDone
+            context.stop(self)
+            None
+          }
+      } catch {
+        case e:Exception =>
+          logger.error(s"Top-level scoring exception.")
+      }
 
     case x =>
       logger.error(s"Unexpected message: $x")
