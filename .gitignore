@@ -20,3 +20,4 @@ conf/generated.keystore
 /src/main/main.iml
 /src/test/test.iml
 /var/
+/wfdLogdir_IS_UNDEFINED/
