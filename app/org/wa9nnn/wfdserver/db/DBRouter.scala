@@ -27,8 +27,10 @@ import scala.concurrent.Future
 class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging  with DBService {
   private val dbs: Map[String, DBService] = {
     val builder = Map.newBuilder[String, DBService]
-    val uri = config.getString("mongodb.mongoURI")
-    builder += "MongoDB" -> new MongoDB(uri, "wfd")
+    if (config.getBoolean("mongodb.enable")) {
+      val uri = config.getString("mongodb.mongoURI")
+      builder += "MongoDB" -> new MongoDB(uri, "wfd")
+    }
     try {
       val slickConfig = config.getConfig("slick.dbs.default")
       if (slickConfig.getBoolean("enable")) {
