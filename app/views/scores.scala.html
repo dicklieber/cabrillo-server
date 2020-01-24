@@ -1,5 +1,6 @@
 @import org.wa9nnn.wfdserver.htmlTable.Table
-@(scoreTable: Table)(implicit request: play.api.mvc.Request[AnyContent])
+@import com.typesafe.config.Config
+@(scoreTable: Table)(implicit request: play.api.mvc.Request[AnyContent], config: Config)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 @main("Scores") {

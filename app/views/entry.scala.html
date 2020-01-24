@@ -1,8 +1,9 @@
 @import org.wa9nnn.wfdserver.htmlTable.Table
 @import org.wa9nnn.wfdserver.auth.WfdSubject
+@import com.typesafe.config.Config
 @(entry: org.wa9nnn.wfdserver.db.EntryViewData,
         filesTable: Table,
-        scoringTable: Table)(implicit request: play.api.mvc.Request[AnyContent], subject:WfdSubject)
+        scoringTable: Table)(implicit request: play.api.mvc.Request[AnyContent], subject:WfdSubject, config: Config)
 
     @main(entry.title) {
         <p>Using @subject.dbName</p>

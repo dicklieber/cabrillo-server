@@ -3,6 +3,7 @@ package controllers
 
 
 import be.objectify.deadbolt.scala.ActionBuilders
+import com.typesafe.config.Config
 import javax.inject._
 import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.db.DBRouter
@@ -17,8 +18,9 @@ import scala.concurrent.Future
  * Administrative pages
  */
 @Singleton
-class SearchController @Inject()(cc: ControllerComponents,
+class SearchController @Inject()(implicit cc: ControllerComponents,
                                  db: DBRouter,
+                                 config: Config,
                                  actionBuilder: ActionBuilders
                                 )
   extends AbstractController(cc)

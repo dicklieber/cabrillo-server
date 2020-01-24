@@ -2,6 +2,7 @@
 package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
+import com.typesafe.config.Config
 import javax.inject._
 import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.db.DBRouter
@@ -12,7 +13,7 @@ import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 
 @Singleton
-class StatsController @Inject()(cc: ControllerComponents, actionBuilder: ActionBuilders, db: DBRouter)(implicit exec: ExecutionContext)
+class StatsController @Inject()(cc: ControllerComponents, actionBuilder: ActionBuilders, db: DBRouter)(implicit exec: ExecutionContext, config:Config)
   extends AbstractController(cc) with JsonLogging with SubjectAccess {
 
   def index(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>

@@ -1,5 +1,6 @@
 @import org.wa9nnn.wfdserver.scoring.ScoringStatus
-@(scoringStatus: ScoringStatus)(implicit request: play.api.mvc.Request[AnyContent])
+@import com.typesafe.config.Config
+@(scoringStatus: ScoringStatus)(implicit request: play.api.mvc.Request[AnyContent], config: Config)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 @if(scoringStatus.isRunning) {
     <meta http-equiv="refresh" content="3"/>

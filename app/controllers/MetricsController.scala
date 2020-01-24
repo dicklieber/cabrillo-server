@@ -4,6 +4,7 @@ package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.kenshoo.play.metrics.{Metrics, MetricsDisabledException}
+import com.typesafe.config.Config
 import javax.inject.Inject
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents, Request}
 
@@ -12,7 +13,7 @@ import scala.concurrent.Future
 class MetricsController @Inject()(
                                    met: Metrics,
                                    controllerComponents: ControllerComponents,
-                                   actionBuilder: ActionBuilders)
+                                   actionBuilder: ActionBuilders)(implicit config:Config)
   extends AbstractController(controllerComponents) {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 

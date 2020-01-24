@@ -1,7 +1,8 @@
 @import controllers.ControlUi
 @import helper._
 @import org.wa9nnn.wfdserver.util.MarkDown
-@(fui: Form[ControlUi])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+@import com.typesafe.config.Config
+@(fui: Form[ControlUi])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider, config: Config)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 @implicitField = @{
     helper.FieldConstructor(views.html.fieldConstructor.f)

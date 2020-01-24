@@ -1,7 +1,8 @@
 @import org.wa9nnn.wfdserver.auth.UserPasswordRoles
 @import helper._
 
-@(userForm: Form[UserPasswordRoles])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider)
+@import com.typesafe.config.Config
+@(userForm: Form[UserPasswordRoles])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider, config: Config)
 @main("Administration") {
     @form(action = routes.UserController.update()) {
 

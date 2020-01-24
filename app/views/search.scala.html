@@ -1,6 +1,7 @@
 @import org.wa9nnn.wfdserver.htmlTable.Table
 @import org.wa9nnn.wfdserver.auth.WfdSubject
-@(table: Table, searchForm: Form[SearchCriterion])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider, subject:WfdSubject)
+@import com.typesafe.config.Config
+@(table: Table, searchForm: Form[SearchCriterion])(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider, subject:WfdSubject, config: Config)
 @import helper._
 
 

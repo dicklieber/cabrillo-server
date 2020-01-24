@@ -5,6 +5,7 @@ import java.time.{LocalDateTime, ZoneId, ZoneOffset}
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.google.inject.Inject
+import com.typesafe.config.Config
 import javax.inject.Singleton
 import org.wa9nnn.wfdserver.contest.{Message, SubmissionConfig, SubmissionControlDao, Times}
 import play.api.data.Form
@@ -14,7 +15,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 
 @Singleton
-class SubmissionControlController @Inject()(cc: ControllerComponents, actionBuilder: ActionBuilders, submissionControlDao: SubmissionControlDao)
+class SubmissionControlController @Inject()(cc: ControllerComponents, actionBuilder: ActionBuilders, submissionControlDao: SubmissionControlDao)(implicit config:Config)
   extends AbstractController(cc)
     with play.api.i18n.I18nSupport {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global

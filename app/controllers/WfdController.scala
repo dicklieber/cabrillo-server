@@ -3,6 +3,7 @@ package controllers
 import java.nio.file.{Path, Paths}
 
 import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import javax.inject._
 import nl.grons.metrics4.scala.DefaultInstrumented
 import org.wa9nnn.cabrillo.ResultWithData
@@ -19,11 +20,11 @@ import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 
 @Singleton
-class WfdController @Inject()(cc: ControllerComponents,
+class WfdController @Inject()( cc: ControllerComponents,
                               actorSystem: ActorSystem,
                               loader: Loader,
                               scoringEngine: ScoringEngine,
-                              recaptchaSupport: RecaptchaSupport)(implicit exec: ExecutionContext)
+                              recaptchaSupport: RecaptchaSupport)(implicit exec: ExecutionContext, config: Config)
   extends AbstractController(cc) with JsonLogging with DefaultInstrumented {
   private val timer = metrics.timer("WfdController")
 
@@ -47,7 +48,7 @@ class WfdController @Inject()(cc: ControllerComponents,
                 scoringEngine.provisional(li).table
             }.getOrElse(Table("Couldn't Score", ""))
 
-            Ok(views.html.wfdresult(resultWithData.result, filename.toString, maybeLogEntryId.map(_.id), scoringResultTable)(request.asInstanceOf[Request[AnyContent]]))
+            Ok(views.html.wfdresult(resultWithData.result, filename.toString, maybeLogEntryId.map(_.id), scoringResultTable)(request.asInstanceOf[Request[AnyContent]], config: Config))
           }
         r.getOrElse(Ok("Why are we here? todo"))
 

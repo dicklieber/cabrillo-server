@@ -1,14 +1,15 @@
 @*
- * This template is called from the `index` template. This template
- * handles the rendering of the page header and body tags. It takes
- * two arguments, a `String` for the title of the page and an `Html`
- * object to insert into the body of the page.
- *@
+* This template is called from the `index` template. This template
+* handles the rendering of the page header and body tags. It takes
+* two arguments, a `String` for the title of the page and an `Html`
+* object to insert into the body of the page.
+*@
 @import org.wa9nnn.wfdcheck.BuildInfo
 @import java.time.Instant
 @import org.wa9nnn.wfdserver.play.FieldConstructor._
 @import org.wa9nnn.wfdserver.DurationFormat._
-@(title: String)(content: Html)(implicit request: play.api.mvc.Request[AnyContent])
+@import com.typesafe.config.Config
+@(title: String)(content: Html)(implicit request: play.api.mvc.Request[AnyContent], config: Config)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,31 +17,36 @@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/wfdflake.png")">
-@*        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>*@
+        @* <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>*@
     </head>
     <body>
         <table class="layoutTable">
             <tr>
                 <th><a href="\"> <img src="@routes.Assets.versioned("images/wfdlogo.png")" class="wfdLogo" alt="WFD Logotype"/></a>
-                @if(request.session.get(org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey).isDefined ){
-                    <br/>
-                <a href="@routes.LoginController.login()" class="credits">Logout</a>
-                }
+                    @if(request.session.get(org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey).isDefined) {
+                        <br/>
+                        <a href="@routes.LoginController.login()" class="credits">Logout</a>
+                    }
                 </th>
-                <td><h1><span class="experimental">Experimental</span> <br/>@title</h1></td>
+                <td><h1>
+                @if(config.hasPath("wfd.experimentMessage")) {
+                    <span class="experimental">@config.getString("wfd.experimentMessage")</span>
+                }
+                <br/>@title</h1></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
                 <td>@content</td>
             </tr>
             <tr>
-                <td colspan="2" class="credits"><p>Written by Dick Lieber, <a href="https://www.qrz.com/db/wa9nnn">WA9NNN</a> for the
+                <td colspan="2" class="credits"><p>Written by Dick Lieber, <a href="https://www.qrz.com/db/wa9nnn">
+                    WA9NNN</a> for the
                     <a target="_blank" href="https://www.winterfieldday.com">Winter Field Day Association</a>.  Source:
                     <a target="_blank" href="https://github.com/dicklieber/cabrillo-server">http server</a>
                     <a target="_blank" href="https://github.com/dicklieber/cabrillio">cabrillio library</a><br/>
                     Version: @org.wa9nnn.wfdcheck.BuildInfo.version Built: @Instant.ofEpochMilli(BuildInfo.buildTime.toLong).toString commit: @BuildInfo.gitHeadCommit.getOrElse("--")
                 </p>
-                <p><a href="@routes.AdminController.adminlanding()"><img src="@routes.Assets.versioned("images/wfdflake.png")" alt="netControl" ></a> </p></td>
+                    <p><a href="@routes.AdminController.adminlanding()"><img src="@routes.Assets.versioned("images/wfdflake.png")" alt="netControl" ></a> </p></td>
             </tr>
         </table>
     </body>

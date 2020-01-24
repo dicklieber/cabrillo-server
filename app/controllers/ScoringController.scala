@@ -4,6 +4,7 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
 import be.objectify.deadbolt.scala.ActionBuilders
+import com.typesafe.config.Config
 import javax.inject._
 import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.bulkloader.StatusRequest
@@ -21,7 +22,7 @@ import scala.language.postfixOps
 class ScoringController @Inject()(cc: ControllerComponents,
                                   actionBuilder: ActionBuilders,
                                   db: DBRouter,
-                                  @Named("scoring") scoringActor: ActorRef)(implicit exec: ExecutionContext)
+                                  @Named("scoring") scoringActor: ActorRef)(implicit exec: ExecutionContext, config:Config)
   extends AbstractController(cc) with JsonLogging with play.api.i18n.I18nSupport with SubjectAccess {
   implicit val timeout: Timeout = Timeout(5 seconds) // needed for `?` below
 

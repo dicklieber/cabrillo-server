@@ -1,6 +1,7 @@
 package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
+import com.typesafe.config.Config
 import javax.inject._
 import org.wa9nnn.wfdserver.CabrilloFileManager
 import org.wa9nnn.wfdserver.auth.SubjectAccess
@@ -23,7 +24,7 @@ class AdminController @Inject()(cc: ControllerComponents,
                                 cabrilloFileManager: CabrilloFileManager,
                                 scoringEngine: ScoringEngine,
                                 actionBuilder: ActionBuilders
-                               )
+                               )(implicit config: Config)
   extends AbstractController(cc) with SubjectAccess
     with play.api.i18n.I18nSupport {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global

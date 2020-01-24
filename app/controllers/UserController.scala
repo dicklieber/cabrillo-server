@@ -2,6 +2,7 @@
 package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
+import com.typesafe.config.Config
 import javax.inject.Inject
 import org.wa9nnn.wfdserver.auth.{CredentialsDao, UserPasswordRoles}
 import org.wa9nnn.wfdserver.htmlTable._
@@ -14,7 +15,7 @@ import scala.concurrent.Future
 class UserController @Inject()(cc: ControllerComponents,
                                credentialsDao: CredentialsDao,
                                actionBuilder: ActionBuilders
-                              )
+                              )(implicit config:Config)
   extends AbstractController(cc) with play.api.i18n.I18nSupport {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
