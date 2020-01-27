@@ -9,7 +9,7 @@ name := "wfdcheck"
 organization := "org.wa9nnn"
 
 
-lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin, LinuxPlugin).settings(
+lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin, LinuxPlugin, UniversalPlugin).settings(
   buildInfoKeys ++= Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion,
     git.gitCurrentTags, git.gitCurrentBranch, git.gitHeadCommit, git.gitHeadCommitDate, git.baseVersion,
     BuildInfoKey.action("buildTime") {
@@ -99,4 +99,28 @@ releaseProcess := Seq[ReleaseStep](
   setNextVersion,                         // : ReleaseStep
   commitNextVersion,                      // : ReleaseStep
   pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
+)
+
+javaOptions in Universal ++= Seq(
+  // JVM memory tuning
+//  "-J-Xmx1024m",
+//  "-J-Xms512m",
+
+  // Since play uses separate pidfile we have to provide it with a proper path
+  // name of the pid file must be play.pid
+  s"-Dpidfile.path=../wfdvar/run/${packageName.value}/play.pid",
+
+  "-Dhttp.port=80",
+
+//  // alternative, you can remove the PID file
+//  // s"-Dpidfile.path=/dev/null",
+//
+//  // Use separate configuration file for production environment
+//  s"-Dconfig.file=/usr/share/${packageName.value}/conf/production.conf",
+//
+//  // Use separate logger configuration file for production environment
+//  s"-Dlogger.file=/usr/share/${packageName.value}/conf/production-logger.xml",
+//
+//  // You may also want to include this setting if you use play evolutions
+//  "-DapplyEvolutions.default=true"
 )
