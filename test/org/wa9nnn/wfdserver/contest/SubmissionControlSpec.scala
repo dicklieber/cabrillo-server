@@ -33,12 +33,12 @@ class SubmissionControlSpec extends Specification {
       backAgain must beEqualTo(updated)
     }
 
-    "apply before" >> {
-      val beforeInstant = default.times.submissionBegin.minusSeconds(100000)
-      val state: CurrentSubmissionState = newDao(3, Clock.fixed(beforeInstant, ZoneId.of("UTC"))).current()
-      state.message must beEqualTo (default.before.message)
-      state.submissionsAllowed must beFalse
-    }
+//    "apply before" >> {
+//      val beforeInstant = default.times.submissionBegin.minusSeconds(100000)
+//      val state: CurrentSubmissionState = newDao(3, Clock.fixed(beforeInstant, ZoneId.of("UTC"))).current()
+//      state.message must beEqualTo (default.before.message)
+//      state.submissionsAllowed must beFalse
+//    }
 
   }
 }
