@@ -1,9 +1,20 @@
 
 package org.wa9nnn.wfdserver.scoring
 
-import org.wa9nnn.wfdserver.htmlTable.{Cell, Header, MultiColumn, Row, SectionedRowCollector, TableInACell}
+import org.wa9nnn.wfdserver.htmlTable._
+import org.wa9nnn.wfdserver.util.{Counted, CountedThings}
 
-case class QsoResult(byBand: Seq[BandCount], byMode: Seq[ModeCount], modeBand: Seq[ModeBand], qsoPoints: Int, errant: Seq[QsoKind], allQsos: Seq[QsoBase]) {
+/**
+ * Result of scoring all the [[org.wa9nnn.wfdserver.model.Qso]]s in a [[org.wa9nnn.wfdserver.model.StationLog]]
+ * @param byBand     count for each band.
+ * @param byMode     count for each mode.
+ * @param modeBand   Mode/Band combinations.
+ * @param qsoPoints  awarded Qso points. Before and multipliers.
+ * @param errantQsos [[MatchedQso]]s that aren't really match or busted etc. (only for official score, provisional score only works with [[org.wa9nnn.wfdserver.model.Qso]]s.
+ *                  which can never be errant.
+ * @param allQsos all processed qsos.
+ */
+case class QsoResult(byBand: Seq[BandCount], byMode: Seq[ModeCount], modeBand: Seq[ModeBand], qsoPoints: Int, errantQsos:Seq[MatchedQso], allQsos: Seq[QsoBase], qsoKinds:CountedThings[QsoKind]) {
   def qsos: Int = allQsos.length
 
   def bandModeMultiplier: Int = modeBand.length

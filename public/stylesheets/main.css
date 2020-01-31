@@ -202,6 +202,14 @@ table th {
     /*background-color: #ffbf00;*/
 }
 
+.matchedQsos {
+    display: block;
+    unicode-bidi: embed;
+    font-family: monospace;
+    /*white-space: pre;*/
+    font-size: smaller;
+    justify-content: left;
+}
 
 .message div {
     background: lavender;

@@ -10,7 +10,7 @@ import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.bulkloader.StatusRequest
 import org.wa9nnn.wfdserver.db.DBRouter
 import org.wa9nnn.wfdserver.htmlTable.Table
-import org.wa9nnn.wfdserver.scoring.{ScoringStatus, StartScoringRequest}
+import org.wa9nnn.wfdserver.scoring.{ScoreRecord, ScoringStatus, StartScoringRequest}
 import org.wa9nnn.wfdserver.util.JsonLogging
 import play.api.mvc.{Action, _}
 

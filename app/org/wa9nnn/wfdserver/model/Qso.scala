@@ -6,13 +6,16 @@ import java.time.Instant
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, RowSource}
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import org.wa9nnn.wfdserver.scoring.{QsoBase, QsoKind}
+import org.wa9nnn.wfdserver.scoring.QsoBase
 
 /**
  * One QSO record from a Cabrillo file.
  * This can be persisted in MongoDB and the field names take up space so this is using the really tiny field names to help keep mongo data budget down.
  * Nicely named defs are provided to make using this class more sensible.
  * This short names shouldn't leak outside of this class
+ *
+ * Terminology note: When referring to instance of this it should always use camel-case e.g. ourQso or qso.
+ * When referring to a general ham-radio meaning of a QSO, then use the all caps form. e.g. QSO.
  *
  * @param b  band as defined in [[Frequencies]]
  * @param m  mode
@@ -44,33 +47,50 @@ case class Qso(
     rr
   }
 
+
+  override def toString: CallSign = {
+    s"$band $mode $s $r"
+  }
+
   def sentKey: QsoKey = {
-    QsoKey(callSign = s.cs,
+    QsoKey(sentCallSign = s.cs,
+      receivedCallSign = r.cs,
       band = b,
       mode = m
     )
   }
 
   def receivedKey: QsoKey = {
-    QsoKey(callSign = r.cs,
+    QsoKey(sentCallSign = r.cs,
+      receivedCallSign = s.cs,
       band = b,
       mode = m
     )
   }
 
-  override val qsoKind: QsoKind = QsoKind.mode(mode)
+  /**
+   *
+   * @return make Qso for other side of actual QSO.
+   */
+  def swap: Qso = copy(s = r, r = s)
+
+
 }
 
 object Qso {
   def header(qsoCount: Int): Header = Header(s"QSO ($qsoCount)", "Freq", "Mode", "Sent", "Received", "Stamp")
+  def apply(band:String, mode:String, sentExchange:Exchange, receivedExchange:Exchange):Qso = {
+    new Qso(band, mode, Instant.now(), sentExchange, receivedExchange)
+  }
 }
 
 /**
  *
  * Generated from the  [[Qso.sentKey]] to match up with a [[Qso.receivedKey]] at another station.
  *
- * @param callSign sent or received
+ * @param sentCallSign sent or received
+ * @param receivedCallSign sent or received
  * @param band 20M etc.
  * @param mode DI etc.
  */
-case class QsoKey(callSign: CallSign, band: String, mode: String)
+case class QsoKey(sentCallSign:CallSign, receivedCallSign: CallSign, band: String, mode: String)

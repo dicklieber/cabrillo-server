@@ -1,8 +1,7 @@
 
 package org.wa9nnn.wfdserver.htmlTable
 
-import org.wa9nnn.wfdserver.scoring.QsoKind
-import org.wa9nnn.wfdserver.util.Counted
+import org.wa9nnn.wfdserver.util.CountedThings
 
 /**
  * Adapt a case class to a [[ Seq[Row] ]]
@@ -15,7 +14,7 @@ trait RowsSource extends Product {
     val rows = (0 until productArity).iterator.toSeq.flatMap { i =>
       val name = prefix + productElementName(i)
       productElement(i) match {
-        case counted:Counted[Any] =>
+        case counted:CountedThings[Any] =>
           counted.rows
         case None =>
           if (includeNone)

@@ -1,9 +1,9 @@
 
 package org.wa9nnn.wfdserver.scoring
 
-import controllers.ScoreRecord
-import org.wa9nnn.wfdserver.htmlTable.{Cell, SectionedRowCollector, Table}
+import org.wa9nnn.wfdserver.htmlTable._
 import org.wa9nnn.wfdserver.model.CallCatSect
+import org.wa9nnn.wfdserver.scoring.ScoringResult._
 
 /**
  *
@@ -32,4 +32,18 @@ case class ScoringResult(callCatSect: CallCatSect,  soapBoxResult: SoapBoxesResu
     ScoreRecord(callCatSect, score)
   }
 }
+
+object ScoringResult {
+  val byModeSection: Seq[Row] => SectionedRows = SectionedRows("By Mode", "Mode", "Award", "Count")
+
+  val powerMultiplierExplain: Cell = TableInACell(Table(Seq(Seq("Multiplier", "Power")), Seq(
+    Row("1", "More than 100W"),
+    Row("2", "100W or less"),
+    Row("4", "QRP")
+  )
+  ).withCssClass("resultTable")
+  )
+
+}
+
 

@@ -1,12 +1,12 @@
 
 package org.wa9nnn.wfdserver.db
 
-import controllers.ScoreRecord
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model.LogInstance
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import org.wa9nnn.wfdserver.scoring.ScoreRecord
 
 import scala.concurrent.Future
 

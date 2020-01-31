@@ -16,6 +16,7 @@ object QsoKind {
   val unMatched: QsoKind = QsoKind(-1, "Unmatched")
   val timeDelta: QsoKind = QsoKind(-1, "TimeDelta")
   val badMode: QsoKind = QsoKind(0, "Bad Mode")
+  val dup: QsoKind = QsoKind(0, "Dup")
 
   def mode(mode: String): QsoKind = mode match {
     case "CW" => QsoKind.cw
@@ -26,9 +27,11 @@ object QsoKind {
 }
 
 trait QsoBase {
-  def points: Int = qsoKind.points
-
-  def qsoKind: QsoKind
+  /**
+   * Other official scoring-time checks
+   * @return
+   */
+  def score()(implicit timeMatcher: TimeMatcher):QsoKind = QsoKind.mode(mode)
 
   def mode: String
 

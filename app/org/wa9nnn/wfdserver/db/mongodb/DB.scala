@@ -1,7 +1,6 @@
 
 package org.wa9nnn.wfdserver.db.mongodb
 
-import controllers.ScoreRecord
 import nl.grons.metrics4.scala.{DefaultInstrumented, Timer}
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.bson.codecs.configuration.CodecRegistry
@@ -20,7 +19,7 @@ import org.wa9nnn.wfdserver.db.mongodb.Helpers._
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.model._
-import org.wa9nnn.wfdserver.scoring._
+import org.wa9nnn.wfdserver.scoring.{ScoreRecord, _}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -157,6 +156,8 @@ object DB {
     classOf[StationLog],
     classOf[Exchange],
     classOf[Qso],
+    classOf[Qso],
+    classOf[MatchedQso],
     classOf[Agg],
     classOf[ModeCount],
     classOf[BandCount],

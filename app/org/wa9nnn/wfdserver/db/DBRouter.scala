@@ -3,7 +3,6 @@ package org.wa9nnn.wfdserver.db
 
 import com.google.inject.Injector
 import com.typesafe.config.Config
-import controllers.ScoreRecord
 import javax.inject.{Inject, Singleton}
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.auth.WfdSubject
@@ -12,7 +11,7 @@ import org.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model.LogInstance
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import org.wa9nnn.wfdserver.scoring.ScoringResult
+import org.wa9nnn.wfdserver.scoring.{ScoreRecord, ScoringResult}
 import org.wa9nnn.wfdserver.util.JsonLogging
 
 import scala.concurrent.Future

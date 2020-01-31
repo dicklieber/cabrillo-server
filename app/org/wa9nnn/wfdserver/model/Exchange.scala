@@ -19,6 +19,10 @@ case class Exchange(cs: String, ex: String) {
     val tokens = ex.split(" ")
     tokens(0) -> tokens(1)
   }
+
+  override def toString: CallSign = {
+    s"[$cs $ex]"
+  }
 }
 
 object Exchange {

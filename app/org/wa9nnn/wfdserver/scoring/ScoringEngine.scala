@@ -41,7 +41,7 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
         //        val rk = receivedQsoCache.map.get(receivedKey)
         //        val sk = receivedQsoCache.map.get(sentKey)
 
-        //        logger.debug(s"Unmatched: ${mqso.qso}")
+                logger.debug(s"Unmatched: ${mqso.qso}")
 
       }
       mqso

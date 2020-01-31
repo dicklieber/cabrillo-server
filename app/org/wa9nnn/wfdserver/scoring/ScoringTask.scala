@@ -10,7 +10,7 @@ import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.db.DBRouter
 import org.wa9nnn.wfdserver.htmlTable.Row
 import org.wa9nnn.wfdserver.model.LogInstance
-import org.wa9nnn.wfdserver.util.{Counted, JsonLogging}
+import org.wa9nnn.wfdserver.util.{Counted, CountedThings, JsonLogging}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -44,18 +44,14 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
               val scoringResult: ScoringResult = scoringEngine.official(logInstance, receivedQsoCache)
               db.putScore(scoringResult.scoreRecord)
               stationMeter.mark()
-
-              scoringResult.qsoResult.allQsos.foreach { q =>
-                qsoKinds(q.qsoKind)
-              }
-
+              qsoKinds(scoringResult.qsoResult.qsoKinds)
               scoringResult
             }
             )
           }
           try {
             val duration = java.time.Duration.ofNanos(scoreOneTimer.mean.toLong)
-            parent ! ScoreOneResult(result.get, duration, receivedQsoCache.mapSize, qsoKinds)
+            parent ! ScoreOneResult(result.get, duration, receivedQsoCache.mapSize, qsoKinds.result)
           } catch {
             case e: Exception =>
               logger.error("calc duration", e)
@@ -67,8 +63,14 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
         }
       }
     }
+
+    receivedQsoCache.mapValues.foreach{qso =>
+      logger.error(s"leftOver: $qso")
+    }
+    val mapSize = receivedQsoCache.mapSize
     logJson("scoring finish")
       .++("stationsToDo" -> stationsToDo)
+      .++("mapSize" -> mapSize)
       .info()
 
   }
@@ -85,7 +87,7 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
             None
           }
       } catch {
-        case e:Exception =>
+        case e: Exception =>
           logger.error(s"Top-level scoring exception.")
       }
 
@@ -95,7 +97,7 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
 }
 
 
-case class ScoreOneResult(scoringResult: ScoringResult, oneMinuteRateDuration: java.time.Duration, mapSize: Int, qsoKinds:Counted[QsoKind])
+case class ScoreOneResult(scoringResult: ScoringResult, oneMinuteRateDuration: java.time.Duration, mapSize: Int, qsoKinds: CountedThings[QsoKind])
 
 object ScoringTask {
   var scoringTaskName = "scoringTask"

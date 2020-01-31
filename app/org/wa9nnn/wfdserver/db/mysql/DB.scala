@@ -1,7 +1,6 @@
 
 package org.wa9nnn.wfdserver.db.mysql
 
-import controllers.ScoreRecord
 import javax.inject._
 import nl.grons.metrics4.scala.{DefaultInstrumented, Timer}
 import org.wa9nnn.cabrillo.requirements.Frequencies
@@ -11,6 +10,7 @@ import org.wa9nnn.wfdserver.db.{DBService, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.model._
+import org.wa9nnn.wfdserver.scoring.ScoreRecord
 import org.wa9nnn.wfdserver.util.JsonLogging
 import org.wa9nnn.wfdserver.{CallSignId, model}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}

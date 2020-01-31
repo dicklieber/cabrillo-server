@@ -1,5 +1,6 @@
 package org.wa9nnn.wfdserver.scoring
 
+import org.wa9nnn.wfdserver.htmlTable.Row
 import org.wa9nnn.wfdserver.model.Qso
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.scoring.QsoKind._
@@ -11,7 +12,7 @@ import org.wa9nnn.wfdserver.scoring.QsoKind._
  * @param qso      of station being scored.
  * @param otherQso of station worked.
  */
-case class MatchedQso(qso: Qso, otherQso: Option[Qso])(implicit timeMatcher: TimeMatcher) extends QsoBase {
+case class MatchedQso(qso: Qso, otherQso: Option[Qso]) extends QsoBase {
   /**
    * Checks that qso and otherQso, if present, matches the given callSign
    * and the two Qsos are consistent with each other.
@@ -36,14 +37,13 @@ case class MatchedQso(qso: Qso, otherQso: Option[Qso])(implicit timeMatcher: Tim
     }
   }
 
-   override val qsoKind : QsoKind = score()
 
   /**
    *
    * @param timeMatcher tells if two [[java.time.Instant]]s are close enough together.
    * @return QsoPoints indicating how many points and why.
    */
-  def score()(implicit timeMatcher: TimeMatcher): QsoKind = {
+  override def score()(implicit timeMatcher: TimeMatcher): QsoKind = {
     if (otherQso.isEmpty) {
       missing // not found
     } else {
@@ -62,6 +62,9 @@ case class MatchedQso(qso: Qso, otherQso: Option[Qso])(implicit timeMatcher: Tim
       }
     }
   }
+
+
+
 
   def display()(implicit timeMatcher: TimeMatcher): String = {
     val cs = otherQso.map(q => q.s.cs).getOrElse("???")

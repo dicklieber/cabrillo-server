@@ -1,38 +1,38 @@
 package org.wa9nnn.wfdserver.scoring
 
-import java.time.Instant
+import java.time.{Duration, Instant}
 
 import org.specs2.mutable.Specification
 import org.wa9nnn.wfdserver.model.{Exchange, Qso}
 
 class QsoAccumulatorSpec extends Specification {
   private val exchange = Exchange("WA9NNN", "2I IL")
-
+ implicit val timeMatcher = new TimeMatcher(Duration.ofHours(2))
   "QsoAccumulatorSpec" >> {
     "happy" in {
-      val QsoAccumulator = new QsoAccumulator
+      val qsoAccumulator = new QsoAccumulator
       val qso = Qso("40M", "CW", Instant.EPOCH, exchange, exchange)
-      QsoAccumulator(qso)
-      val result = QsoAccumulator.result(1)
+      qsoAccumulator(qso)
+      val result = qsoAccumulator.result
       result.qsoPoints must beEqualTo (2)
       result.bandModeMultiplier must beEqualTo (1)
     }
     "one band two modes" in {
-      val QsoAccumulator = new QsoAccumulator
-      QsoAccumulator(Qso("40M", "CW", Instant.EPOCH, exchange, exchange))
-      QsoAccumulator(Qso("40M", "DI", Instant.EPOCH, exchange, exchange))
-      val result = QsoAccumulator.result(1)
+      val qsoAccumulator = new QsoAccumulator
+      qsoAccumulator(Qso("40M", "CW", Instant.EPOCH, exchange, exchange))
+      qsoAccumulator(Qso("40M", "DI", Instant.EPOCH, exchange, exchange))
+      val result = qsoAccumulator.result
       result.qsoPoints must beEqualTo (4)
       result.bandModeMultiplier must beEqualTo (2)
       result.byMode must haveLength(2)
       result.byBand must haveLength(1)
     }
     "two band three modes" in {
-      val QsoAccumulator = new QsoAccumulator
-      QsoAccumulator(Qso("40M", "CW", Instant.EPOCH, exchange, exchange))
-      QsoAccumulator(Qso("40M", "DI", Instant.EPOCH, exchange, exchange))
-      QsoAccumulator(Qso("20M", "PH", Instant.EPOCH, exchange, exchange))
-      val result = QsoAccumulator.result(1)
+      val qsoAccumulator = new QsoAccumulator
+      qsoAccumulator(Qso("40M", "CW", Instant.EPOCH, exchange, exchange))
+      qsoAccumulator(Qso("40M", "DI", Instant.EPOCH, exchange, exchange))
+      qsoAccumulator(Qso("20M", "PH", Instant.EPOCH, exchange, exchange))
+      val result = qsoAccumulator.result
       result.qsoPoints must beEqualTo (5)
       result.bandModeMultiplier must beEqualTo (3)
       result.byMode must haveLength(3)

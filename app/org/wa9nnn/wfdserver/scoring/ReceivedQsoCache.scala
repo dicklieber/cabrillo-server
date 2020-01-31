@@ -27,6 +27,11 @@ class ReceivedQsoCache @Inject()(config: Config) extends JsonLogging {
   private val dbName: String = mongoConfig.getString("database")
 
   private val map = new TrieMap[QsoKey, Qso] // receivedQsoKey to Qso
+  /**
+   * test helper
+   * @return
+   */
+  def mapValues = map.values
 
   var stationCount = 0
   def mapSize: Int = map.size
@@ -43,7 +48,10 @@ class ReceivedQsoCache @Inject()(config: Config) extends JsonLogging {
     override def onNext(result: LogInstance): Unit = {
       stationCount = stationCount + 1
       result.qsos.foreach { qso =>
-        map.put(qso.receivedKey, qso)
+        val wasPresent = map.put(qso.receivedKey, qso)
+        if(wasPresent.isDefined){
+          logger.error(s"duplicate qsoKey! $wasPresent")
+        }
       }
     }
 
