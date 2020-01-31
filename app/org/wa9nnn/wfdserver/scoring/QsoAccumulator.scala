@@ -12,8 +12,10 @@ class QsoAccumulator(implicit timeMatcher: TimeMatcher) {
   private val modeCountMap = new TrieMap[String, AtomicInteger]()
   private val bandCountMap = new TrieMap[String, AtomicInteger]()
   private var qsoScore: Int = 0
-  private var errantQsos: Seq[QsoKind] = Seq.empty
-  private var qsos:Seq[QsoBase] = Seq.empty
+  private val errantQsosBuilder = Seq.newBuilder[MatchedQso]
+  private var qsos: Seq[QsoBase] = Seq.empty
+  private val qsoKinds = new Counted[QsoKind]
+
 
   def apply(qso: QsoBase): Unit = {
     val qsoKind: QsoKind = qso.score()
@@ -32,7 +34,7 @@ class QsoAccumulator(implicit timeMatcher: TimeMatcher) {
     //    }
   }
 
-  def result(powerMultiplier: Int): QsoResult = {
+  def result: QsoResult = {
     QsoResult(
       byBand = bandCountMap.map { case (band, ai) => BandCount(band, ai.get()) }.toSeq,
       byMode = modeCountMap.map { case (mode, ai) => ModeCount(mode, ai.get()) }.toSeq,

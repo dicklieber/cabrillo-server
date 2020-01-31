@@ -9,7 +9,7 @@ import javax.inject._
 import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.bulkloader.StatusRequest
 import org.wa9nnn.wfdserver.db.DBRouter
-import org.wa9nnn.wfdserver.htmlTable.Table
+import org.wa9nnn.wfdserver.htmlTable.{Row, Table}
 import org.wa9nnn.wfdserver.scoring.{ScoreRecord, ScoringStatus, StartScoringRequest}
 import org.wa9nnn.wfdserver.util.JsonLogging
 import play.api.mvc.{Action, _}
@@ -44,8 +44,12 @@ class ScoringController @Inject()(cc: ControllerComponents,
   def viewScores(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
 
     db.getScores().map { records =>
-      val rows = records.map(_.toRow)
-      val table = Table(ScoreRecord.header, rows).withCssClass("resultTable")
+      val rows: Seq[Row] = records
+        .sortBy(_.awardedPoints)
+        .reverse
+        .map(_.toRow)
+      val table = new Table(ScoreRecord.header(rows.length), rows)
+        .withCssClass("resultTable")
       Ok(views.html.scores(table))
     }
   }

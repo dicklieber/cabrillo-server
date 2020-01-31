@@ -3,15 +3,20 @@ package org.wa9nnn.wfdserver.scoring
 
 import javax.inject.{Inject, Singleton}
 import nl.grons.metrics4.scala.DefaultInstrumented
-import org.wa9nnn.wfdserver.model.{LogInstance, StationLog}
+import org.wa9nnn.wfdserver.model.{LogInstance, Qso, StationLog}
 import org.wa9nnn.wfdserver.util.JsonLogging
 
+/**
+ * Scores one [[LogInstance]].
+ *
+ * @param timeMatcher determines if two times are close enough.
+ */
 @Singleton
 class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends DefaultInstrumented with JsonLogging {
   private val timer = metrics.timer("Score")
 
   /**
-   * Provisional scoring is done at ingestion time. e.i. without matching to other stations.
+   * Provisional scoring is done at ingestion time. e.i. without de-duping or matching other stations.
    *
    * @param li               as persisted.
    * @return
@@ -20,30 +25,28 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
     calcScore(li.stationLog, li.qsos)
   }
 
-  var soFar: Int = 0
 
   /**
-   * Official scoring is done after all logs have been submitted. Qsos are compared against worked stations.
+   * Official scoring is done after all logs have been submitted. Qsos are  de-duplicated and compared against worked stations.
    *
    * @param li               as persisted.
    * @param receivedQsoCache matches up with other stations
    * @return
    */
   def official(li: LogInstance, receivedQsoCache: ReceivedQsoCache): ScoringResult = {
-    soFar += 1
-    val matchedQsos = li.qsos.map { qso =>
+
+    def deDup(qsos: Seq[Qso]) = {
+      qsos.groupBy(_.dupKey)
+        .map { case (_, matching) =>
+          matching.head
+        }
+    }
+
+    val deDuped = deDup(li.qsos)
+    val matchedQsos = deDuped.map { qso =>
       val sentKey = qso.sentKey
       val maybeMatched = receivedQsoCache(sentKey)
       val mqso = MatchedQso(qso, maybeMatched)
-      if (mqso.otherQso.isEmpty) {
-        //        val receivedCallSign = mqso.qso.receivedCallSign
-        //        val receivedKey = mqso.qso.receivedKey
-        //        val rk = receivedQsoCache.map.get(receivedKey)
-        //        val sk = receivedQsoCache.map.get(sentKey)
-
-                logger.debug(s"Unmatched: ${mqso.qso}")
-
-      }
       mqso
     }
 
@@ -56,9 +59,10 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
    * @param qsos       either directly from a [[LogInstance]] or filtered.
    * @return
    */
-  private def calcScore(stationLog: StationLog, qsos: Seq[QsoBase]): ScoringResult = {
+  private def calcScore(stationLog: StationLog, qsos: Iterable[QsoBase]): ScoringResult = {
 
     timer.time {
+
       val qsoAccumulator = new QsoAccumulator
 
       qsos.foreach(qsoAccumulator(_))
@@ -69,12 +73,11 @@ class ScoringEngine @Inject()(implicit timeMatcher: TimeMatcher) extends Default
         case _ => 1
       }).getOrElse(1)
 
-      val qsoResult: QsoResult = qsoAccumulator.result(powerMultiplier)
+      val qsoResult: QsoResult = qsoAccumulator.result
 
       val soapBoxResult: SoapBoxesResult = SoapBoxParser(stationLog.soapBoxes)
 
-      //      val score = -42
-      ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult, qsoResult.qsoPoints)
+      ScoringResult(stationLog.callCatSect, soapBoxResult, qsoResult, powerMultiplier, stationLog.claimedScore)
     }
   }
 }

@@ -4,11 +4,11 @@ package org.wa9nnn.wfdserver.scoring
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.util.JsonLogging
 
-case class QsoKind(points: Int, reason: String) {
+ case class QsoKind(points: Int, reason: String) {
   def isErrant: Boolean = points <= 0
 }
 
-object QsoKind {
+ object QsoKind {
   val cw: QsoKind = QsoKind(2, "CW")
   val ph: QsoKind = QsoKind(1, "PH")
   val di: QsoKind = QsoKind(2, "DI")

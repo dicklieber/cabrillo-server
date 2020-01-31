@@ -30,6 +30,7 @@ case class Qso(
                 s: Exchange,
                 r: Exchange) extends RowSource  with QsoBase{
 
+
   def sentCallSign: CallSign = s.cs
 
   def receivedCallSign: CallSign = r.cs
@@ -66,6 +67,14 @@ case class Qso(
       band = b,
       mode = m
     )
+  }
+
+  /**
+   * Used to de-duplicate QSO with the same station on the same band and mode.
+   * @return a Key
+   */
+  def dupKey: String = {
+    s"$receivedKey|$b|$m"
   }
 
   /**

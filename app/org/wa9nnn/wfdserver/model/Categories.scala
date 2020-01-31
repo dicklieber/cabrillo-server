@@ -22,4 +22,5 @@ case class Categories(
     super.toRows(includeNone = includeNone,
       prefix = "category-")
   }
+
 }

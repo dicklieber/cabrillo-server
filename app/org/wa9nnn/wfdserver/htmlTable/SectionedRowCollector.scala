@@ -29,4 +29,21 @@ class SectionedRowCollector(val rows: Seq[Row] = Seq.empty) {
 
     new SectionedRowCollector(this.rows :+ sectionHeader :+ colHeaders :++ rows)
   }
+  def += (sectionRows:SectionedRows):SectionedRowCollector = {
+
+    val colHeaders: Row = Row(sectionRows.columns.map {
+      Cell(_)
+    }).withCssClass("sectionHeader")
+
+    val cols = colHeaders.cells.foldLeft(0){case (accum, cell) => accum + cell.colSpan}
+    val sectionHeader = Row(Seq(Cell(sectionRows.sectionName)
+      .withCssClass("sectionHeader")
+      .withColSpan(cols)
+    ))
+
+    new SectionedRowCollector(this.rows :+ sectionHeader :+ colHeaders :++ rows)
+
+  }
 }
+
+case class SectionedRows(sectionName:String, columns: Any*)(rows:Seq[Row])

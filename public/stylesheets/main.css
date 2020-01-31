@@ -24,6 +24,7 @@
     cursor: pointer;
     text-align: center;
 }
+
 .inputfile {
     width: 0.1px;
     height: 0.1px;
@@ -33,7 +34,8 @@
     z-index: -1;
     display: none;
 }
-.fileLabel{
+
+.fileLabel {
     display: block;
     width: 100%;
     border: none;
@@ -57,6 +59,7 @@
     font-size: inherit;
     background: pink;
 }
+
 /*.provisionalOverlay:after{*/
 /*    content: "";*/
 /*    display: block;*/
@@ -72,7 +75,6 @@
 /*    background-repeat: no-repeat;*/
 /*    opacity: 0.7;*/
 /*}*/
-
 
 
 .multiplierTable td {
@@ -139,6 +141,7 @@ table th {
     border: 1px solid black;
     padding: 2px;
     background: lightgray;
+    text-align: center;
 }
 
 .rowHeader {
@@ -148,7 +151,7 @@ table th {
 .resultTable td {
     border: 1px solid black;
     padding: 2px;
-    vertical-align:top
+    vertical-align: top
 }
 
 /*.resultTable table {*/
@@ -177,7 +180,8 @@ table th {
     font-style: italic;
     opacity: 75;
 }
-.help{
+
+.help {
     font-size: small;
     color: darkgrey;
     font-weight: lighter;
@@ -211,6 +215,14 @@ table th {
     justify-content: left;
 }
 
+.pointsDontMatch {
+    background-color: lightpink;
+}
+
+.pointsMatch {
+    background-color: lightgreen;
+}
+
 .message div {
     background: lavender;
     justify-content: left;
@@ -227,6 +239,7 @@ table th {
     font-size: inherit;
     padding-top: 0;
 }
+
 .message a {
     color: inherit;
 }
