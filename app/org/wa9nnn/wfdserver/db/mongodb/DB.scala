@@ -140,6 +140,10 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
     scoresCollection.insertOne(scoreRecord).results()
   }
 
+  override def putScores(ranked: Seq[ScoreRecord])(implicit subject: WfdSubject): Unit = {
+    scoresCollection.insertMany(ranked).results()
+  }
+
   override def getScores()(implicit subject: WfdSubject): Future[Seq[ScoreRecord]] = {
     scoresCollection.find().sort(ascending("callCatSect.callSign")).toFuture()
   }

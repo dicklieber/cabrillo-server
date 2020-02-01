@@ -206,6 +206,10 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
     //throw new NotImplementedError() //todo
   }
 
+  override def putScores(ranked: Seq[ScoreRecord])(implicit subject: WfdSubject): Unit = {
+    // throw new NotImplementedError() //todo
+  }
+
   override def getLatest(callSign: CallSign)(implicit subject: WfdSubject): Future[Option[LogInstance]] = {
    Future{
      None

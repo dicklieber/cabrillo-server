@@ -30,6 +30,8 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
     val parent = context.parent
     metrics.timer("ScoringTimer").time {
       val count = db.stationCount()
+      val recordBuilder = Seq.newBuilder[ScoreRecord]
+
       stationsToDo = count
       parent ! StartingScoring(stationsToDo)
       logJson("scoring Start").++("stationsToDo" -> stationsToDo)
@@ -42,12 +44,15 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
             val logInstance: Option[LogInstance] = Await.result[Option[LogInstance]](db.logInstance(csid.entryId), 30 seconds)
             logInstance.map(logInstance => {
               val scoringResult: ScoringResult = scoringEngine.official(logInstance, receivedQsoCache)
-              db.putScore(scoringResult.scoreRecord)
+              //              db.putScore(scoringResult.scoreRecord)
+              recordBuilder += scoringResult.scoreRecord
               stationMeter.mark()
               qsoKinds(scoringResult.qsoResult.qsoKinds)
               scoringResult
             }
             )
+
+
           }
           try {
             val duration = java.time.Duration.ofNanos(scoreOneTimer.mean.toLong)
@@ -62,9 +67,11 @@ class ScoringTask @Inject()(db: DBRouter, scoringEngine: ScoringEngine, received
             logger.error(s"Station: ${csid.callSign}", e)
         }
       }
+      val ranked = Ranking(recordBuilder.result())
+      db.putScores(ranked)
     }
 
-    receivedQsoCache.mapValues.foreach{qso =>
+    receivedQsoCache.mapValues.foreach { qso =>
       logger.error(s"leftOver: $qso")
     }
     val mapSize = receivedQsoCache.mapSize

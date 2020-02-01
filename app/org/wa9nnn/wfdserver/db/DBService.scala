@@ -63,6 +63,8 @@ trait DBService {
 
   def putScore(scoreRecord: ScoreRecord)(implicit subject: WfdSubject): Unit
 
+  def putScores(ranked: Seq[ScoreRecord])(implicit subject: WfdSubject): Unit
+
   def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]]
 
   protected val recentLimit: Int = 25

@@ -24,6 +24,7 @@ import scala.concurrent.Future
  */
 @Singleton
 class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging  with DBService {
+
   private val dbs: Map[String, DBService] = {
     val builder = Map.newBuilder[String, DBService]
     if (config.getBoolean("mongodb.enable")) {
@@ -97,6 +98,8 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
   override def dropScoringDb()(implicit subject: WfdSubject): Unit = db.dropScoringDb()
 
   override def putScore(scoreRecord: ScoreRecord)(implicit subject: WfdSubject): Unit = db.putScore(scoreRecord)
+
+  override def putScores(ranked: Seq[ScoreRecord])(implicit subject: WfdSubject): Unit = db.putScores(ranked)
 
   override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] = db.getScores()
 
