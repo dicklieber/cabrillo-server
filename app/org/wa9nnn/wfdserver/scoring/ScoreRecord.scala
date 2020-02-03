@@ -30,15 +30,24 @@ case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoin
 object ScoreRecord {
   def header(stationCount: Int): Seq[Seq[Any]] = Seq(
     Seq(Cell(f"Station Scores ($stationCount)")
-      .withColSpan(8)),
+      .withColSpan(8)
+      .withCssClass("tablesorter-noSort")),
     Seq(
       Cell("CallSign").withRowSpan(2),
       Cell("Category").withRowSpan(2),
       Cell("Section").withRowSpan(2),
-      Cell("Rank").withColSpan(2),
-      Cell("Score").withColSpan(2),
+      Cell("Rank")
+        .withColSpan(2)
+        .withCssClass("tablesorter-noSort"),
+      Cell("Score")
+        .withColSpan(2)
+        .withCssClass("tablesorter-noSort"),
       Cell("Errant QSOs").withRowSpan(2)
     ),
-    Seq("Overall", "Category", "Awarded", "Claimed")
+    Seq(Cell("Overall"),
+      Cell("Category"),
+      Cell("Awarded"),
+      Cell("Claimed")
+    )
   )
 }

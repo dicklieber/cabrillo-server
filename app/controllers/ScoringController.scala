@@ -49,7 +49,8 @@ class ScoringController @Inject()(cc: ControllerComponents,
         .reverse
         .map(_.toRow)
       val table = new Table(ScoreRecord.header(rows.length), rows)
-        .withCssClass("resultTable")
+        .withCssClass("resultTable tablesorter")
+          .withId("scoresTable")
       Ok(views.html.scores(table))
     }
   }

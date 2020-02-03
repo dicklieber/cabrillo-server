@@ -2,7 +2,23 @@
 @import com.typesafe.config.Config
 @(scoreTable: Table)(implicit request: play.api.mvc.Request[AnyContent], config: Config)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+<script type="text/javascript" src="@routes.Assets.versioned("javascripts/jquery.tablesorter.min.js")"></script>
+<link href="@routes.Assets.versioned("themes/blue/blue.css")" rel="stylesheet">
+
+
+<script>
+        $(function() {
+            $("#scoresTable").tablesorter();
+        });
+
+</script>
+
+
+    <!-- tablesorter widgets (optional) -->
+<script type="text/javascript" src="@routes.Assets.versioned("javascripts/jquery.tablesorter.widgets.js")"></script>
 @main("Scores") {
     @renderTable(scoreTable)
 }

@@ -1,0 +1,25 @@
+.tablesorter thead tr .tablesorter-headerUnSorted {
+    background-image: url('/assets/themes/blue/bg.gif');
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+    padding: 4px 20px 4px 4px;
+}
+.tablesorter thead tr .tablesorter-headerAsc {
+    background-image: url('/assets/themes/blue/asc.gif');
+    background-repeat: no-repeat;
+    background-position:  right;
+    cursor: pointer;
+    padding: 4px 20px 4px 4px;
+}
+.tablesorter thead tr .tablesorter-headerDesc {
+    background-image: url('/assets/themes/blue/desc.gif');
+    background-repeat: no-repeat;
+    background-position:  right;
+    cursor: pointer;
+    padding: 4px 20px 4px 4px;
+}
+
+.tablesorter .tablesorter-header.tablesorter-noSort {
+    background-image: url();
+}
