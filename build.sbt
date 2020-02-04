@@ -57,8 +57,8 @@ libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
   "io.dropwizard.metrics" % "metrics-core" % "4.1.2",
   "com.kenshoo" %% "metrics-play" % "2.7.3_0.8.2",
   "nl.grons" %% "metrics4-scala" % "4.1.1",
-  "org.planet42" %% "laika-core" % "0.12.1"
-
+  "org.planet42" %% "laika-core" % "0.12.1",
+  "com.opencsv" % "opencsv" % "5.1"
 )
 
 //RPM

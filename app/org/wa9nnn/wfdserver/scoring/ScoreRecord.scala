@@ -22,16 +22,24 @@ case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoin
       categoryRank,
       Cell(awardedPoints).withCssClass(pointsClass),
       Cell(claimedPoints.getOrElse("")).withCssClass(pointsClass),
-      if(scoreFilter.includeErrantDetail) {
+      if (scoreFilter.includeErrantDetail) {
         Cell.rawHtml(errant.map(_.toString).mkString("<br/>")).withCssClass("matchedQsos")
-      }else{
-        if(errant.isEmpty){
+      } else {
+        if (errant.isEmpty) {
           ""
-        }else{
+        } else {
           f"${errant.size} bad QSOs"
         }
       }
     )
+  }
+
+  def toCsv: Array[String] = {
+    implicit def iToS(in: Int): String = in.toString
+    implicit def oiToS(in: Option[Int]): String = in.map(in => in.toString).getOrElse("")
+
+    val ccs = callCatSect
+    Seq[String](ccs.callSign, ccs.category, ccs.arrlSection, overallRank, categoryRank, awardedPoints, claimedPoints, errant.length).toArray
   }
 }
 

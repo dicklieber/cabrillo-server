@@ -1,15 +1,18 @@
 package controllers
 
+import java.io.StringWriter
+
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
 import be.objectify.deadbolt.scala.{ActionBuilders, AuthenticatedRequest}
+import com.opencsv.CSVWriter
 import com.typesafe.config.Config
 import javax.inject._
 import org.wa9nnn.wfdserver.auth.SubjectAccess
 import org.wa9nnn.wfdserver.bulkloader.StatusRequest
-import org.wa9nnn.wfdserver.db.{DBRouter, ScoreFilter}
 import org.wa9nnn.wfdserver.db.ScoreFilter._
+import org.wa9nnn.wfdserver.db.{DBRouter, ScoreFilter}
 import org.wa9nnn.wfdserver.htmlTable.{Row, Table}
 import org.wa9nnn.wfdserver.scoring.{ScoreRecord, ScoringStatus, StartScoringRequest}
 import org.wa9nnn.wfdserver.util.JsonLogging
@@ -20,6 +23,7 @@ import play.api.mvc.{Action, _}
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
+import scala.util.{Try, Using}
 
 @Singleton
 class ScoringController @Inject()(cc: ControllerComponents,
@@ -61,7 +65,7 @@ class ScoringController @Inject()(cc: ControllerComponents,
   }
 
 
-  def viewFiteredScores() = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
+  def viewFiteredScores(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() { implicit request =>
 
     val ff: Form[ScoreFilter] = scoreFilterForm.bindFromRequest()
 
@@ -70,18 +74,41 @@ class ScoringController @Inject()(cc: ControllerComponents,
   }
 
   def showScores(scoreFilterForm: Form[ScoreFilter])(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
-    val categoriesBuilder = Set.newBuilder[String]
-    val sectionsBuilder = Set.newBuilder[String]
 
     val scoreFilter = scoreFilterForm.get
 
-    val ff =( if( scoreFilter.submit == "All"){
-      scoreFilterForm.fill( ScoreFilter(includeErrantDetail = scoreFilter.includeErrantDetail))
-    }else{
-      scoreFilterForm
-    })
+    if (scoreFilter.submit == "All") {
+      sendScore(scoreFilter, scoreFilterForm.fill(ScoreFilter(includeErrantDetail = scoreFilter.includeErrantDetail)))
+    } else if (scoreFilter.submit.startsWith("Download")) {
+      sendCsv(scoreFilter)
+    } else {
+      sendScore(scoreFilter, scoreFilterForm)
+    }
+  }
 
+  def sendCsv(scoreFilter: ScoreFilter)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
+    db.getScores(scoreFilter).map { scoreRrecords =>
+      val stringOrError: Try[String] = Using(new StringWriter()) { sw =>
+        val writer = new CSVWriter(sw)
+        writer.writeNext(Array("CallSign", "Category", "Section", "OverallRank", "CategoryRank", "AwardedScore", "ClaimedScore", "ErrantQSOs"))
+        scoreRrecords.foreach { sr =>
+          writer.writeNext(sr.toCsv)
+        }
+        writer.flush()
+        sw.toString
+      }
 
+      Ok(stringOrError.get).withHeaders(
+        "Content-Type" -> "text/csv",
+        "Content-disposition" -> s"attachment; filename=wfdscores.csv"
+      )
+
+    }
+  }
+
+  def sendScore(scoreFilter: ScoreFilter, ff: Form[ScoreFilter])(implicit request: AuthenticatedRequest[AnyContent]):Future[Result] ={
+    val categoriesBuilder = Set.newBuilder[String]
+    val sectionsBuilder = Set.newBuilder[String]
     db.getScores(scoreFilter).map { records =>
       val rows: Seq[Row] = records
         .sortBy(_.awardedPoints)
@@ -100,8 +127,6 @@ class ScoringController @Inject()(cc: ControllerComponents,
         sectionsBuilder.result().toSeq.sorted.prepended(chooseSection)
       ))
     }
-
   }
-
 }
 
