@@ -1,6 +1,9 @@
 @import org.wa9nnn.wfdserver.htmlTable.Table
 @import com.typesafe.config.Config
-@(scoreTable: Table)(implicit request: play.api.mvc.Request[AnyContent], config: Config)
+@import org.wa9nnn.wfdserver.db.ScoreFilter
+@import helper._
+
+@(scoreTable: Table, scoreFilterForm: Form[ScoreFilter], categories: Seq[String], sections: Seq[String])(implicit request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -10,16 +13,46 @@
 
 
 <script>
-        $(function() {
+        $(function () {
             $("#scoresTable").tablesorter();
         });
 
 </script>
-
+    @implicitField = @{
+        helper.FieldConstructor(views.html.fieldConstructor.f)
+    }
 
     <!-- tablesorter widgets (optional) -->
 <script type="text/javascript" src="@routes.Assets.versioned("javascripts/jquery.tablesorter.widgets.js")"></script>
 @main("Scores") {
+
+    <fieldset>
+        <legend>Filter</legend>
+        @form(action = routes.ScoringController.viewFiteredScores()) {
+            <table>
+                <tr>
+                    <td>@select(
+                        field = scoreFilterForm("category"),
+                        options = categories.map(cat => cat -> cat)
+                    )</td>
+                    <td>@select(
+                        field = scoreFilterForm("section"),
+                        options = sections.map(sect => sect -> sect)
+                    )
+                    </td>
+                    <td>
+                        <label for="errant">
+                            Include Errant QSOs detail.</label> @checkbox(scoreFilterForm("includeErrantDetail"), Symbol("id") -> "errant")
+                    </td>
+                    <td><input type="submit" name="submit" value="View"></td>
+                    <td><input type="submit" name="submit" value="All"></td>
+                </tr>
+
+            </table>
+
+
+        }
+    </fieldset>
     @renderTable(scoreTable)
 }
 

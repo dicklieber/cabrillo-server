@@ -22,6 +22,7 @@ GET         /bulkLoad/status        controllers.BulkLoaderController.status()
 POST        /scoring/start          controllers.ScoringController.start()
 GET         /scoring/status         controllers.ScoringController.status()
 GET         /scoring/view           controllers.ScoringController.viewScores()
+POST        /scoring/view           controllers.ScoringController.viewFiteredScores()
 
 GET         /userList               controllers.UserController.index()
 GET         /userEditor             controllers.UserController.edit(userId:String)

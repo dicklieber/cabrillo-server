@@ -1,6 +1,7 @@
 
 package org.wa9nnn.wfdserver.db
 
+import org.mongodb.scala.bson.conversions.Bson
 import org.wa9nnn.wfdserver.CallSignId
 import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.htmlTable.Table
@@ -65,9 +66,16 @@ trait DBService {
 
   def putScores(ranked: Seq[ScoreRecord])(implicit subject: WfdSubject): Unit
 
-  def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]]
+  def getScores(scoreFilter: ScoreFilter)(implicit subject: WfdSubject): Future[Seq[ScoreRecord]]
 
   protected val recentLimit: Int = 25
 }
 
+import ScoreFilter._
 
+case class ScoreFilter(category: Option[String] = Some(chooseCategory), section: Option[String] = Some(chooseSection), includeErrantDetail: Boolean = true, submit:String = "All")
+
+object ScoreFilter {
+  val chooseCategory = "-Category-"
+  val chooseSection = "-Section-"
+}

@@ -6,7 +6,7 @@ import nl.grons.metrics4.scala.{DefaultInstrumented, Timer}
 import org.wa9nnn.cabrillo.requirements.Frequencies
 import org.wa9nnn.wfdserver.auth.WfdSubject
 import org.wa9nnn.wfdserver.db.mysql.Tables._
-import org.wa9nnn.wfdserver.db.{DBService, mysql}
+import org.wa9nnn.wfdserver.db.{DBService, ScoreFilter, mysql}
 import org.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import org.wa9nnn.wfdserver.model._
@@ -220,7 +220,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
    Await.result[Int]( db.run(Entries.length.result), 10 seconds)
   }
 
-  override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] ={
+  override def getScores(scoreFilter: ScoreFilter)(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] ={
    Future{
      Seq.empty
    }

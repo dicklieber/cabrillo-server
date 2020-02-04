@@ -144,14 +144,30 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
     scoresCollection.insertMany(ranked).results()
   }
 
-  override def getScores()(implicit subject: WfdSubject): Future[Seq[ScoreRecord]] = {
-    scoresCollection.find().sort(ascending("callCatSect.callSign")).toFuture()
+  override def getScores(scoreFilter: ScoreFilter)(implicit subject: WfdSubject): Future[Seq[ScoreRecord]] = {
+    import ScoreFilter._
+    /**
+     * mongodb filter
+     */
+    import com.mongodb.client.model.Filters._
+
+    val category = scoreFilter.category.getOrElse("")
+    (if (category != chooseCategory) {
+      scoresCollection.find(equal("callCatSect.category", category))
+    } else {
+      val section = scoreFilter.section.getOrElse("")
+      if (section != chooseSection) {
+        scoresCollection.find(equal("callCatSect.arrlSection", section))
+      } else {
+        scoresCollection.find()
+      }
+    }).sort(ascending("callCatSect.callSign")).toFuture()
   }
 
 }
 
 object DB {
-  private  val customCodecs: CodecRegistry = fromProviders(
+  private val customCodecs: CodecRegistry = fromProviders(
     // These tell the Scala MongoDB driver which case classes we will be using.
     // This lets Mongo automatically map between scala case classes and mongos BSON document objects.
     classOf[LogInstance],
@@ -172,7 +188,7 @@ object DB {
     classOf[QsoResult],
     classOf[ScoringResult],
   )
-   val codecRegistry: CodecRegistry = fromRegistries(customCodecs,
+  val codecRegistry: CodecRegistry = fromRegistries(customCodecs,
     DEFAULT_CODEC_REGISTRY)
 
 }

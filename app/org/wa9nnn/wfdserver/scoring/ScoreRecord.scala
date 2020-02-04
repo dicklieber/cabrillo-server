@@ -2,12 +2,12 @@
 package org.wa9nnn.wfdserver.scoring
 
 import controllers.routes
+import org.wa9nnn.wfdserver.db.ScoreFilter
 import org.wa9nnn.wfdserver.htmlTable.{Cell, Row, RowSource}
 import org.wa9nnn.wfdserver.model.CallCatSect
 
-case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoints: Option[Int], errant: Seq[MatchedQso], overallRank: Option[Int] = None, categoryRank: Option[Int] = None)
-  extends RowSource {
-  override def toRow: Row = {
+case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoints: Option[Int], errant: Seq[MatchedQso], overallRank: Option[Int] = None, categoryRank: Option[Int] = None) {
+  def toRow(scoreFilter: ScoreFilter): Row = {
     val pointsClass = if (claimedPoints.getOrElse(-1) == awardedPoints) {
       "pointsMatch"
     } else {
@@ -22,7 +22,15 @@ case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoin
       categoryRank,
       Cell(awardedPoints).withCssClass(pointsClass),
       Cell(claimedPoints.getOrElse("")).withCssClass(pointsClass),
-      Cell.rawHtml(errant.map(_.toString).mkString("<br/>")).withCssClass("matchedQsos")
+      if(scoreFilter.includeErrantDetail) {
+        Cell.rawHtml(errant.map(_.toString).mkString("<br/>")).withCssClass("matchedQsos")
+      }else{
+        if(errant.isEmpty){
+          ""
+        }else{
+          f"${errant.size} bad QSOs"
+        }
+      }
     )
   }
 }

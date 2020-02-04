@@ -11,7 +11,7 @@ import org.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
 import org.wa9nnn.wfdserver.htmlTable.Table
 import org.wa9nnn.wfdserver.model.LogInstance
 import org.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import org.wa9nnn.wfdserver.scoring.{ScoreRecord, ScoringResult}
+import org.wa9nnn.wfdserver.scoring.ScoreRecord
 import org.wa9nnn.wfdserver.util.JsonLogging
 
 import scala.concurrent.Future
@@ -101,7 +101,7 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
 
   override def putScores(ranked: Seq[ScoreRecord])(implicit subject: WfdSubject): Unit = db.putScores(ranked)
 
-  override def getScores()(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] = db.getScores()
+  override def getScores(scoreFilter: ScoreFilter)(implicit subject: WfdSubject):Future[Seq[ScoreRecord]] = db.getScores(scoreFilter)
 
 }
 
