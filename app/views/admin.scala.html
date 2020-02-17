@@ -1,7 +1,7 @@
 @import controllers.DbName
-@import org.wa9nnn.wfdserver.db.DBRouter
+@import com.wa9nnn.wfdserver.db.DBRouter
 @import helper._
-@import org.wa9nnn.wfdserver.auth.WfdSubject
+@import com.wa9nnn.wfdserver.auth.WfdSubject
 @import com.typesafe.config.Config
 @(stuffForm: Form[DbName], dbRouter: DBRouter, dbName: String)(implicit request: play.api.mvc.Request[AnyContent], messagesProvider: MessagesProvider, subject:WfdSubject, config: Config)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -14,7 +14,7 @@
                         <legend>Actions</legend>
 
                         <table class="menu">
-                            @for(mi <- org.wa9nnn.wfdserver.AdminMenu.menuItems){
+                            @for(mi <- com.wa9nnn.wfdserver.AdminMenu.menuItems){
                                 <tr>
                                     <td class="help">@Html(mi.help)</td>
                                     <td> <button onclick="window.location.href = '@{mi.call.url}';">@{mi.button}</button></td>

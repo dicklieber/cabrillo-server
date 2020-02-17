@@ -5,9 +5,9 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import javax.inject._
-import org.wa9nnn.wfdserver.auth.SubjectAccess
-import org.wa9nnn.wfdserver.db.DBRouter
-import org.wa9nnn.wfdserver.htmlTable._
+import com.wa9nnn.wfdserver.auth.SubjectAccess
+import com.wa9nnn.wfdserver.db.DBRouter
+import com.wa9nnn.wfdserver.htmlTable._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}

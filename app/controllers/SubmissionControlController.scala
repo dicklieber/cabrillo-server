@@ -7,7 +7,7 @@ import be.objectify.deadbolt.scala.ActionBuilders
 import com.google.inject.Inject
 import com.typesafe.config.Config
 import javax.inject.Singleton
-import org.wa9nnn.wfdserver.contest.{Message, SubmissionConfig, SubmissionControlDao, Times}
+import com.wa9nnn.wfdserver.contest.{Message, SubmissionConfig, SubmissionControlDao, Times}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._

@@ -4,10 +4,10 @@
 * two arguments, a `String` for the title of the page and an `Html`
 * object to insert into the body of the page.
 *@
-@import org.wa9nnn.wfdcheck.BuildInfo
+@import com.wa9nnn.wfdserver.BuildInfo
 @import java.time.Instant
-@import org.wa9nnn.wfdserver.play.FieldConstructor._
-@import org.wa9nnn.wfdserver.DurationFormat._
+@import com.wa9nnn.wfdserver.play.FieldConstructor._
+@import com.wa9nnn.wfdserver.DurationFormat._
 @import com.typesafe.config.Config
 @(title: String)(content: Html)(implicit request: play.api.mvc.Request[AnyContent], config: Config)
 
@@ -23,7 +23,7 @@
         <table class="layoutTable">
             <tr>
                 <th><a href="\"> <img src="@routes.Assets.versioned("images/wfdlogo.png")" class="wfdLogo" alt="WFD Logotype"/></a>
-                    @if(request.session.get(org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey).isDefined) {
+                    @if(request.session.get(com.wa9nnn.wfdserver.auth.WfdSubject.sessionKey).isDefined) {
                         <br/>
                         <a href="@routes.LoginController.login()" class="credits">Logout</a>
                     }
@@ -44,7 +44,7 @@
                     <a target="_blank" href="https://www.winterfieldday.com">Winter Field Day Association</a>.  Source:
                     <a target="_blank" href="https://github.com/dicklieber/cabrillo-server">http server</a>
                     <a target="_blank" href="https://github.com/dicklieber/cabrillio">cabrillio library</a><br/>
-                    Version: @org.wa9nnn.wfdcheck.BuildInfo.version Built: @Instant.ofEpochMilli(BuildInfo.buildTime.toLong).toString commit: @BuildInfo.gitHeadCommit.getOrElse("--")
+                    Version: @com.wa9nnn.wfdserver.BuildInfo.version Built: @Instant.ofEpochMilli(BuildInfo.buildTime.toLong).toString commit: @BuildInfo.gitHeadCommit.getOrElse("--")
                 </p>
                     <p><a href="@routes.AdminController.adminlanding()"><img src="@routes.Assets.versioned("images/wfdflake.png")" alt="netControl" ></a> </p></td>
             </tr>

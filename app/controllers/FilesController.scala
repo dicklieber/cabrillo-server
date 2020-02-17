@@ -3,7 +3,7 @@ package controllers
 
 import be.objectify.deadbolt.scala.ActionBuilders
 import javax.inject.{Inject, Singleton}
-import org.wa9nnn.wfdserver.CabrilloFileManager
+import com.wa9nnn.wfdserver.CabrilloFileManager
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -19,7 +19,7 @@ class FilesController @Inject()(cc: ControllerComponents,
 
   /**
    *
-   * @param key as returned from a [[org.wa9nnn.wfdserver.util.FileInfo]]
+   * @param key as returned from a [[com.wa9nnn.wfdserver.util.FileInfo]]
    * @return
    */
   def download(key: String): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {

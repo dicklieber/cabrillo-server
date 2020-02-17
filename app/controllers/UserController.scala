@@ -4,8 +4,8 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import javax.inject.Inject
-import org.wa9nnn.wfdserver.auth.{CredentialsDao, UserPasswordRoles}
-import org.wa9nnn.wfdserver.htmlTable._
+import com.wa9nnn.wfdserver.auth.{CredentialsDao, UserPasswordRoles}
+import com.wa9nnn.wfdserver.htmlTable._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}

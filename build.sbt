@@ -1,15 +1,11 @@
-import NativePackagerHelper._
-import play.sbt.routes.RoutesKeys
+name := "wfdserver"
+
+organization := "com.wa9nnn"
 
 maintainer := "wa9nnn@u505.com"
 
-name := "wfdcheck"
 
-
-organization := "org.wa9nnn"
-
-
-lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin, LinuxPlugin, UniversalPlugin).settings(
+lazy val `wfdserver` = (project in file(".")).enablePlugins(PlayScala, BuildInfoPlugin, LinuxPlugin, UniversalPlugin).settings(
   buildInfoKeys ++= Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion,
     git.gitCurrentTags, git.gitCurrentBranch, git.gitHeadCommit, git.gitHeadCommitDate, git.baseVersion,
     BuildInfoKey.action("buildTime") {
@@ -17,10 +13,11 @@ lazy val `wfdcheck` = (project in file(".")).enablePlugins(PlayScala, BuildInfoP
     } // re-computed each time at compile)
   ),
   //    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitCurrentTags, git.gitCurrentBranch),
-  buildInfoPackage := "org.wa9nnn.wfdcheck"
+  buildInfoPackage := "com.wa9nnn.wfdserver"
 )
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+resolvers += Resolver.bintrayRepo("dicklieber", "maven")
 
 resolvers += "Akka Snapshot Repository" at "https://repo.akka.io/snapshots/"
 
@@ -38,7 +35,7 @@ initialize := {
 
 
 libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
-  "com.github.dicklieber" %% "cabrillo" % "0.3.6",
+  "com.wa9nnn" %% "cabrillo-lib" % "1.0.0",
   "com.typesafe.play" %% "play-slick" % "5.0.0",
   "com.typesafe.play" %% "play-json" % "2.8.1",
   "ch.qos.logback" % "logback-classic" % "1.2.3",
@@ -66,7 +63,7 @@ packageSummary in Linux := "wfdserver"
 
 rpmVendor := "wa9nnn"
 
-packageDescription := """Checks and ingests cabrillo files into a database."""
+packageDescription := """Checks and ingests WFD cabrillo files into a database & scores"""
 
 
 rpmLicense := Some("None")
@@ -74,16 +71,9 @@ rpmLicense := Some("None")
 rpmRelease := {
   System.currentTimeMillis.toString
 }
-publishTo := Some(Resolver.file("local-ivy", file("target/ivy-repo/releases")))
 
 
-import ReleaseTransformations._
-//import posterous.Publish._
-//
-//val publishReleaseNotes = (ref: ProjectRef) => ReleaseStep(
-//  check  = releaseStepTaskAggregated(check in Posterous in ref),   // upfront check
-//  action = releaseStepTaskAggregated(publish in Posterous in ref) // publish release notes
-//)
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 
 releaseProcess := Seq[ReleaseStep](
@@ -94,12 +84,16 @@ releaseProcess := Seq[ReleaseStep](
   setReleaseVersion,                      // : ReleaseStep
   commitReleaseVersion,                   // : ReleaseStep, performs the initial git checks
   tagRelease,                             // : ReleaseStep
-//  publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
   releaseStepCommand("universal:packageBin"),
+  publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
   setNextVersion,                         // : ReleaseStep
   commitNextVersion,                      // : ReleaseStep
   pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
 )
+
+ThisBuild / organizationName := "Dick Lieber WA9NNN"
+ThisBuild / organizationHomepage := Some(url("http://www.u505.com/cabrillo"))
+ThisBuild / licenses := List("GPL-3.0" -> new URL("https://www.gnu.org/licenses/quick-guide-gplv3.html"))
 
 javaOptions in Universal ++= Seq(
   // JVM memory tuning
@@ -112,15 +106,4 @@ javaOptions in Universal ++= Seq(
 
   "-Dhttp.port=80",
 
-//  // alternative, you can remove the PID file
-//  // s"-Dpidfile.path=/dev/null",
-//
-//  // Use separate configuration file for production environment
-//  s"-Dconfig.file=/usr/share/${packageName.value}/conf/production.conf",
-//
-//  // Use separate logger configuration file for production environment
-//  s"-Dlogger.file=/usr/share/${packageName.value}/conf/production-logger.xml",
-//
-//  // You may also want to include this setting if you use play evolutions
-//  "-DapplyEvolutions.default=true"
 )

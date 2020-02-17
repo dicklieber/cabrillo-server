@@ -1,7 +1,7 @@
-@import org.wa9nnn.wfdserver.htmlTable.Table
-@import org.wa9nnn.wfdserver.NumberOrBlank
+@import com.wa9nnn.wfdserver.htmlTable.Table
+@import com.wa9nnn.wfdserver.NumberOrBlank
 @import com.typesafe.config.Config
-@(result: org.wa9nnn.cabrillo.Result,
+@(result: com.wa9nnn.cabrillo.Result,
         fileName: String,
         autoEntryId: Option[String],
         scoringResultTable: Table)(implicit request: play.api.mvc.Request[AnyContent], config: Config)
@@ -54,7 +54,7 @@
                         }
                         <tr>
                             <th class="rowHeader">Duration</th>
-                            <td class="number">@org.wa9nnn.wfdserver.DurationFormat.apply(result.duration)</td>
+                            <td class="number">@com.wa9nnn.wfdserver.DurationFormat.apply(result.duration)</td>
                         </tr>
                     </table>
 

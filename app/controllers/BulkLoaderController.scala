@@ -6,8 +6,8 @@ import akka.util.Timeout
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import javax.inject._
-import org.wa9nnn.wfdserver.bulkloader.{BuildLoadStatus, StartBulkLoadRequest, StatusRequest}
-import org.wa9nnn.wfdserver.util.JsonLogging
+import com.wa9nnn.wfdserver.bulkloader.{BuildLoadStatus, StartBulkLoadRequest, StatusRequest}
+import com.wa9nnn.wfdserver.util.JsonLogging
 import play.api.mvc.{Action, _}
 
 import scala.concurrent.{ExecutionContext, Future}

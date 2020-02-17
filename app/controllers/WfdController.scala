@@ -6,13 +6,13 @@ import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import javax.inject._
 import nl.grons.metrics4.scala.DefaultInstrumented
-import org.wa9nnn.cabrillo.ResultWithData
-import org.wa9nnn.wfdserver.Loader
-import org.wa9nnn.wfdserver.htmlTable.Table
-import org.wa9nnn.wfdserver.model.LogInstance
-import org.wa9nnn.wfdserver.recaptcha.RecaptchaSupport
-import org.wa9nnn.wfdserver.scoring.ScoringEngine
-import org.wa9nnn.wfdserver.util.JsonLogging
+import com.wa9nnn.cabrillo.ResultWithData
+import com.wa9nnn.wfdserver.Loader
+import com.wa9nnn.wfdserver.htmlTable.Table
+import com.wa9nnn.wfdserver.model.LogInstance
+import com.wa9nnn.wfdserver.recaptcha.RecaptchaSupport
+import com.wa9nnn.wfdserver.scoring.ScoringEngine
+import com.wa9nnn.wfdserver.util.JsonLogging
 import play.api.libs.Files
 import play.api.mvc._
 

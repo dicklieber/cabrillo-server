@@ -1,6 +1,6 @@
-@import org.wa9nnn.wfdserver.htmlTable.Table
+@import com.wa9nnn.wfdserver.htmlTable.Table
 @import com.typesafe.config.Config
-@import org.wa9nnn.wfdserver.db.ScoreFilter
+@import com.wa9nnn.wfdserver.db.ScoreFilter
 @import helper._
 
 @(scoreTable: Table, scoreFilterForm: Form[ScoreFilter], categories: Seq[String], sections: Seq[String])(implicit request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)

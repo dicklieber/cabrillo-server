@@ -4,9 +4,9 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import javax.inject._
-import org.wa9nnn.wfdserver.auth.SubjectAccess
-import org.wa9nnn.wfdserver.db.DBRouter
-import org.wa9nnn.wfdserver.util.JsonLogging
+import com.wa9nnn.wfdserver.auth.SubjectAccess
+import com.wa9nnn.wfdserver.db.DBRouter
+import com.wa9nnn.wfdserver.util.JsonLogging
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext

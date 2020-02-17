@@ -1,4 +1,4 @@
-package org.wa9nnn.wfdserver.auth
+package com.wa9nnn.wfdserver.auth
 
 import org.specs2.mutable.Specification
 

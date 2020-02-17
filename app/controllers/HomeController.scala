@@ -2,7 +2,7 @@ package controllers
 
 import com.typesafe.config.Config
 import javax.inject._
-import org.wa9nnn.wfdserver.contest.SubmissionControlDao
+import com.wa9nnn.wfdserver.contest.SubmissionControlDao
 import play.api.mvc._
 
 /**

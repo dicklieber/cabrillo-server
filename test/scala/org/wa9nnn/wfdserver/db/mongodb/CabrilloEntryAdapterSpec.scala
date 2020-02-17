@@ -1,4 +1,4 @@
-package org.wa9nnn.wfdserver.db.mongodb
+package com.wa9nnn.wfdserver.db.mongodb
 
 import org.specs2.mutable.Specification
 

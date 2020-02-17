@@ -4,11 +4,11 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import javax.inject.Inject
-import org.wa9nnn.wfdserver.auth.WfdSubject._
-import org.wa9nnn.wfdserver.auth.{CredentialsDao, UserPassword}
-import org.wa9nnn.wfdserver.db.DBRouter
-import org.wa9nnn.wfdserver.recaptcha.RecaptchaSupport
-import org.wa9nnn.wfdserver.util.JsonLogging
+import com.wa9nnn.wfdserver.auth.WfdSubject._
+import com.wa9nnn.wfdserver.auth.{CredentialsDao, UserPassword}
+import com.wa9nnn.wfdserver.db.DBRouter
+import com.wa9nnn.wfdserver.recaptcha.RecaptchaSupport
+import com.wa9nnn.wfdserver.util.JsonLogging
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._

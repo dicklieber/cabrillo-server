@@ -6,15 +6,15 @@ import com.github.racc.tscg.TypesafeConfigModule
 import com.google.inject.{AbstractModule, Provides}
 import javax.inject.{Named, Singleton}
 import net.codingwell.scalaguice.ScalaModule
-import org.wa9nnn.wfdserver.actor.GuiceActorCreator
-import org.wa9nnn.wfdserver.auth.{WFDAuthorizedRoutes, WfdHandlerCache}
-import org.wa9nnn.wfdserver.bulkloader.BulkLoader
-import org.wa9nnn.wfdserver.scoring.ScoringActor
+import com.wa9nnn.wfdserver.actor.GuiceActorCreator
+import com.wa9nnn.wfdserver.auth.{WFDAuthorizedRoutes, WfdHandlerCache}
+import com.wa9nnn.wfdserver.bulkloader.BulkLoader
+import com.wa9nnn.wfdserver.scoring.ScoringActor
 import play.api.{Configuration, Environment}
 
 class Module(environment: Environment, configuration: Configuration) extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
-    install(TypesafeConfigModule.fromConfigWithPackage(configuration.underlying, "org.wa9nnn.wfdserver"))
+    install(TypesafeConfigModule.fromConfigWithPackage(configuration.underlying, "com.wa9nnn.wfdserver"))
 
     bind[AuthorizedRoutes].to[WFDAuthorizedRoutes]
     bind[HandlerCache].to[WfdHandlerCache]

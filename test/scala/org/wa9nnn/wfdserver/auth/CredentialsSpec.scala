@@ -1,4 +1,4 @@
-package org.wa9nnn.wfdserver.auth
+package com.wa9nnn.wfdserver.auth
 
 import java.nio.file.{Files, Path}
 

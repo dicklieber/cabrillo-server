@@ -9,13 +9,13 @@ import be.objectify.deadbolt.scala.{ActionBuilders, AuthenticatedRequest}
 import com.opencsv.CSVWriter
 import com.typesafe.config.Config
 import javax.inject._
-import org.wa9nnn.wfdserver.auth.SubjectAccess
-import org.wa9nnn.wfdserver.bulkloader.StatusRequest
-import org.wa9nnn.wfdserver.db.ScoreFilter._
-import org.wa9nnn.wfdserver.db.{DBRouter, ScoreFilter}
-import org.wa9nnn.wfdserver.htmlTable.{Row, Table}
-import org.wa9nnn.wfdserver.scoring.{ScoreRecord, ScoringStatus, StartScoringRequest}
-import org.wa9nnn.wfdserver.util.JsonLogging
+import com.wa9nnn.wfdserver.auth.SubjectAccess
+import com.wa9nnn.wfdserver.bulkloader.StatusRequest
+import com.wa9nnn.wfdserver.db.ScoreFilter._
+import com.wa9nnn.wfdserver.db.{DBRouter, ScoreFilter}
+import com.wa9nnn.wfdserver.htmlTable.{Row, Table}
+import com.wa9nnn.wfdserver.scoring.{ScoreRecord, ScoringStatus, StartScoringRequest}
+import com.wa9nnn.wfdserver.util.JsonLogging
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}

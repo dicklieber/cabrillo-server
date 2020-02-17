@@ -3,12 +3,12 @@ package controllers
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import javax.inject._
-import org.wa9nnn.wfdserver.CabrilloFileManager
-import org.wa9nnn.wfdserver.auth.SubjectAccess
-import org.wa9nnn.wfdserver.auth.WfdSubject.sessionKey
-import org.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
-import org.wa9nnn.wfdserver.htmlTable._
-import org.wa9nnn.wfdserver.scoring.ScoringEngine
+import com.wa9nnn.wfdserver.CabrilloFileManager
+import com.wa9nnn.wfdserver.auth.SubjectAccess
+import com.wa9nnn.wfdserver.auth.WfdSubject.sessionKey
+import com.wa9nnn.wfdserver.db.{DBRouter, EntryViewData}
+import com.wa9nnn.wfdserver.htmlTable._
+import com.wa9nnn.wfdserver.scoring.ScoringEngine
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, _}

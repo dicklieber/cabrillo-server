@@ -1,4 +1,4 @@
-package org.wa9nnn.wfdserver
+package com.wa9nnn.wfdserver
 
 import org.specs2.mutable.Specification
 
