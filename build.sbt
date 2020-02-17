@@ -85,7 +85,7 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,                   // : ReleaseStep, performs the initial git checks
   tagRelease,                             // : ReleaseStep
   releaseStepCommand("universal:packageBin"),
-  publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
+//  publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
   setNextVersion,                         // : ReleaseStep
   commitNextVersion,                      // : ReleaseStep
   pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
@@ -95,6 +95,7 @@ ThisBuild / organizationName := "Dick Lieber WA9NNN"
 ThisBuild / organizationHomepage := Some(url("http://www.u505.com/cabrillo"))
 ThisBuild / licenses := List("GPL-3.0" -> new URL("https://www.gnu.org/licenses/quick-guide-gplv3.html"))
 
+publishTo := Some(Resolver.bintrayRepo("dicklieber", "WinterFielddayServer"))
 javaOptions in Universal ++= Seq(
   // JVM memory tuning
 //  "-J-Xmx1024m",
