@@ -4,6 +4,8 @@ import be.objectify.deadbolt.scala.cache.HandlerCache
 import be.objectify.deadbolt.scala.filters.AuthorizedRoutes
 import com.github.racc.tscg.TypesafeConfigModule
 import com.google.inject.{AbstractModule, Provides}
+import com.wa9nnn.cabrillo.Cabrillo
+import com.wa9nnn.cabrillo.requirements.ContestInfo
 import javax.inject.{Named, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import com.wa9nnn.wfdserver.actor.GuiceActorCreator
@@ -18,6 +20,7 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
 
     bind[AuthorizedRoutes].to[WFDAuthorizedRoutes]
     bind[HandlerCache].to[WfdHandlerCache]
+    bind[ContestInfo].toInstance(Cabrillo.rules.contestInfo)
   }
 
   @Provides

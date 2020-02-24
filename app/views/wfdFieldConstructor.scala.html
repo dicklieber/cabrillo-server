@@ -1,0 +1,13 @@
+@(elements: helper.FieldElements)
+
+<div class="field @if(elements.hasErrors) {error}">
+    <label for="@elements.id">@elements.label</label>: @elements.input
+    @if(elements.hasErrors) {
+        <p class="error">@elements.errors.mkString(", ")</p>
+            <!-- The default renders this. To get rid of format.boolean do not include it.  -->
+            <!-- <span class="info">
+        @elements.infos.mkString(", ")
+    </
+--span> -->
+}
+</div>

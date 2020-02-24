@@ -127,6 +127,7 @@ h2 {
 table th {
     text-align: left;
     border-collapse: collapse;
+
     /*background: darkgrey;*/
     /*color: white;*/
 }
@@ -151,7 +152,9 @@ table th {
 .resultTable td {
     border: 1px solid black;
     padding: 2px;
-    vertical-align: top
+    vertical-align: top;
+    white-space: nowrap;
+
 }
 
 /*.resultTable table {*/
