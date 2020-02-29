@@ -1,0 +1,62 @@
+@import helper._
+@import com.wa9nnn.wfdserver.play.WfdFieldConstructor._
+@import com.wa9nnn.wfdserver.paper.PaperLogHeader
+@import com.wa9nnn.wfdserver.auth.WfdSubject
+@import com.typesafe.config.Config
+@import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+@(callSign:Option[CallSign], paperHeaderForm: Form[PaperLogHeader])(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
+    @paperEditor(callSign) {
+        <h2>@paperHeaderForm("callSign").value.get</h2>
+        @form(action = routes.PaperLogController.updateHeader()) {
+            <input type="hidden" name="callSign" value="@paperHeaderForm("callSign").value.get">
+            <table class="resultTable capsContainer">
+                <tr>
+                    <td>
+                    @inputText(paperHeaderForm("club"))
+                    </td>
+                    <td>
+                    @inputText(paperHeaderForm("name"))
+                    </td>
+                    <td>
+                    @inputText(paperHeaderForm("email"))
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    @inputText(paperHeaderForm("address"))
+                    </td>
+                    <td>
+                    @inputText(paperHeaderForm("city"))
+                    </td>
+                    <td>
+                    @inputText(paperHeaderForm("stateProvince"), Symbol("class") -> "caps")
+                    </td>
+                    <td>
+                    @inputText(paperHeaderForm("postalCode"))
+                    </td>
+                    <td>
+                    @inputText(paperHeaderForm("country"))
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    @inputText(paperHeaderForm("category"), Symbol("class") -> "caps")
+                    </td>
+                    <td>
+                    @inputText(paperHeaderForm("section"), Symbol("class") -> "caps")
+                    </td>
+                </tr>
+                <tr>
+                    <td>@inputText(paperHeaderForm("txPower"))</td>
+                    <td>@checkbox(paperHeaderForm("noMainPower"))</td>
+                    <td>@checkbox(paperHeaderForm("awayFromHome"))</td>
+                    <td>@checkbox(paperHeaderForm("outdoors"))</td>
+                    <td>@checkbox(paperHeaderForm("satellite"))</td>
+                </tr>
+                <tr>
+                    <td><input type="submit" name="submit" value="Update header"></td>
+                </tr>
+            </table>
+
+        }
+    }

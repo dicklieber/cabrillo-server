@@ -1,0 +1,35 @@
+@import com.wa9nnn.wfdserver.model.PaperLogQso
+@import com.wa9nnn.wfdserver.auth.WfdSubject
+@import com.typesafe.config.Config
+@import views.html.helper.form
+@import com.wa9nnn.wfdserver.play.WfdLabelAbove._
+@import com.wa9nnn.wfdserver.htmlTable.Table
+
+@import views.html.helper.inputText
+@import views.html.helper.inputDate
+@(paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
+
+@paperEditor(paperQsoForm("callSign").value) {
+    <h2>@paperQsoForm("callSign").value.get</h2>
+
+
+    @form(action = routes.PaperLogController.addQso()) {
+
+        @renderTable(qsosTable)
+
+        <input type="hidden", name="callSign" value="@paperQsoForm("callSign").value.get">
+        <table>
+            <tr>
+                <td>@inputText(paperQsoForm("freq"))</td>
+                <td>@inputText(paperQsoForm("mode"), Symbol("class") -> "caps")</td>
+                <td>@inputDate(paperQsoForm("date"))</td>
+                <td>@inputText(paperQsoForm("time"))</td>
+                <td>@inputText(paperQsoForm("theirCall"), Symbol("class") -> "caps")</td>
+                <td>@inputText(paperQsoForm("catSect"), Symbol("class") -> "caps")</td>
+            </tr>
+            <tr>
+                <td colspan="5"><input type="submit" name="submit" value="Add QSO"></td>
+            </tr>
+        </table>
+    }
+}

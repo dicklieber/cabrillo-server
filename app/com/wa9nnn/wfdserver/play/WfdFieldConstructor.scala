@@ -15,3 +15,13 @@ package object WfdFieldConstructor
   }
 
 }
+
+package object WfdLabelAbove
+{
+  implicit val fieldConstructor: FieldConstructor = new FieldConstructor {
+    def apply(elements: FieldElements): play.twirl.api.Html = {
+      html.wfdLabelAbove(elements)
+    }
+  }
+
+}
