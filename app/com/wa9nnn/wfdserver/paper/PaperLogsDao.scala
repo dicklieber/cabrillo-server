@@ -36,6 +36,7 @@ class PaperLogsDao @Inject()(@TypesafeConfig("wfd.paperLogDirectory") paperLogDi
    * @return
    */
   def list(user: Option[String] = None): Seq[PaperLogMetadata] = {
+    Files.createDirectories(directory)
     Files.list(directory)
       .toScala(Iterator)
       .filterNot(Files.isHidden)

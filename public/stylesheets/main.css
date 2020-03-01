@@ -226,6 +226,10 @@ table th {
     background-color: lightgreen;
 }
 
+.qsoTable td {
+    vertical-align:top;
+}
+
 .message div {
     background: lavender;
     justify-content: left;

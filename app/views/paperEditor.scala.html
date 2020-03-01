@@ -12,9 +12,13 @@
     <table class="menu">
         <tr>
             <td><button onclick="window.location.href = '@routes.PaperLogController.paperLogList'">Logs</button></td>
-            <td><button onclick="window.location.href = '@routes.PaperLogController.headerEditor(callSign)'">Header</button></td>
-            <td><button onclick="window.location.href = '@routes.PaperLogController.qsoEditor(callSign)'">QSOs</button></td>
-            <td><button onclick="window.location.href = '@routes.PaperLogController.paperLogList'">Result</button></td>
+            @if(callSign.isDefined) {
+                <td><button onclick="window.location.href = '@routes.PaperLogController.headerEditor(callSign)'">
+                    Header</button></td>
+                <td><button onclick="window.location.href = '@routes.PaperLogController.qsoEditor(callSign)'">
+                    QSOs</button></td>
+                <td><button onclick="window.location.href = '@routes.PaperLogController.paperLogList'">Result</button></td>
+            }
         </tr>
     </table>
 

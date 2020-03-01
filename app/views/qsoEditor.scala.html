@@ -10,6 +10,19 @@
 @(paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
 
 @paperEditor(paperQsoForm("callSign").value) {
+    <script>
+            $(document).ready(function () {
+                $('#qsoTime').focusout(function () {
+                    let v = this.value;
+                    let tokens = v.match("(\\d{2})(\\d{2})");
+                    if (tokens != null) {
+                        let r = tokens[1] + ":" + tokens[2];
+                        $(this).val(r)
+                    }
+                });
+            });
+    </script>
+
     <h2>@paperQsoForm("callSign").value.get</h2>
 
 
@@ -18,12 +31,12 @@
         @renderTable(qsosTable)
 
         <input type="hidden", name="callSign" value="@paperQsoForm("callSign").value.get">
-        <table>
+        <table class = "qsoTable">
             <tr>
                 <td>@inputText(paperQsoForm("freq"))</td>
                 <td>@inputText(paperQsoForm("mode"), Symbol("class") -> "caps")</td>
                 <td>@inputDate(paperQsoForm("date"))</td>
-                <td>@inputText(paperQsoForm("time"))</td>
+                <td>@inputText(paperQsoForm("time"), Symbol("id") -> "qsoTime")</td>
                 <td>@inputText(paperQsoForm("theirCall"), Symbol("class") -> "caps")</td>
                 <td>@inputText(paperQsoForm("catSect"), Symbol("class") -> "caps")</td>
             </tr>

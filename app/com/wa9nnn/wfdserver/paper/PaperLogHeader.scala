@@ -18,7 +18,18 @@ case class PaperLogHeader(callSign: String = "",
                           awayFromHome: Boolean = false,
                           outdoors: Boolean = false,
                           satellite: Boolean = false
-                         ) extends EditableData
+                         ) extends EditableData {
+  /**
+   *
+   * @return true if minimum data is present.
+   */
+  def isvalid: Boolean = {
+    name.isEmpty ||
+      email.isEmpty ||
+      category.isEmpty ||
+      section.isEmpty
+  }
+}
 
 object TxPower extends Enumeration {
   type TxPower = Value

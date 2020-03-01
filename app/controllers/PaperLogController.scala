@@ -94,16 +94,30 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
       val paperHeaderForm: Form[PaperLogHeader] = formPaperHeader.fill(pl.paperLogHeader)
       val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = callSign))
-          Future(Ok(views.html.paperLogHeader(Some(callSign),paperHeaderForm)))
+      Future(Ok(views.html.paperLogHeader(Some(callSign), paperHeaderForm)))
   }
 
+  /**
+   * from click on callsign.
+   *
+   * @param callSign of interest.
+   */
   def start(callSign: CallSign): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      val pl: PaperLog = paperLog(callSign).paperLog
+      val dao = paperLog(callSign)
+      val pl: PaperLog = dao.paperLog
+      val header = pl.paperLogHeader
+      Future(
+        if (header.isvalid) {
+          val plf: Form[PaperLogHeader] = formPaperHeader.fill(header)
+          Ok(views.html.paperLogHeader(Some(callSign), plf))
+        } else {
+          val qsosTable = dao.qsosTable()
 
-      val paperHeaderForm: Form[PaperLogHeader] = formPaperHeader.fill(pl.paperLogHeader)
-      //      val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = callSign))
-      Future(Ok( views.html.paperLogHeader(Some(callSign), paperHeaderForm)))
+          val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign))
+          Ok(views.html.qsoEditor(paperQsoForm, qsosTable))
+        }
+      )
   }
 
   def qsoEditor(callSign: Option[CallSign]): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
@@ -113,7 +127,8 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
           case Some(cs) =>
             val qsosTable = paperLog(cs).qsosTable()
 
-            val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = cs))
+            val paperLogQso = PaperLogQso(callSign = cs)
+            val paperQsoForm: Form[PaperLogQso] = formQso.fill(paperLogQso)
             Ok(views.html.qsoEditor(paperQsoForm, qsosTable))
           case None =>
             Ok("Please select or create a call sign in the logs tab.")
@@ -139,7 +154,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
     implicit request =>
 
       Future {
-//        val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso())
+        //        val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso())
         formPaperHeader.bindFromRequest.fold(
           formWithErrors => {
             val maybeString = formWithErrors.data.get("callSign")

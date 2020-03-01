@@ -9,7 +9,7 @@
         <h2>@paperHeaderForm("callSign").value.get</h2>
         @form(action = routes.PaperLogController.updateHeader()) {
             <input type="hidden" name="callSign" value="@paperHeaderForm("callSign").value.get">
-            <table class="resultTable capsContainer">
+            <table class="resultTable">
                 <tr>
                     <td>
                     @inputText(paperHeaderForm("club"))

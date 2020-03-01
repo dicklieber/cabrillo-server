@@ -25,15 +25,12 @@
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
         <script>
-        $(document).ready(function () {
-            $('.capsContainer').on("keyup", ".caps", function () {
-                $(this).val($(this).val().toUpperCase());
-            });
-            // $('.caps').keyup(function () {
-            //     $(this).val($(this).val().toUpperCase());
-            // });
-        });
-</script>
+                $(document).ready(function () {
+                    $('.caps').keyup(function () {
+                        $(this).val($(this).val().toUpperCase());
+                    });
+                });
+        </script>
     </head>
     <body>
         <table class="layoutTable">
@@ -45,10 +42,11 @@
                     }
                 </th>
                 <td><h1>
-                @if(config.hasPath("wfd.experimentMessage")) {
-                    <span class="experimental">@config.getString("wfd.experimentMessage")</span>
-                }
-                <br/>@title</h1></td>
+                    @if(config.hasPath("wfd.experimentMessage")) {
+                        <span class="experimental">@config.getString("wfd.experimentMessage")</span>
+                    }
+                    <br/>
+                    @title</h1></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
