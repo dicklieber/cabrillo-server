@@ -7,8 +7,7 @@ import java.time.Instant
 import com.github.racc.tscg.TypesafeConfig
 import com.wa9nnn.wfdserver.auth.WfdSubject
 import com.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, RowSource, Table}
-import com.wa9nnn.wfdserver.model.PaperLogQso
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.{CallSign, PaperLogQso}
 import com.wa9nnn.wfdserver.paper.PaperLogDao.metadata
 import controllers.routes
 import javax.inject.{Inject, Singleton}
@@ -53,7 +52,7 @@ class PaperLogsDao @Inject()(@TypesafeConfig("wfd.paperLogDirectory") paperLogDi
    * @return Left[PaperLogEditor] if ok to edit Right[PaperLog] if somewone else is editing
    */
   def start(callSign: CallSign)(implicit wfdSubject: WfdSubject): PaperLogDao = {
-    val callSignDir = directory.resolve(callSign)
+    val callSignDir = directory.resolve(callSign.fileSafe)
     new PaperLogDao(callSign, callSignDir, wfdSubject)
     //    if (Files.exists(callSignDir)) {
     //      Right(metadata(callSign, callSignDir))
@@ -95,6 +94,8 @@ case class PaperLog(paperLogDetails: PaperLogMetadata, paperLogHeader: PaperLogH
 
 
 object PaperLogFormat {
+  implicit val f = CallSign.callSignFormat
+
   implicit val qsoFormat: Format[PaperLogQso] = Json.format
   implicit val detailsFormat: Format[PaperLogMetadata] = Json.format
   implicit val headerFormat: Format[PaperLogHeader] = Json.format

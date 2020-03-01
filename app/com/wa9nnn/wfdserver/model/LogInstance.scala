@@ -1,7 +1,6 @@
 
 package com.wa9nnn.wfdserver.model
 
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
 /**
  * Object persisted in MongoDB and used for scoring.
@@ -11,12 +10,12 @@ import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
  * @param stationLog everything from cabrillo except the QSOs
  * @param qsos       just the QSOs
  */
-case class LogInstance(_id: String ,
+case class LogInstance(_id: String,
                        qsoCount: Int,
                        stationLog: StationLog,
                        qsos: Seq[Qso]
                       ) {
-   def id: String = _id
+  def id: String = _id
 
-  def callSign:CallSign =  stationLog.callSign
+  def callSign: CallSign = stationLog.callSign
 }

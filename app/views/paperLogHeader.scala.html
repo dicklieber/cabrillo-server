@@ -3,7 +3,7 @@
 @import com.wa9nnn.wfdserver.paper.PaperLogHeader
 @import com.wa9nnn.wfdserver.auth.WfdSubject
 @import com.typesafe.config.Config
-@import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+@import com.wa9nnn.wfdserver.model.CallSign
 @(callSign:Option[CallSign], paperHeaderForm: Form[PaperLogHeader])(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
     @paperEditor(callSign) {
         <h2>@paperHeaderForm("callSign").value.get</h2>

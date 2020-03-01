@@ -108,3 +108,5 @@ javaOptions in Universal ++= Seq(
   "-Dhttp.port=80",
 
 )
+
+routesImport += "com.wa9nnn.wfdserver.model.CallSign._"

@@ -8,7 +8,6 @@ import com.wa9nnn.wfdserver.auth.WfdSubject
 import com.wa9nnn.wfdserver.db.mysql.Tables._
 import com.wa9nnn.wfdserver.db.{DBService, ScoreFilter, mysql}
 import com.wa9nnn.wfdserver.htmlTable.{Header, Row, Table}
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import com.wa9nnn.wfdserver.model._
 import com.wa9nnn.wfdserver.scoring.ScoreRecord
 import com.wa9nnn.wfdserver.util.JsonLogging
@@ -34,7 +33,7 @@ class DB @Inject()(@Inject() protected val dbConfigProvider: DatabaseConfigProvi
 
   private def deleteExisting(callSign: CallSign) = {
     val f = for {
-      entryId <- db.run(Entries.filter(_.callsign === callSign).result.head.map(_.id))
+      entryId <- db.run(Entries.filter(_.callsign === callSign.toString).result.head.map(_.id))
       _ <- db.run(Contacts.filter(_.entryId === entryId).delete)
       _ <- db.run(Soapboxes.filter(_.entryId === entryId).delete)
       _ <- db.run(Entries.filter(_.id === entryId).delete)

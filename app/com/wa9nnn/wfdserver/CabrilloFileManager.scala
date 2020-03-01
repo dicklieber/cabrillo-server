@@ -6,7 +6,7 @@ import java.nio.file.{Files, Path, Paths}
 import com.github.racc.tscg.TypesafeConfig
 import javax.inject.{Inject, Singleton}
 import com.wa9nnn.wfdserver.htmlTable.{Header, Table}
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.CallSign
 import com.wa9nnn.wfdserver.util.{FileInfo, JsonLogging}
 
 import scala.jdk.CollectionConverters._

@@ -2,12 +2,12 @@ package com.wa9nnn.wfdserver.paper
 
 import java.time.{LocalDate, LocalTime}
 
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.CallSign
 import com.wa9nnn.wfdserver.paper
 import com.wa9nnn.wfdserver.paper.TxPower.TxPower
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-case class PaperLogHeader(callSign: String = "",
+case class PaperLogHeader(callSign: CallSign = CallSign.empty,
                           club: String = "",
                           name: String = "",
                           email: String = "",

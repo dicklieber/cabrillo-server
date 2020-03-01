@@ -1,12 +1,10 @@
 
 package com.wa9nnn.wfdserver.db
 
-import org.mongodb.scala.bson.conversions.Bson
 import com.wa9nnn.wfdserver.CallSignId
 import com.wa9nnn.wfdserver.auth.WfdSubject
 import com.wa9nnn.wfdserver.htmlTable.Table
-import com.wa9nnn.wfdserver.model.LogInstance
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.{CallSign, LogInstance}
 import com.wa9nnn.wfdserver.scoring.ScoreRecord
 
 import scala.concurrent.Future
@@ -71,7 +69,7 @@ trait DBService {
   protected val recentLimit: Int = 25
 }
 
-import ScoreFilter._
+import com.wa9nnn.wfdserver.db.ScoreFilter._
 
 case class ScoreFilter(category: Option[String] = Some(chooseCategory), section: Option[String] = Some(chooseSection), includeErrantDetail: Boolean = true, submit:String = "All")
 

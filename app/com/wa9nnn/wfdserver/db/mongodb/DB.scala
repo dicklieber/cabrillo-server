@@ -2,8 +2,8 @@
 package com.wa9nnn.wfdserver.db.mongodb
 
 import nl.grons.metrics4.scala.{DefaultInstrumented, Timer}
-import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
-import org.bson.codecs.configuration.CodecRegistry
+import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries, fromCodecs}
+import org.bson.codecs.configuration.{CodecProvider, CodecRegistry}
 import org.bson.types.ObjectId
 import org.mongodb.scala._
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
@@ -17,13 +17,15 @@ import com.wa9nnn.wfdserver.auth.WfdSubject
 import com.wa9nnn.wfdserver.db._
 import com.wa9nnn.wfdserver.db.mongodb.Helpers._
 import com.wa9nnn.wfdserver.htmlTable.Table
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
-import com.wa9nnn.wfdserver.model._
+import com.wa9nnn.wfdserver.model.{CallSign, _}
 import com.wa9nnn.wfdserver.scoring.{ScoreRecord, _}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
 import DB._
+import org.bson.codecs.pojo.PojoCodecProvider
+import org.bson.{BsonReader, BsonWriter}
+import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 
 /**
  *
@@ -166,7 +168,23 @@ class DB(connectUri: String = "mongodb://localhost", dbName: String = "wfd-test"
 
 }
 
+class CallSignCodec extends Codec[CallSign] {
+  override def decode(reader: BsonReader, decoderContext: DecoderContext): CallSign = {
+    val cs = reader.readString()
+    CallSign(cs)
+  }
+
+  override def encode(writer: BsonWriter, value: CallSign, encoderContext: EncoderContext): Unit = {
+    writer.writeString(value.toString)
+  }
+
+  override def getEncoderClass: Class[CallSign] = classOf[CallSign]
+}
+
 object DB {
+
+  private val csRegistry = fromCodecs(new CallSignCodec())
+
   private val customCodecs: CodecRegistry = fromProviders(
     // These tell the Scala MongoDB driver which case classes we will be using.
     // This lets Mongo automatically map between scala case classes and mongos BSON document objects.
@@ -188,7 +206,9 @@ object DB {
     classOf[QsoResult],
     classOf[ScoringResult],
   )
-  val codecRegistry: CodecRegistry = fromRegistries(customCodecs,
+  val codecRegistry: CodecRegistry = fromRegistries(
+    csRegistry,
+    customCodecs,
     DEFAULT_CODEC_REGISTRY)
 
 }

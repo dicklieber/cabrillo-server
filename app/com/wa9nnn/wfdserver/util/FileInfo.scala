@@ -6,9 +6,10 @@ import java.time.{Clock, Instant}
 
 import controllers.routes
 import com.wa9nnn.wfdserver.htmlTable.{Cell, Row, RowSource}
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.CallSign
 
 import scala.jdk.CollectionConverters._
+import scala.language.implicitConversions
 
 /**
  * Details about a Cabrillo file being saved or retrieved.
@@ -37,7 +38,7 @@ case class FileInfo(callSign: CallSign, stamp: Instant, relativePath: Path) exte
 
   override def compare(that: FileInfo): Int = {
     // Newest at top
-    that.stamp compareTo(this.stamp)
+    that.stamp compareTo this.stamp
   }
 }
 
@@ -56,7 +57,7 @@ object FileInfo {
    * @return
    */
   def subDir(callSign: CallSign): Path = {
-    val safeChars = callSign.replaceAll("/", "")
+    val safeChars = callSign.fileSafe
     Paths.get(safeChars.take(3))
   }
 
@@ -66,11 +67,10 @@ object FileInfo {
    * @param clock    for unit tests so we hae a deterministic time. Normallly use system clock.
    */
   def apply(callSign: CallSign, clock: Clock = Clock.systemUTC()): FileInfo = {
-    val ucCallSign = callSign.toUpperCase //todo where best to do this?
     val now = Instant.now(clock)
-    val fileName = s"$ucCallSign-${instantToHex(now)}.cbr"
-    val path = subDir(ucCallSign).resolve(fileName)
-    new FileInfo(ucCallSign, now, path)
+    val fileName = s"$callSign-${instantToHex(now)}.cbr"
+    val path = subDir(callSign).resolve(fileName)
+    new FileInfo(callSign, now, path)
   }
 
   private val r = """(.+)-(.+).cbr""".r

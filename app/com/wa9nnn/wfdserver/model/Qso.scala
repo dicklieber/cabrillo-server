@@ -5,7 +5,6 @@ import java.time.Instant
 
 import com.wa9nnn.cabrillo.requirements.Frequencies
 import com.wa9nnn.wfdserver.htmlTable.{Header, Row, RowSource}
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import com.wa9nnn.wfdserver.scoring.QsoBase
 
 /**
@@ -49,7 +48,7 @@ case class Qso(
   }
 
 
-  override def toString: CallSign = {
+  override def toString: String = {
     s"$band $mode $s $r"
   }
 

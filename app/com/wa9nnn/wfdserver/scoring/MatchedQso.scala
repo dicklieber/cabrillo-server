@@ -1,8 +1,6 @@
 package com.wa9nnn.wfdserver.scoring
 
-import com.wa9nnn.wfdserver.htmlTable.Row
-import com.wa9nnn.wfdserver.model.Qso
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.{CallSign, Qso}
 import com.wa9nnn.wfdserver.scoring.QsoKind._
 
 /**

@@ -3,7 +3,6 @@ package com.wa9nnn.wfdserver.model
 import java.time.Instant
 
 import com.wa9nnn.wfdserver.htmlTable.RowsSource
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
 /**
  * Non-QSO Cabrillo fields.
@@ -35,9 +34,7 @@ case class CallCatSect(callSign:CallSign, category:String, arrlSection:String) e
 
 
 
-object WfdTypes {
-  type CallSign = String
-}
+
 
 
 

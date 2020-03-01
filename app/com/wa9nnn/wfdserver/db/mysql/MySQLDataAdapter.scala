@@ -26,7 +26,7 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
   def entryRow(): EntriesRow = EntriesRow(
     id = 0, // will come from DB
     logVersion = stationLog.logVersion.toFloat.toInt,
-    callsign = stationLog.callSign,
+    callsign = stationLog.callSign.toString,
     contest = "WFD", //todo do we need this in LogInstance
     assistedId = categories.assisted.contains("ASSISTED"),
     bandId = Band(categories.band).getOrElse(0),
@@ -72,7 +72,7 @@ case class MySQLDataAdapter(logInstance: LogInstance) extends LazyLogging {
         qsoMode = Mode(qso.m),
         contactDate = sqlDate,
         contactTime = sqlTime,
-        callsign = qso.r.cs,
+        callsign = qso.r.cs.toString,
         exch = qso.r.ex,
         transmitter = 0,
         category = strings(0),

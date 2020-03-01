@@ -4,10 +4,12 @@ package com.wa9nnn.wfdserver.model
 import java.time.{LocalDate, LocalTime}
 
 import com.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, RowSource}
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
-case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate = LocalDate.ofEpochDay(1), time: LocalTime = LocalTime.MIDNIGHT, theirCall: CallSign = "", catSect: String = "", callSign: CallSign = "") extends RowSource {
-  def next: PaperLogQso = copy(time = LocalTime.MIN, theirCall = "", catSect = "")
+case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate = LocalDate.ofEpochDay(1), time: LocalTime = LocalTime.MIDNIGHT,
+                       theirCall: CallSign = CallSign.empty,
+                       category: String = "", section:String = "",
+                       callSign: CallSign = "") extends RowSource {
+  def next: PaperLogQso = copy(time = LocalTime.MIN, theirCall = CallSign.empty, category = "", section="")
 
   def toCsvLine: String = {
     productIterator.map(_.toString).mkString(",")
@@ -20,7 +22,8 @@ case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate =
       mode,
       time,
       theirCall,
-      catSect
+      category,
+      section
     )
   }
 }
@@ -34,11 +37,12 @@ object PaperLogQso {
       LocalTime.parse(e(3)),
       e(4),
       e(5),
+      e(6),
       callSign)
   }
 
   def header(qsoCount: Int): Header = {
-    Header(f"QSOs ($qsoCount%,d)", "Freq", "Mode", "Date", "Time", "CallSign", "Cat Sect")
+    Header(f"QSOs ($qsoCount%,d)", "Freq", "Mode", "Date", "Time", "CallSign", "Cat","Sect")
   }
 }
 

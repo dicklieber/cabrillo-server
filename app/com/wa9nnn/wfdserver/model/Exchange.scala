@@ -3,7 +3,6 @@ package com.wa9nnn.wfdserver.model
 
 import com.wa9nnn.cabrillo.parsers.Exchange_WFD
 import com.wa9nnn.wfdserver.htmlTable.Cell
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
 
 /**
  * May be sent or received
@@ -12,15 +11,15 @@ import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
  * @param cs callSign
  * @param ex exchange e.g. "3O IL"
  */
-case class Exchange(cs: String, ex: String) {
-  def toCell: Cell = Cell(s"${cs.padTo(7, ' ')} $ex").withCssClass("exchange")
+case class Exchange(cs: CallSign, ex: String) {
+  def toCell: Cell = Cell(s"${cs.toString.padTo(7, ' ')} $ex").withCssClass("exchange")
 
   def categoryAndSection: (String, String) = {
     val tokens = ex.split(" ")
     tokens(0) -> tokens(1)
   }
 
-  override def toString: CallSign = {
+  override def toString: String = {
     s"[$cs $ex]"
   }
 }

@@ -36,11 +36,11 @@ POST        /loginOp                  controllers.LoginController.dologin
 
 GET         /paper                    controllers.PaperLogController.index
 GET         /paperLogList             controllers.PaperLogController.paperLogList
-GET         /paperStart               controllers.PaperLogController.start(callSign:String)
+GET         /paperStart               controllers.PaperLogController.start(callSign:com.wa9nnn.wfdserver.model.CallSign)
 POST        /paperStartF              controllers.PaperLogController.create()
-GET         /paperHeaderEditor        controllers.PaperLogController.headerEditor(callSign:Option[String])
+GET         /paperHeaderEditor        controllers.PaperLogController.headerEditor(callSign:Option[com.wa9nnn.wfdserver.model.CallSign])
 POST        /paperUpdateHeader        controllers.PaperLogController.updateHeader()
-GET        /qsoEditor                controllers.PaperLogController.qsoEditor(callSign:Option[String])
+GET        /qsoEditor                controllers.PaperLogController.qsoEditor(callSign:Option[com.wa9nnn.wfdserver.model.CallSign])
 POST        /paperAddQso              controllers.PaperLogController.addQso()
 
 

@@ -3,7 +3,7 @@ package com.wa9nnn.wfdserver
 
 import org.bson.Document
 import com.wa9nnn.wfdserver.htmlTable.{Cell, CellProvider}
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.CallSign
 
 /**
  * used to for choices when user need to select a log.

@@ -1,10 +1,12 @@
 
 package com.wa9nnn.wfdserver.scoring
 
-import controllers.routes
 import com.wa9nnn.wfdserver.db.ScoreFilter
-import com.wa9nnn.wfdserver.htmlTable.{Cell, Row, RowSource}
+import com.wa9nnn.wfdserver.htmlTable.{Cell, Row}
 import com.wa9nnn.wfdserver.model.CallCatSect
+import controllers.routes
+
+import scala.language.implicitConversions
 
 case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoints: Option[Int], errant: Seq[MatchedQso], overallRank: Option[Int] = None, categoryRank: Option[Int] = None) {
   def toRow(scoreFilter: ScoreFilter): Row = {
@@ -15,7 +17,7 @@ case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoin
     }
     Row(
       Cell(callCatSect.callSign)
-        .withUrl(routes.AdminController.submission(callCatSect.callSign).url),
+        .withUrl(routes.AdminController.submission(callCatSect.callSign.toString).url),
       callCatSect.category,
       callCatSect.arrlSection,
       overallRank,
@@ -39,7 +41,7 @@ case class ScoreRecord(callCatSect: CallCatSect, awardedPoints: Int, claimedPoin
     implicit def oiToS(in: Option[Int]): String = in.map(in => in.toString).getOrElse("")
 
     val ccs = callCatSect
-    Seq[String](ccs.callSign, ccs.category, ccs.arrlSection, overallRank, categoryRank, awardedPoints, claimedPoints, errant.length).toArray
+    Seq[String](ccs.callSign.toString, ccs.category, ccs.arrlSection, overallRank, categoryRank, awardedPoints, claimedPoints, errant.length).toArray
   }
 }
 

@@ -5,8 +5,8 @@ import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import com.wa9nnn.wfdserver.auth.{SubjectAccess, WfdSubject}
 import com.wa9nnn.wfdserver.htmlTable.Table
-import com.wa9nnn.wfdserver.model.PaperLogQso
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.CallSign.callSign
+import com.wa9nnn.wfdserver.model.{CallSign, PaperLogQso}
 import com.wa9nnn.wfdserver.paper._
 import com.wa9nnn.wfdserver.play.EnumPlayUtils.`enum`
 import com.wa9nnn.wfdserver.util.JsonLogging
@@ -27,11 +27,9 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
   extends AbstractController(cc)
     with JsonLogging with play.api.i18n.I18nSupport
     with SubjectAccess {
-
-
   private val formPaperHeader: Form[PaperLogHeader] = Form(
     mapping(
-      "callSign" -> text,
+      "callSign" -> callSign,
       "club" -> text,
       "name" -> text,
       "email" -> nonEmptyText,
@@ -58,9 +56,10 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
       "mode" -> nonEmptyText,
       "date" -> localDate("MM/dd/yy"),
       "time" -> localTime("HH:mm"),
-      "theirCall" -> nonEmptyText,
-      "catSect" -> nonEmptyText,
-      "callSign" -> nonEmptyText
+      "theirCall" -> callSign,
+      "cat" -> nonEmptyText,
+      "sect" -> nonEmptyText,
+      "callSign" -> callSign
 
     )(PaperLogQso.apply)(PaperLogQso.unapply))
 
@@ -114,8 +113,8 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         } else {
           val qsosTable = dao.qsosTable()
 
-          val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign))
-          Ok(views.html.qsoEditor(paperQsoForm, qsosTable))
+          val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = callSign))
+          Ok(views.html.qsoEditor(callSign, paperQsoForm, qsosTable))
         }
       )
   }
@@ -129,7 +128,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
             val paperLogQso = PaperLogQso(callSign = cs)
             val paperQsoForm: Form[PaperLogQso] = formQso.fill(paperLogQso)
-            Ok(views.html.qsoEditor(paperQsoForm, qsosTable))
+            Ok(views.html.qsoEditor(callSign, paperQsoForm, qsosTable))
           case None =>
             Ok("Please select or create a call sign in the logs tab.")
         }
@@ -157,7 +156,9 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         //        val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso())
         formPaperHeader.bindFromRequest.fold(
           formWithErrors => {
-            val maybeString = formWithErrors.data.get("callSign")
+            val maybeString = Option(formWithErrors.data.get("callSign")
+              .map(CallSign(_))
+              .getOrElse(CallSign.empty))
             BadRequest(views.html.paperLogHeader(maybeString, formWithErrors))
           },
           paperLogHeader => {
@@ -175,14 +176,14 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         //        val paperHeaderForm: Form[PaperLogHeader] = formPaperHeader.fill(PaperLogHeader("WA9NNN"))
         formQso.bindFromRequest.fold(
           formWithErrors => {
-            val callSign = formWithErrors.data("callSign")
-            BadRequest(views.html.qsoEditor(formWithErrors, paperLog(callSign).qsosTable()))
+            val callSign: String = formWithErrors.data("callSign")
+            BadRequest(views.html.qsoEditor(CallSign(callSign), formWithErrors, paperLog(callSign).qsosTable()))
           },
           paperLogQso => {
 
             val paperLogDao = paperLog(paperLogQso.callSign)
             paperLogDao.addQso(paperLogQso)
-            Ok(views.html.qsoEditor(formQso.fill(paperLogQso.next), paperLogDao.qsosTable()))
+            Ok(views.html.qsoEditor(paperLogDao.callSign, formQso.fill(paperLogQso.next), paperLogDao.qsosTable()))
           }
         )
       }

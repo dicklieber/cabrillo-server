@@ -7,8 +7,8 @@ import java.time.Instant
 
 import com.wa9nnn.wfdserver.auth.WfdSubject
 import com.wa9nnn.wfdserver.htmlTable.Table
-import com.wa9nnn.wfdserver.model.PaperLogQso
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.CallSign._
+import com.wa9nnn.wfdserver.model.{CallSign, PaperLogQso}
 import com.wa9nnn.wfdserver.paper.PaperLogDao._
 import com.wa9nnn.wfdserver.util.JsonLogging
 import play.api.libs.json.{Format, Json}
@@ -72,15 +72,15 @@ class PaperLogDao(val callSign: CallSign, val ourDir: Path, wfdSubject: WfdSubje
     }
   }
 
-   def qsos(page:Option[Page] = None): Seq[PaperLogQso] = {
+  def qsos(page: Option[Page] = None): Seq[PaperLogQso] = {
     Using(Source.fromFile(qsosFile.toFile)) { bs =>
-      bs.getLines().map {line =>
+      bs.getLines().map { line =>
         PaperLogQso.fromCsv(line, callSign)
       }.toSeq
     }.getOrElse(Seq.empty)
   }
 
-  def qsosTable(page:Option[Page] = None):Table ={
+  def qsosTable(page: Option[Page] = None): Table = {
     Table(PaperLogQso.header(qsos().length), qsos(page).map(_.toRow)).withCssClass("resultTable")
   }
 
@@ -139,8 +139,10 @@ object PaperLogDao {
     PaperLogMetadata(callSign, user(directory).getOrElse("?"), latest, qsoCount)
   }
 
+  implicit val f = CallSign.callSignFormat
   implicit val qsoFormat: Format[PaperLogQso] = Json.format
   implicit val headerFormat: Format[PaperLogHeader] = Json.format
 
 }
-case class Page(pageNo:Int, pageSize:Int = 25)
+
+case class Page(pageNo: Int, pageSize: Int = 25)

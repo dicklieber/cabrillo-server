@@ -7,7 +7,6 @@ import com.wa9nnn.cabrillo.model.CabrilloTypes.Tag
 import com.wa9nnn.cabrillo.model.{CabrilloData, TagValue}
 import com.wa9nnn.cabrillo.parsers.QSO_WFD
 import com.wa9nnn.wfdserver.model
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
 import com.wa9nnn.wfdserver.model._
 
 object LogInstanceAdapter {
@@ -94,7 +93,7 @@ object LogInstanceAdapter {
       }
     }
     model.LogInstance(
-      _id = callSign,
+      _id = callSign.toString,
       qsoCount = qsos.length,
       qsos = qsos,
       stationLog = stationLog

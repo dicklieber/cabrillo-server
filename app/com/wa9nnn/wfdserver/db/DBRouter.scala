@@ -9,8 +9,7 @@ import com.wa9nnn.wfdserver.auth.WfdSubject
 import com.wa9nnn.wfdserver.db.mongodb.{DB => MongoDB}
 import com.wa9nnn.wfdserver.db.mysql.{DB => SlickDB}
 import com.wa9nnn.wfdserver.htmlTable.Table
-import com.wa9nnn.wfdserver.model.LogInstance
-import com.wa9nnn.wfdserver.model.WfdTypes.CallSign
+import com.wa9nnn.wfdserver.model.{CallSign, LogInstance}
 import com.wa9nnn.wfdserver.scoring.ScoreRecord
 import com.wa9nnn.wfdserver.util.JsonLogging
 
@@ -62,7 +61,7 @@ class DBRouter @Inject()(config: Config, injector: Injector) extends JsonLogging
     try {
       dbs.getOrElse(subject.dbName, throw new IllegalArgumentException(s"Unknown dbName: ${subject.dbName}"))
     } catch {
-      case e: Exception =>
+      case _: Exception =>
         dbs(dbNames.head)
     }
   }

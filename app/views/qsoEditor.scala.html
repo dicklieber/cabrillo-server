@@ -4,12 +4,12 @@
 @import views.html.helper.form
 @import com.wa9nnn.wfdserver.play.WfdLabelAbove._
 @import com.wa9nnn.wfdserver.htmlTable.Table
-
+@import com.wa9nnn.wfdserver.model.CallSign
 @import views.html.helper.inputText
 @import views.html.helper.inputDate
-@(paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
+@(callSign:Option[CallSign], paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
 
-@paperEditor(paperQsoForm("callSign").value) {
+@paperEditor(callSign) {
     <script>
             $(document).ready(function () {
                 $('#qsoTime').focusout(function () {
@@ -38,7 +38,8 @@
                 <td>@inputDate(paperQsoForm("date"))</td>
                 <td>@inputText(paperQsoForm("time"), Symbol("id") -> "qsoTime")</td>
                 <td>@inputText(paperQsoForm("theirCall"), Symbol("class") -> "caps")</td>
-                <td>@inputText(paperQsoForm("catSect"), Symbol("class") -> "caps")</td>
+                <td>@inputText(paperQsoForm("cat"), Symbol("class") -> "caps")</td>
+                <td>@inputText(paperQsoForm("sect"), Symbol("class") -> "caps")</td>
             </tr>
             <tr>
                 <td colspan="5"><input type="submit" name="submit" value="Add QSO"></td>
