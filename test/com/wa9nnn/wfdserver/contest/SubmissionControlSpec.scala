@@ -13,7 +13,7 @@ trait PaperLogDaoContext extends ForEach[SubmissionControlDao] {
   def foreach[R: AsResult](r: SubmissionControlDao => R): Result = {
     val dir = Files.createTempDirectory("SubmissionControlSpec")
     println(s"Create $dir")
-    val dao: SubmissionControlDao = new SubmissionControlDao(dir.resolve("controlFile.json"))
+    val maindao: SubmissionControlDao = new SubmissionControlDao(dir.resolve("controlFile.json"))
 
     val result = AsResult(r(dao))
 
