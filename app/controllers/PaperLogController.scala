@@ -41,7 +41,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
       "category" -> nonEmptyText
         .verifying(categoryValidator.categoryConstraint),
       "section" -> nonEmptyText
-        .verifying(sectionValidator.passwordCheckConstraint),
+        .verifying(sectionValidator.sectionConstraint),
       "txPower" -> enum(TxPower),
       "noMainPower" -> boolean,
       "awayFromHome" -> boolean,
@@ -57,8 +57,10 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
       "date" -> localDate("MM/dd/yy"),
       "time" -> localTime("HH:mm"),
       "theirCall" -> callSign,
-      "cat" -> nonEmptyText,
-      "sect" -> nonEmptyText,
+      "cat" -> nonEmptyText
+        .verifying(categoryValidator.categoryConstraint),
+      "sect" -> nonEmptyText
+        .verifying(sectionValidator.sectionConstraint),
       "callSign" -> callSign
 
     )(PaperLogQso.apply)(PaperLogQso.unapply))

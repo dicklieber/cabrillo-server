@@ -19,6 +19,7 @@ case class PaperLogHeader(callSign: CallSign = CallSign.empty,
                           outdoors: Boolean = false,
                           satellite: Boolean = false
                          ) extends EditableData {
+
   /**
    *
    * @return true if minimum data is present.

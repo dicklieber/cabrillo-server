@@ -10,6 +10,14 @@
 @(callSign:Option[CallSign], paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
 
 @paperEditor(callSign) {
+@*           <script>*@
+@*                $(document).ready(function () {*@
+@*                    $('.caps').focusout(function () {*@
+@*                        $(this).val($(this).val().toUpperCase());*@
+@*                    });*@
+@*                });*@
+@*        </script>*@
+@*  *@
     <script>
             $(document).ready(function () {
                 $('#qsoTime').focusout(function () {

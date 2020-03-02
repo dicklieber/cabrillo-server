@@ -8,7 +8,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 
 @Singleton
 class SectionValidator @Inject()(contestInfo: ContestInfo = new ContestInfoWFD) {
-  val passwordCheckConstraint: Constraint[String] = Constraint("Unknown Section")({ sectionCandidate =>
+  val sectionConstraint: Constraint[String] = Constraint("Unknown Section")({ sectionCandidate =>
 
     try {
       contestInfo.validateLocation(sectionCandidate)

@@ -53,7 +53,7 @@ object CallSign {
     if (c.isEmpty) {
       throw new IllegalArgumentException("Can't have empty CallSign") //todo replace with regex check
     }
-    new CallSign(c.toUpperCase)
+    new CallSign(c.trim.toUpperCase)
   }
 
 
