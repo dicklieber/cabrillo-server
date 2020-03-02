@@ -8,7 +8,7 @@ import com.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, RowSource}
 case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate = LocalDate.ofEpochDay(1), time: LocalTime = LocalTime.MIDNIGHT,
                        theirCall: CallSign = CallSign.empty,
                        category: String = "", section:String = "",
-                       callSign: CallSign = "") extends RowSource {
+                       callSign: CallSign = CallSign.empty) extends RowSource {
   def next: PaperLogQso = copy(time = LocalTime.MIN, theirCall = CallSign.empty, category = "", section="")
 
   def toCsvLine: String = {
@@ -23,13 +23,14 @@ case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate =
       time,
       theirCall,
       category,
-      section
+      section,
+      callSign
     )
   }
 }
 
 object PaperLogQso {
-  def fromCsv(line: String, callSign: CallSign): PaperLogQso = {
+  def fromCsv(line: String): PaperLogQso = {
     val e: Array[String] = line.split(",")
     PaperLogQso(e(0),
       e(1),
@@ -38,7 +39,7 @@ object PaperLogQso {
       e(4),
       e(5),
       e(6),
-      callSign)
+      e(7))
   }
 
   def header(qsoCount: Int): Header = {

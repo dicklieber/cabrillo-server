@@ -1,16 +1,22 @@
 package com.wa9nnn.wfdserver.model
 
-import javax.inject.Singleton
-import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
-import org.bson.{BsonReader, BsonWriter}
+import com.wa9nnn.wfdserver.model.CallSign.regx
 import play.api.data.Forms._
 import play.api.data._
 import play.api.data.format.Formatter
-import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 import play.api.mvc.QueryStringBindable
 
+import scala.language.implicitConversions
+import scala.util.matching.Regex
+
 class CallSign private(val cs: String) extends Ordered[CallSign] {
+
+  override def equals(obj: Any): Boolean = obj match {
+    case cs: CallSign => this.cs equals cs.cs
+    case _ => false
+  }
+
   /**
    *
    * @return only safe chars to use in a filename.
@@ -22,6 +28,13 @@ class CallSign private(val cs: String) extends Ordered[CallSign] {
   override def compare(that: CallSign): Int = {
     this.cs compareTo that.cs
   }
+
+  def valid(): Unit = {
+    if (!regx.matches(cs)) {
+      throw new IllegalArgumentException("Bad callsign syntax!")
+    }
+  }
+
 }
 
 object CallSign {
@@ -43,36 +56,51 @@ object CallSign {
     new CallSign(c.toUpperCase)
   }
 
-  def isValid(callSign: String): Boolean = {
-    true //todo use regex
-  }
 
   def unapply(callSign: CallSign): Option[String] = {
     Option(callSign.cs)
   }
 
-  //  /**
-  //   * Lets [[CallSign]] work directly in a Play Form.
-  //   */
-  //  val callSignForm: Form[CallSign] = Form(
-  //    mapping(
-  //      "cs" -> text
-  //    )(CallSign.apply)(CallSign.unapply)
-  //
-  //  )
-  val callSignFormat: Format[CallSign] = Json.format[CallSign]
+  /**
+   * for play json
+   */
+  implicit val callSignFormat: Format[CallSign] = new Format[CallSign] {
+    override def reads(json: JsValue): JsResult[CallSign] = {
+      val cs = json.as[String]
+      try {
+        JsSuccess(CallSign(cs))
+      }
+      catch {
+        case e: IllegalArgumentException ⇒ JsError(e.getMessage)
+      }
+    }
+
+    override def writes(callSign: CallSign): JsValue = {
+      JsString(callSign.toString)
+    }
+  }
 
 
   implicit def callSignFormatter: Formatter[CallSign] = new Formatter[CallSign] {
 
 
     override def bind(key: String, data: Map[String, String]) = {
-      data.get(key)
-        .map(CallSign(_))
-        .toRight(Seq(FormError(key, "error.required", Nil)))
+      try {
+        data.get(key)
+          .map{c =>
+            val cs: CallSign = CallSign(c)
+            cs.valid()
+            cs
+          }
+          .toRight(Seq(FormError(key, "error.required", "Required")))
+      } catch {
+        case e: IllegalArgumentException =>
+          val error = FormError(key,  e.getMessage)
+          Left(Seq(error))
+      }
     }
 
-    override def unbind(key: String, value: CallSign):Map[String, String] = {
+    override def unbind(key: String, value: CallSign): Map[String, String] = {
       Map(key -> value.toString)
     }
   }
@@ -84,7 +112,7 @@ object CallSign {
   implicit object bindableChar extends QueryStringBindable[CallSign] {
 
     override def unbind(key: String, value: CallSign): String = {
-     s"$key=$value"
+      s"$key=$value"
     }
 
     override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, CallSign]] = {
@@ -106,17 +134,6 @@ object CallSign {
     }
   }
 
-  @Singleton
-  class CallSignValidator {
-    val categoryConstraint: Constraint[String] = Constraint("Bad CallSign") { categoryCandidate =>
-
-      if (CallSign.isValid(categoryCandidate))
-        Valid
-      else
-        Invalid("callsign todo")
-    }
-  }
-
   // for play form to bind/unbind with a form
   implicit object playFormFormatter extends play.api.data.format.Formatter[CallSign] {
     override def unbind(key: String, value: CallSign): Map[String, String] = {
@@ -125,18 +142,21 @@ object CallSign {
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], CallSign] = {
       try {
-        Right(CallSign(data(key)))
+        val callSign1 = CallSign(data(key))
+        callSign1.valid()
+        Right(callSign1)
       } catch {
         case _: NoSuchElementException =>
           Left(Seq(FormError(key, "CallSign is required!")))
         case _: IllegalArgumentException =>
-          Left(Seq(FormError(key, "Bad CallSign Syntax")))
+          Left(Seq(FormError(key, "Bad CallSign Syntax", "Bad CallSign Syntax")))
         case x: Exception =>
           Left(Seq(FormError(key, x.getMessage)))
       }
     }
   }
 
+  val regx: Regex = """[a-zA-Z0-9]{1,3}[0123456789][a-zA-Z0-9]{0,3}[a-zA-Z]""".r
 
 }
 

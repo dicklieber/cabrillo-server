@@ -41,6 +41,9 @@ class PaperLogDao(val callSign: CallSign, val ourDir: Path, wfdSubject: WfdSubje
     }
   }
 
+
+  override def toString: String = ourDir.toAbsolutePath.toString
+
   def header: PaperLogHeader = {
     Using(Files.newInputStream(headerFile)) { inputStream =>
       Json.parse(inputStream).as[PaperLogHeader]
@@ -75,7 +78,7 @@ class PaperLogDao(val callSign: CallSign, val ourDir: Path, wfdSubject: WfdSubje
   def qsos(page: Option[Page] = None): Seq[PaperLogQso] = {
     Using(Source.fromFile(qsosFile.toFile)) { bs =>
       bs.getLines().map { line =>
-        PaperLogQso.fromCsv(line, callSign)
+        PaperLogQso.fromCsv(line)
       }.toSeq
     }.getOrElse(Seq.empty)
   }
@@ -139,7 +142,7 @@ object PaperLogDao {
     PaperLogMetadata(callSign, user(directory).getOrElse("?"), latest, qsoCount)
   }
 
-  implicit val f = CallSign.callSignFormat
+//  implicit val f = CallSign.callSignFormat
   implicit val qsoFormat: Format[PaperLogQso] = Json.format
   implicit val headerFormat: Format[PaperLogHeader] = Json.format
 

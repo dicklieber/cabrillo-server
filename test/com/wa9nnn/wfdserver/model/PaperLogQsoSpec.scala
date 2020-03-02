@@ -1,19 +1,21 @@
 package com.wa9nnn.wfdserver.model
 
-import java.time.Instant
+import java.time.{Instant, LocalDate, LocalTime}
 
 import org.specs2.mutable.Specification
 
 class PaperLogQsoSpec extends Specification {
 
   "PaperLogQso" >> {
-    "CSV" >> {
-      val in = PaperLogQso("CW", Instant.EPOCH, "W1AW", "1I CT")
+    "CSV " >> {
+      val in = PaperLogQso("7.0125", "CW", LocalDate.ofYearDay(1998, 25), LocalTime.MIDNIGHT,
+        CallSign("W1AW"), "1I", "CT",
+        CallSign("wa9nnn"))
       val csvLine = in.toCsvLine
-      csvLine must beEqualTo ("CW,1970-01-01T00:00:00Z,W1AW,1I CT")
-      val backAgain = PaperLogQso.apply(mode = csvLine)
+      csvLine must beEqualTo("7.0125,CW,1998-01-25,00:00,W1AW,1I,CT,WA9NNN")
+      val backAgain = PaperLogQso.fromCsv(csvLine)
 
-      backAgain must beEqualTo (in)
+      backAgain must beEqualTo(in)
     }
 
   }

@@ -1,29 +1,38 @@
 package com.wa9nnn.wfdserver.contest
 
-import java.nio.file.{Files, Path}
-import java.time.{Clock, ZoneId}
+import java.nio.file.Files
 
-import org.specs2.mutable.Specification
 import com.wa9nnn.wfdserver.contest.SubmissionConfig.default
+import org.apache.commons.io.FileUtils
+import org.specs2.execute.{AsResult, Result}
+import org.specs2.mutable.Specification
+import org.specs2.specification.ForEach
 
-class SubmissionControlSpec extends Specification {
-  def newDao(n:Int, clock:Clock = Clock.systemUTC()): SubmissionControlDao = {
+trait PaperLogDaoContext extends ForEach[SubmissionControlDao] {
+
+  def foreach[R: AsResult](r: SubmissionControlDao => R): Result = {
     val dir = Files.createTempDirectory("SubmissionControlSpec")
-    val path: Path = dir.resolveSibling(s"subcontrol$n")
-    println(s"path: $path")
-    new SubmissionControlDao(path, clock)
+    println(s"Create $dir")
+    val dao: SubmissionControlDao = new SubmissionControlDao(dir.resolve("controlFile.json"))
+
+    val result = AsResult(r(dao))
+
+    println(s"delete $dir")
+    FileUtils.deleteDirectory(dir.toFile)
+    result
   }
+}
+
+class SubmissionControlSpec extends Specification with PaperLogDaoContext{
 
   "SubmissionControl" >> {
 
-    "get default" >> {
-      val dao = newDao(1)
+    "get default" >> {dao:SubmissionControlDao =>
       val sc: SubmissionConfig = dao.get
       sc.times must beEqualTo (default.times)
     }
 
-    "put" >> {
-      val dao = newDao(2)
+    "put" >> {dao:SubmissionControlDao =>
       val submisionsConfig = dao.get
       val updated = submisionsConfig.copy(duringMessage = Message("changed header", "changed body"))
 
@@ -32,13 +41,5 @@ class SubmissionControlSpec extends Specification {
       val backAgain = dao.get
       backAgain must beEqualTo(updated)
     }
-
-//    "apply before" >> {
-//      val beforeInstant = default.times.submissionBegin.minusSeconds(100000)
-//      val state: CurrentSubmissionState = newDao(3, Clock.fixed(beforeInstant, ZoneId.of("UTC"))).current()
-//      state.message must beEqualTo (default.before.message)
-//      state.submissionsAllowed must beFalse
-//    }
-
   }
 }

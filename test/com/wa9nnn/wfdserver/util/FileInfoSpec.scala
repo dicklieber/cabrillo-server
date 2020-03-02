@@ -3,11 +3,12 @@ package com.wa9nnn.wfdserver.util
 import java.nio.file.Paths
 import java.time.{Clock, Instant, ZoneId}
 
+import com.wa9nnn.wfdserver.model.CallSign
 import org.specs2.mutable.Specification
 
 class FileInfoSpec extends Specification {
   private  val fileSaveDir = Paths.get("filSavdir")
-  val callSign = "WA9NNN"
+  val callSign = CallSign("WA9NNN")
   "FileInfoSpec" should {
     "hex/Instant" in {
       val instant = Instant.EPOCH

@@ -14,7 +14,7 @@ import play.api.libs.json.{JsValue, Json}
  * Determine if submissions are currently being accepted and text to display before, during and after submission time.
  */
 @Singleton
-class SubmissionControlDao(submissionControlConfigPath: Path, clock: Clock) extends PersistableJson[SubmissionConfig](submissionControlConfigPath) {
+class SubmissionControlDao(submissionControlConfigPath: Path, clock: Clock = Clock.systemUTC()) extends PersistableJson[SubmissionConfig](submissionControlConfigPath) {
   @Inject() def this(@TypesafeConfig("wfd.submissionControl") submissionControlConfigPath: String) = {
     this(Paths.get(submissionControlConfigPath), Clock.systemUTC())
   }

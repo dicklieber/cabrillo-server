@@ -1,17 +1,16 @@
 package com.wa9nnn.wfdserver.paper
 
 import java.nio.file.{Files, Path}
-import java.time.Instant
+import java.time.{Instant, LocalDateTime}
 
-import scala.jdk.CollectionConverters._
-import scala.jdk.StreamConverters._
-import com.wa9nnn.wfdserver.CabrilloFileManager
 import com.wa9nnn.wfdserver.auth.WfdSubject
-import com.wa9nnn.wfdserver.model.PaperLogQso
+import com.wa9nnn.wfdserver.model.{CallSign, PaperLogQso}
 import org.apache.commons.io.FileUtils
 import org.specs2.execute.{AsResult, Result}
 import org.specs2.mutable.Specification
 import org.specs2.specification.ForEach
+
+import scala.jdk.StreamConverters._
 
 trait PaperLogDaoContext extends ForEach[PaperLogDao] {
   val callSign = "WM9W"
@@ -36,7 +35,7 @@ trait PaperLogDaoContext extends ForEach[PaperLogDao] {
   def foreach[R: AsResult](r: PaperLogDao => R): Result = {
     val paperLogDao = new PaperLogDao(callSign, Files.createTempDirectory("PaperLogDaoSpec"), wfdSubject)
     val paperLogDir: Path = paperLogDao.ourDir
-
+println(s"paperLogDir: $paperLogDir")
     val result = AsResult(r(paperLogDao))
 
     FileUtils.deleteDirectory(paperLogDir.toFile)
@@ -45,6 +44,11 @@ trait PaperLogDaoContext extends ForEach[PaperLogDao] {
 }
 
 class PaperLogDaoSpec extends Specification with PaperLogDaoContext {
+  val qsoStamp = LocalDateTime.now()
+
+  val qso = PaperLogQso(freq = "7.123", mode = "CW", date= qsoStamp.toLocalDate, time=qsoStamp.toLocalTime,
+    theirCall = "W1AW", category =  "1I", section = "CT",
+    callSign = CallSign("WA9NNN"))
 
   "PaperLogDao" >> {
     "start" >> { paperLogDao: PaperLogDao =>
@@ -63,8 +67,6 @@ class PaperLogDaoSpec extends Specification with PaperLogDaoContext {
     }
     "with header and a qso" >> { paperLogDao: PaperLogDao =>
       paperLogDao.saveHeader(paperLogHeader)
-      val qsoStamp = Instant.now()
-      val qso = PaperLogQso("CW", qsoStamp, "W1AW", "1I CT")
       paperLogDao.addQso(qso)
       val paperLog = paperLogDao.paperLog
       paperLog.paperLogDetails.lastUpdate.isBefore(Instant.now)
@@ -83,14 +85,12 @@ class PaperLogDaoSpec extends Specification with PaperLogDaoContext {
     }
 
     "multiple QSO Lines">> { paperLogDao: PaperLogDao =>
-      val qsoStamp = Instant.now()
-      val qso0 = PaperLogQso("CW", qsoStamp, "W1AW", "1I CT")
-      paperLogDao.addQso(qso0)
-      val qso1 = qso0.copy(mode = "PH")
+      paperLogDao.addQso(qso)
+      val qso1 = qso.copy(mode = "PH")
       paperLogDao.addQso(qso1)
       val paperLog = paperLogDao.paperLog
       val qsos = paperLog.qsos
-      qsos.head must beEqualTo (qso0)
+      qsos.head must beEqualTo (qso)
       qsos(1) must beEqualTo (qso1)
       qsos must haveLength(2)
     }
