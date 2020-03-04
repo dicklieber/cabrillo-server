@@ -8,10 +8,10 @@ class SectionValidatorSpec extends Specification {
 
   "SectionValidator" should {
     "OK" in {
-      secValidator.passwordCheckConstraint("IL") must beEqualTo(Valid)
+      secValidator.sectionConstraint("IL") must beEqualTo(Valid)
     }
     "Unknown" in {
-      secValidator.passwordCheckConstraint("3H") must beEqualTo(Invalid(("Unknown ARRL section: 3H")))
+      secValidator.sectionConstraint("3H") must beEqualTo(Invalid(("Unknown ARRL section: 3H")))
     }
 
   }

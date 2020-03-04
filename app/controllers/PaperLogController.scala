@@ -1,6 +1,9 @@
 
 package controllers
 
+import java.time.LocalTime
+
+import akka.stream.scaladsl.JavaFlowSupport.Source
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import com.wa9nnn.wfdserver.auth.{SubjectAccess, WfdSubject}
@@ -17,13 +20,17 @@ import play.api.mvc._
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.{ExecutionContext, Future}
+import scala.io.{BufferedSource, Source}
+import scala.io.Source
+import scala.util.{Failure, Success, Try, Using}
 
 @Singleton
 class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: ActionBuilders,
                                    sectionValidator: SectionValidator,
                                    categoryValidator: CategoryValidator,
                                    paperLogsDao: PaperLogsDao)
-                                  (implicit exec: ExecutionContext, config: Config)
+                                  (implicit exec: ExecutionContext, config: Config,
+                                   addMany: AddMany)
   extends AbstractController(cc)
     with JsonLogging with play.api.i18n.I18nSupport
     with SubjectAccess {
@@ -190,6 +197,44 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         )
       }
   }
+
+  def addMany(callSign: String, howMany: Int): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+    implicit request =>
+      Future {
+        val cs = CallSign(callSign)
+        val paperLogDao = paperLog(cs)
+        var count = 0
+
+
+        addMany(2000){ theirCallsign =>
+          paperLogDao.addQso(PaperLogQso(freq = s"7.$count", time = LocalTime.now().plusMinutes(count), theirCall = theirCallsign, category = "7O", section = "DX", callSign = cs))
+
+        }
+
+//        val rr: Try[Unit] = Using {
+//          val r: BufferedSource = scala.io.Source.fromFile("/Users/dlieber/dev/ham/wfdcheck/conf/SampleCallSigns.txt")
+//          r
+//        } { bs: BufferedSource =>
+//          bs.getLines.foreach { c: String =>
+//            val theirCllsign = CallSign(c)
+//            paperLogDao.addQso(PaperLogQso(freq = s"7.$count", time = LocalTime.now().plusMinutes(count), theirCall = theirCllsign, category = "7O", section = "DX", callSign = cs))
+//            count = count + 1
+//            if (count >= howMany) {
+//              throw new Exception()
+//            }
+//          }
+//        }
+//        rr match {
+//          case Failure(exception) =>
+//            exception.printStackTrace()
+//          case Success(value) =>
+//            println(value)
+//        }
+        Redirect(routes.PaperLogController.qsoEditor(cs))
+
+      }
+  }
+
 
 }
 
