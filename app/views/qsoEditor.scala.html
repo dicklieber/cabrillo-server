@@ -8,7 +8,9 @@
 @import views.html.helper.inputText
 @import views.html.helper.inputDate
 @import com.wa9nnn.wfdserver.paper.AddMany
-@(callSign: Option[CallSign], paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider, addMany: AddMany)
+@import java.time.LocalDate
+@import views.html.helper.select
+@(callSign: Option[CallSign], paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider, addMany: AddMany,  dates: Seq[LocalDate])
 
 @paperEditor(callSign) {
     @* <script>*@
@@ -44,7 +46,7 @@
             <tr>
                 <td>@inputText(paperQsoForm("freq"))</td>
                 <td>@inputText(paperQsoForm("mode"), Symbol("class") -> "caps")</td>
-                <td>@inputDate(paperQsoForm("date"))</td>
+                <td>@select(paperQsoForm("date"), dates.map(d => d.toString -> d.toString))</td>
                 <td>@inputText(paperQsoForm("time"), Symbol("id") -> "qsoTime")</td>
                 <td>@inputText(paperQsoForm("theirCall"), Symbol("class") -> "caps")</td>
                 <td>@inputText(paperQsoForm("cat"), Symbol("class") -> "caps")</td>
@@ -56,6 +58,6 @@
         </table>
     }
     @if(addMany.enabled) {
-        <a href="@routes.PaperLogController.addMany(callSign.get.toString, 2000)">Add 2000 for testing</a>
+        <a href="@routes.PaperLogController.addMany(callSign.get.toString, 500)">Add 500 for testing</a>
     }
 }

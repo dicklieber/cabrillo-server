@@ -18,8 +18,8 @@ case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate =
   override def toRow: Row = {
     Row(
       freq,
-      Cell(date),
       mode,
+      Cell(date),
       time,
       theirCall,
       category,

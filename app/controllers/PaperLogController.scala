@@ -1,7 +1,7 @@
 
 package controllers
 
-import java.time.LocalTime
+import java.time.{LocalDate, LocalTime}
 
 import akka.stream.scaladsl.JavaFlowSupport.Source
 import be.objectify.deadbolt.scala.ActionBuilders
@@ -34,6 +34,10 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
   extends AbstractController(cc)
     with JsonLogging with play.api.i18n.I18nSupport
     with SubjectAccess {
+  private  implicit val dates: Seq[LocalDate] = {
+    val date0 = LocalDate.parse(config.getString("wfd.startDate"))
+    Seq(date0, date0.plusDays(1))
+  }
   private val formPaperHeader: Form[PaperLogHeader] = Form(
     mapping(
       "callSign" -> callSign,
@@ -61,7 +65,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
     mapping(
       "freq" -> nonEmptyText,
       "mode" -> nonEmptyText,
-      "date" -> localDate("MM/dd/yy"),
+      "date" -> localDate,
       "time" -> localTime("HH:mm"),
       "theirCall" -> callSign,
       "cat" -> nonEmptyText
@@ -206,30 +210,30 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         var count = 0
 
 
-        addMany(2000){ theirCallsign =>
+        addMany(2000) { theirCallsign =>
           paperLogDao.addQso(PaperLogQso(freq = s"7.$count", time = LocalTime.now().plusMinutes(count), theirCall = theirCallsign, category = "7O", section = "DX", callSign = cs))
 
         }
 
-//        val rr: Try[Unit] = Using {
-//          val r: BufferedSource = scala.io.Source.fromFile("/Users/dlieber/dev/ham/wfdcheck/conf/SampleCallSigns.txt")
-//          r
-//        } { bs: BufferedSource =>
-//          bs.getLines.foreach { c: String =>
-//            val theirCllsign = CallSign(c)
-//            paperLogDao.addQso(PaperLogQso(freq = s"7.$count", time = LocalTime.now().plusMinutes(count), theirCall = theirCllsign, category = "7O", section = "DX", callSign = cs))
-//            count = count + 1
-//            if (count >= howMany) {
-//              throw new Exception()
-//            }
-//          }
-//        }
-//        rr match {
-//          case Failure(exception) =>
-//            exception.printStackTrace()
-//          case Success(value) =>
-//            println(value)
-//        }
+        //        val rr: Try[Unit] = Using {
+        //          val r: BufferedSource = scala.io.Source.fromFile("/Users/dlieber/dev/ham/wfdcheck/conf/SampleCallSigns.txt")
+        //          r
+        //        } { bs: BufferedSource =>
+        //          bs.getLines.foreach { c: String =>
+        //            val theirCllsign = CallSign(c)
+        //            paperLogDao.addQso(PaperLogQso(freq = s"7.$count", time = LocalTime.now().plusMinutes(count), theirCall = theirCllsign, category = "7O", section = "DX", callSign = cs))
+        //            count = count + 1
+        //            if (count >= howMany) {
+        //              throw new Exception()
+        //            }
+        //          }
+        //        }
+        //        rr match {
+        //          case Failure(exception) =>
+        //            exception.printStackTrace()
+        //          case Success(value) =>
+        //            println(value)
+        //        }
         Redirect(routes.PaperLogController.qsoEditor(cs))
 
       }
