@@ -33,7 +33,7 @@ trait PaperLogDaoContext extends ForEach[PaperLogDao] {
   )
 
   def foreach[R: AsResult](r: PaperLogDao => R): Result = {
-    val paperLogDao = new PaperLogDao(callSign, Files.createTempDirectory("PaperLogDaoSpec"), wfdSubject)
+    val paperLogDao = new PaperLogDao(callSign, Files.createTempDirectory("PaperLogDaoSpec")) (wfdSubject)
     val paperLogDir: Path = paperLogDao.ourDir
 println(s"paperLogDir: $paperLogDir")
     val result = AsResult(r(paperLogDao))
@@ -91,7 +91,7 @@ class PaperLogDaoSpec extends Specification with PaperLogDaoContext {
       val paperLog = paperLogDao.paperLog
       val qsos = paperLog.qsos
       qsos.head must beEqualTo (qso)
-      qsos(1) must beEqualTo (qso1)
+      qsos(1) must beEqualTo (qso1.withIndex(1))
       qsos must haveLength(2)
     }
   }

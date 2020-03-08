@@ -36,6 +36,7 @@ case class Row(cells: Seq[Cell],
   def renderedCssClass: String = {
     cssClass.mkString(" ")
   }
+  def withId(id:String):Row = copy(rowId = Some(id))
 
   override def toRow: Row = this
 }

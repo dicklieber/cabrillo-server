@@ -5,17 +5,25 @@ import play.api.data.Forms._
 import play.api.data._
 import play.api.data.format.Formatter
 import play.api.libs.json._
-import play.api.mvc.QueryStringBindable
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
 import scala.language.implicitConversions
 import scala.util.matching.Regex
 
 class CallSign private(val cs: String) extends Ordered[CallSign] {
+  def canEqual(a: Any): Boolean = a.isInstanceOf[CallSign]
 
-  override def equals(obj: Any): Boolean = obj match {
-    case cs: CallSign => this.cs equals cs.cs
-    case _ => false
+  override def equals(that: Any): Boolean = {
+      that match {
+        case that: CallSign =>
+          that.canEqual(this) &&
+            this.cs == that.cs
+        case _ => false
+      }
   }
+
+
+  override def hashCode(): Int = cs.hashCode
 
   /**
    *
@@ -71,7 +79,7 @@ object CallSign {
         JsSuccess(CallSign(cs))
       }
       catch {
-        case e: IllegalArgumentException ⇒ JsError(e.getMessage)
+        case e: IllegalArgumentException => JsError(e.getMessage)
       }
     }
 
@@ -109,7 +117,7 @@ object CallSign {
   val callSign: Mapping[CallSign] = of[CallSign]
 
   // for routes
-  implicit object bindableChar extends QueryStringBindable[CallSign] {
+  implicit object queryStringBindable extends QueryStringBindable[CallSign] {
 
     override def unbind(key: String, value: CallSign): String = {
       s"$key=$value"
@@ -131,6 +139,20 @@ object CallSign {
             Left(x.getMessage)
         }
       }
+    }
+  }
+
+  implicit val callSignPathBindable: PathBindable[CallSign] =  new PathBindable[CallSign] {
+    override def bind(key: String, value: String):  Either[String, CallSign] = {
+      try {
+        Right(CallSign(value))
+      } catch {
+        case e:Exception =>
+          Left(e.toString)
+      }
+    }
+    override def unbind(key: String, value: CallSign):String = {
+      value.toString
     }
   }
 

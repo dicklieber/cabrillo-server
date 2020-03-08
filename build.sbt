@@ -109,4 +109,4 @@ javaOptions in Universal ++= Seq(
 
 )
 
-routesImport += "com.wa9nnn.wfdserver.model.CallSign._"
+routesImport += "com.wa9nnn.wfdserver.model.CallSign.callSignPathBindable,com.wa9nnn.wfdserver.model.CallSign"

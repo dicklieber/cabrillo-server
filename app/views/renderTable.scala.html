@@ -37,6 +37,9 @@
             @if(cell.style) {
                 style="@(cell.style.get)"
                 }
+            @if(cell.id.isDefined) {
+                id="@cell.id.get"
+            }
         > @if(cell.href.isDefined) {
             @defining(cell.href.get) { link =>
                 @if(cell.image.nonEmpty) {

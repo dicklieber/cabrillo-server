@@ -4,48 +4,49 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET         /                                   controllers.HomeController.index()
-POST        /wfd                                controllers.WfdController.upload()
+GET         /                                    controllers.HomeController.index()
+POST        /wfd                                 controllers.WfdController.upload()
 
-GET         /state                              controllers.StatsController.index()
-GET         /netcontrol                         controllers.AdminController.adminlanding()
-POST        /stuff                              controllers.AdminController.stuffPost()
-GET         /entries                            controllers.AdminController.callSigns()
-GET         /recent                             controllers.AdminController.recent()
-GET         /search                             controllers.SearchController.index()
-POST        /search                             controllers.SearchController.search()
-GET         /fetch                              controllers.FilesController.download(key:String)
-GET         /submission                         controllers.AdminController.submission(entryId:String)
-POST        /bulkLoad/start                     controllers.BulkLoaderController.start()
-GET         /bulkLoad/status                    controllers.BulkLoaderController.status()
+GET         /state                               controllers.StatsController.index()
+GET         /netcontrol                          controllers.AdminController.adminlanding()
+POST        /stuff                               controllers.AdminController.stuffPost()
+GET         /entries                             controllers.AdminController.callSigns()
+GET         /recent                              controllers.AdminController.recent()
+GET         /search                              controllers.SearchController.index()
+POST        /search                              controllers.SearchController.search()
+GET         /fetch                               controllers.FilesController.download(key:String)
+GET         /submission                          controllers.AdminController.submission(entryId:String)
+POST        /bulkLoad/start                      controllers.BulkLoaderController.start()
+GET         /bulkLoad/status                     controllers.BulkLoaderController.status()
 
-POST        /scoring/start                      controllers.ScoringController.start()
-GET         /scoring/status                     controllers.ScoringController.status()
-GET         /scoring/view                       controllers.ScoringController.viewScores()
-POST        /scoring/view                       controllers.ScoringController.viewFiteredScores()
+POST        /scoring/start                       controllers.ScoringController.start()
+GET         /scoring/status                      controllers.ScoringController.status()
+GET         /scoring/view                        controllers.ScoringController.viewScores()
+POST        /scoring/view                        controllers.ScoringController.viewFiteredScores()
 
-GET         /userList                           controllers.UserController.index()
-GET         /userEditor                         controllers.UserController.edit(userId:String)
-GET         /userCreate                         controllers.UserController.create()
-POST        /userUpdate                         controllers.UserController.update()
-GET         /sessionControl                     controllers.SubmissionControlController.index()
-POST        /sessionControl                     controllers.SubmissionControlController.post()
-GET         /metrics                            controllers.MetricsController.metrics
-GET         /login                              controllers.LoginController.login
-POST        /loginOp                            controllers.LoginController.dologin
+GET         /userList                            controllers.UserController.index()
+GET         /userEditor                          controllers.UserController.edit(userId:String)
+GET         /userCreate                          controllers.UserController.create()
+POST        /userUpdate                          controllers.UserController.update()
+GET         /sessionControl                      controllers.SubmissionControlController.index()
+POST        /sessionControl                      controllers.SubmissionControlController.post()
+GET         /metrics                             controllers.MetricsController.metrics
+GET         /login                               controllers.LoginController.login
+POST        /loginOp                             controllers.LoginController.dologin
 
-GET         /paper                              controllers.PaperLogController.index
-GET         /paperLogList                       controllers.PaperLogController.paperLogList
-GET         /paperStart                         controllers.PaperLogController.start(callSign:com.wa9nnn.wfdserver.model.CallSign)
-POST        /paperStartF                        controllers.PaperLogController.create()
-GET         /paperHeaderEditor                  controllers.PaperLogController.headerEditor(callSign:Option[com.wa9nnn.wfdserver.model.CallSign])
-POST        /paperUpdateHeader                  controllers.PaperLogController.updateHeader()
-GET         /qsoEditor                          controllers.PaperLogController.qsoEditor(callSign:Option[com.wa9nnn.wfdserver.model.CallSign])
-POST        /paperAddQso                        controllers.PaperLogController.addQso()
-GET         /loadmany/:callSign/:howMany        controllers.PaperLogController.addMany(callSign:String, howMany:Int)
-
+GET         /paper                               controllers.PaperLogController.index
+GET         /paperLogList                        controllers.PaperLogController.paperLogList
+GET         /paperStart                          controllers.PaperLogController.start(callSign:CallSign)
+POST        /paperStartF                         controllers.PaperLogController.create()
+GET         /paperHeaderEditor                   controllers.PaperLogController.headerEditor(callSign:Option[CallSign])
+POST        /paperUpdateHeader                   controllers.PaperLogController.updateHeader()
+GET         /qsoEditor                           controllers.PaperLogController.qsoEditor(callSign:Option[CallSign])
+POST        /paperAddQso                         controllers.PaperLogController.addQso()
+GET         /loadmany/:callSign/:howMany         controllers.PaperLogController.addMany(callSign:String, howMany:Int)
+GET        /paperDelete/:index/:callSign        controllers.PaperLogController.deleteQso(index:Int, callSign:CallSign)
+GET         /paperEdit                           controllers.PaperLogController.editQso(callSign:CallSign, index:Int)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                       controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                        controllers.Assets.versioned(path="/public", file: Asset)
 
       

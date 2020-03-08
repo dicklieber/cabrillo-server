@@ -13,7 +13,7 @@ class PaperLogQsoSpec extends Specification {
         CallSign("wa9nnn"))
       val csvLine = in.toCsvLine
       csvLine must beEqualTo("7.0125,CW,1998-01-25,00:00,W1AW,1I,CT,WA9NNN")
-      val backAgain = PaperLogQso.fromCsv(csvLine)
+      val backAgain = PaperLogQso.fromCsv(csvLine, 0)
 
       backAgain must beEqualTo(in)
     }

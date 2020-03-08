@@ -3,7 +3,6 @@ package controllers
 
 import java.time.{LocalDate, LocalTime}
 
-import akka.stream.scaladsl.JavaFlowSupport.Source
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
 import com.wa9nnn.wfdserver.auth.{SubjectAccess, WfdSubject}
@@ -20,9 +19,7 @@ import play.api.mvc._
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.{BufferedSource, Source}
-import scala.io.Source
-import scala.util.{Failure, Success, Try, Using}
+import scala.language.implicitConversions
 
 @Singleton
 class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: ActionBuilders,
@@ -30,11 +27,12 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
                                    categoryValidator: CategoryValidator,
                                    paperLogsDao: PaperLogsDao)
                                   (implicit exec: ExecutionContext, config: Config,
-                                   addMany: AddMany)
+                                   addMany: AddMany, sectionChoices: SectionChoices)
   extends AbstractController(cc)
     with JsonLogging with play.api.i18n.I18nSupport
     with SubjectAccess {
-  private  implicit val dates: Seq[LocalDate] = {
+
+  private implicit val dates: Seq[LocalDate] = {
     val date0 = LocalDate.parse(config.getString("wfd.startDate"))
     Seq(date0, date0.plusDays(1))
   }
@@ -72,9 +70,10 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         .verifying(categoryValidator.categoryConstraint),
       "sect" -> nonEmptyText
         .verifying(sectionValidator.sectionConstraint),
-      "callSign" -> callSign
-
-    )(PaperLogQso.apply)(PaperLogQso.unapply))
+      "callSign" -> callSign,
+      "index" -> number
+    )(PaperLogQso.apply)(PaperLogQso.unapply)
+  )
 
   private val byCallSign = new TrieMap[CallSign, PaperLogDao]()
 
@@ -105,7 +104,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
       val pl: PaperLog = paperLog(callSign).paperLog
 
       val paperHeaderForm: Form[PaperLogHeader] = formPaperHeader.fill(pl.paperLogHeader)
-      val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = callSign))
+      //      val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = callSign))
       Future(Ok(views.html.paperLogHeader(Some(callSign), paperHeaderForm)))
   }
 
@@ -124,12 +123,23 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
           val plf: Form[PaperLogHeader] = formPaperHeader.fill(header)
           Ok(views.html.paperLogHeader(Some(callSign), plf))
         } else {
-          val qsosTable = dao.qsosTable()
-
-          val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = callSign))
-          Ok(views.html.qsoEditor(callSign, paperQsoForm, qsosTable))
+          doQsoEdit(callSign)
         }
       )
+  }
+
+  implicit def csToOpt(callSign: CallSign): Option[CallSign] = Option(callSign)
+
+  private def doQsoEdit(callSign: CallSign, qso: Option[PaperLogQso] = None)(implicit request: Request[AnyContent]): Result = {
+    doQsoEdit(paperLog(callSign), qso)
+  }
+
+  private def doQsoEdit(paperLogDao: PaperLogDao, qso: Option[PaperLogQso])(implicit request: Request[AnyContent]): Result = {
+    val callSign = paperLogDao.callSign
+    val qsosTable = paperLogDao.qsosTable()
+    val paperLogQso = qso.getOrElse(PaperLogQso(callSign))
+    val paperQsoForm: Form[PaperLogQso] = formQso.fill(paperLogQso)
+    Ok(views.html.qsoEditor(callSign, paperQsoForm, qsosTable))
   }
 
   def qsoEditor(callSign: Option[CallSign]): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
@@ -137,11 +147,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
       Future {
         callSign match {
           case Some(cs) =>
-            val qsosTable = paperLog(cs).qsosTable()
-
-            val paperLogQso = PaperLogQso(callSign = cs)
-            val paperQsoForm: Form[PaperLogQso] = formQso.fill(paperLogQso)
-            Ok(views.html.qsoEditor(callSign, paperQsoForm, qsosTable))
+            doQsoEdit(cs)
           case None =>
             Ok("Please select or create a call sign in the logs tab.")
         }
@@ -196,9 +202,29 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
             val paperLogDao = paperLog(paperLogQso.callSign)
             paperLogDao.addQso(paperLogQso)
-            Ok(views.html.qsoEditor(paperLogDao.callSign, formQso.fill(paperLogQso.next), paperLogDao.qsosTable()))
+            doQsoEdit(paperLogDao, None)
           }
         )
+      }
+  }
+
+
+  def deleteQso(index: Int, callSign: CallSign): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+    implicit request =>
+      Future {
+        val paperLogDao = paperLog(callSign)
+        paperLogDao.remove(index)
+
+        doQsoEdit(callSign)
+      }
+  }
+
+  def editQso(callSign: CallSign, index: Int): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+    implicit request =>
+      Future {
+
+
+        Ok("todo eeditQso")
       }
   }
 
@@ -215,31 +241,9 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
         }
 
-        //        val rr: Try[Unit] = Using {
-        //          val r: BufferedSource = scala.io.Source.fromFile("/Users/dlieber/dev/ham/wfdcheck/conf/SampleCallSigns.txt")
-        //          r
-        //        } { bs: BufferedSource =>
-        //          bs.getLines.foreach { c: String =>
-        //            val theirCllsign = CallSign(c)
-        //            paperLogDao.addQso(PaperLogQso(freq = s"7.$count", time = LocalTime.now().plusMinutes(count), theirCall = theirCllsign, category = "7O", section = "DX", callSign = cs))
-        //            count = count + 1
-        //            if (count >= howMany) {
-        //              throw new Exception()
-        //            }
-        //          }
-        //        }
-        //        rr match {
-        //          case Failure(exception) =>
-        //            exception.printStackTrace()
-        //          case Success(value) =>
-        //            println(value)
-        //        }
         Redirect(routes.PaperLogController.qsoEditor(cs))
-
       }
   }
-
-
 }
 
 case class SessionKey(user: String, callSign: CallSign)

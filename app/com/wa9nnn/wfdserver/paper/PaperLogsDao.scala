@@ -53,7 +53,7 @@ class PaperLogsDao @Inject()(@TypesafeConfig("wfd.paperLogDirectory") paperLogDi
    */
   def start(callSign: CallSign)(implicit wfdSubject: WfdSubject): PaperLogDao = {
     val callSignDir = directory.resolve(callSign.fileSafe)
-    new PaperLogDao(callSign, callSignDir, wfdSubject)
+    new PaperLogDao(callSign, callSignDir)
     //    if (Files.exists(callSignDir)) {
     //      Right(metadata(callSign, callSignDir))
     //    } else {
