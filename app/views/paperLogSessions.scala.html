@@ -1,0 +1,10 @@
+@import com.wa9nnn.wfdserver.htmlTable.Table
+@import com.wa9nnn.wfdserver.auth.WfdSubject
+@import com.typesafe.config.Config
+@import views.html.helper.form
+@(table: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
+
+@paperEditor() {
+    <p>These are the paper log sessions that are currently cached in memory.</p>
+    @renderTable(table)
+}

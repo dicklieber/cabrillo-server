@@ -34,8 +34,10 @@ GET         /metrics                             controllers.MetricsController.m
 GET         /login                               controllers.LoginController.login
 POST        /loginOp                             controllers.LoginController.dologin
 
-GET         /paper                               controllers.PaperLogController.index
-GET         /paperLogList                        controllers.PaperLogController.paperLogList
+GET         /paper                               controllers.PaperLogController.paperLogList
+#GET         /paperLogList                        controllers.PaperLogController.paperLogList
+GET         /paperLogSessions                    controllers.PaperLogController.sessionsList
+GET         /paperLogInvalidate                  controllers.PaperLogController.invalidate(callSign:CallSign)
 GET         /paperStart                          controllers.PaperLogController.start(callSign:CallSign)
 POST        /paperStartF                         controllers.PaperLogController.create()
 GET         /paperHeaderEditor                   controllers.PaperLogController.headerEditor(callSign:Option[CallSign])
@@ -43,7 +45,7 @@ POST        /paperUpdateHeader                   controllers.PaperLogController.
 GET         /qsoEditor                           controllers.PaperLogController.qsoEditor(callSign:Option[CallSign])
 POST        /paperAddQso                         controllers.PaperLogController.addQso()
 GET         /loadmany/:callSign/:howMany         controllers.PaperLogController.addMany(callSign:String, howMany:Int)
-GET        /paperDelete/:index/:callSign        controllers.PaperLogController.deleteQso(index:Int, callSign:CallSign)
+GET         /paperDelete/:index/:callSign        controllers.PaperLogController.deleteQso(index:Int, callSign:CallSign)
 GET         /paperEdit                           controllers.PaperLogController.editQso(callSign:CallSign, index:Int)
 
 # Map static resources from the /public folder to the /assets URL path

@@ -16,6 +16,11 @@ case class Row(cells: Seq[Cell],
   extends RowSource {
   def withToolTip(toolTip: String): Row = copy(rowToolTip = toolTip)
 
+  /**
+   * Addpend this cssClass to any exitings classes.
+   * @param cssClass to be appended.
+   * @return new Row with additional cssClass.
+   */
   def withCssClass(cssClass: String): Row = copy(cssClass = this.cssClass :+ cssClass)
 
   /**

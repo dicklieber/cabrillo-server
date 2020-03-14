@@ -43,7 +43,7 @@ class PaperLogsDaoSpec extends Specification with PaperLogsDaoContext {
 
   "PaperLogsDaoSpec" >> {
     "start new" >> { paperLogsDao: PaperLogsDao =>
-      val t: PaperLogDao = paperLogsDao.start(callSign)
+      val t: SessionDao = paperLogsDao.start(callSign)
       ok
     }
     "several" >> { paperLogsDao: PaperLogsDao =>

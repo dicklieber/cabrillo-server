@@ -1,49 +1,46 @@
 
 package com.wa9nnn.wfdserver.model
 
+import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalTime}
 
+import com.wa9nnn.wfdserver.util.TimeConverters.zoneIdUtc
 import com.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, RowSource}
 import controllers.routes
+import PaperLogQso._
 
 /**
  *
- * @param freq
- * @param mode
- * @param date
- * @param time
- * @param theirCall
- * @param category
- * @param section
- * @param callSign
- * @param index this is not persisted.
+ * @param index this is not persisted. It's updated while begin read from the qsos.txt file.
  */
 case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate = LocalDate.ofEpochDay(1), time: LocalTime = LocalTime.MIDNIGHT,
                        theirCall: CallSign = CallSign.empty,
                        category: String = "", section: String = "",
                        callSign: CallSign = CallSign.empty,
-                       index: Int = 0) extends RowSource {
+                       index: Int = createIndex) extends RowSource {
+  def isCreate: Boolean = index == createIndex
+
+
   def next: PaperLogQso = copy(time = LocalTime.MIN, theirCall = CallSign.empty, category = "", section = "")
 
-  def toCsvLine: String = {
-    productIterator
-      .toSeq
-      .init
-      .map(_.toString).mkString(",")
+  def withIndex(index: Int): PaperLogQso = {
+    if(this.index != createIndex){
+      throw new IllegalStateException(s"Qso already has index of ${this.index}")
+    }
+    copy(index = index)
   }
 
-  def withIndex(index: Int): PaperLogQso = copy(index = index)
-
-  override def toRow: Row = {
-    Row(
-      //      Cell("DeleteQso").withUrl(routes.PaperLogController.deleteQso(theirCall, index).url)
+  def toRow(editingThisRow: Boolean = false): Row = {
+    val sIndex = index.toString
+    val rr = Row(
       Cell("DeleteQso").withCssClass("deleteQso")
         .withImage(routes.Assets.versioned("images/delete.png").url)
-        .withId(index.toString + "|" + callSign.toString)
+        .withId(sIndex + "|" + callSign.toString)
         .withToolTip("Remove this QSO, Can't be undone!"),
       Cell("EditQso").withUrl(routes.PaperLogController.editQso(callSign, index).url)
         .withImage(routes.Assets.versioned("images/pencil.png").url)
         .withToolTip("Update this qso row."),
+      sIndex,
       freq,
       mode,
       Cell(date),
@@ -51,27 +48,38 @@ case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate =
       theirCall,
       category,
       section
-    )
+    ).withId(sIndex)
+    if (editingThisRow)
+      rr.withCssClass("editing")
+    else {
+      rr
+    }
+  }
+
+  override def toRow: Row = toRow()
+
+  def toCsvLine: String = {
+    Seq(
+      freq,
+      mode,
+      date.toString,
+      timeFormatter.format(time),
+      theirCall,
+      category,
+      section,
+      callSign.toString
+    ).mkString(",")
   }
 }
 
 object PaperLogQso {
-  def apply(freq: String = "", mode: String = "DI", date: LocalDate = LocalDate.ofEpochDay(1), time: LocalTime = LocalTime.MIDNIGHT,
-            theirCall: CallSign = CallSign.empty,
-            category: String = "", section: String = "",
-            callSign: CallSign = CallSign.empty,
-            index: Int = 0): PaperLogQso = {
-    new PaperLogQso(freq, mode.toUpperCase, date, time, theirCall, category.toUpperCase, section.toUpperCase, callSign, index)
-  }
-
-  def apply(callSign: CallSign) = new PaperLogQso(callSign = callSign)
-
   def fromCsv(line: String, index: Int): PaperLogQso = {
     val e: Array[String] = line.split(",")
-    PaperLogQso(freq = e(0),
+    PaperLogQso(
+      freq = e(0),
       mode = e(1),
       date = LocalDate.parse(e(2)),
-      time = LocalTime.parse(e(3)),
+      time = LocalTime.parse(e(3), timeFormatter),
       theirCall = e(4),
       category = e(5),
       section = e(6),
@@ -79,10 +87,22 @@ object PaperLogQso {
       index = index)
   }
 
-  def header(qsoCount: Int): Header = {
-    Header(f"QSOs ($qsoCount%,d)", "Delete", "Edit", "Freq", "Mode", "Date", "Time", "CallSign", "Cat", "Sect")
+  def apply(freq: String = "", mode: String = "DI", date: LocalDate = LocalDate.ofEpochDay(1), time: LocalTime = LocalTime.MIDNIGHT,
+            theirCall: CallSign = CallSign.empty,
+            category: String = "", section: String = "",
+            callSign: CallSign = CallSign.empty,
+            index: Int = createIndex): PaperLogQso = {
+    new PaperLogQso(freq, mode.toUpperCase, date, time, theirCall, category.toUpperCase, section.toUpperCase, callSign, index)
   }
 
-  //  def tupled: ((String, String, LocalDate, LocalTime, CallSign, String, String, CallSign)) => PaperLogQso = (PaperLogQso.apply _).tupled
+  def apply(callSign: CallSign) = new PaperLogQso(callSign = callSign)
+
+
+  def header(rangeInfo: String): Header = {
+    Header(s"QSOs ($rangeInfo)", "Delete", "Edit", "Index", "Freq", "Mode", "Date", "Time", "CallSign", "Cat", "Sect")
+  }
+
+  val createIndex: Int = -1
+  val timeFormatter: DateTimeFormatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm").withZone(zoneIdUtc)
 }
 

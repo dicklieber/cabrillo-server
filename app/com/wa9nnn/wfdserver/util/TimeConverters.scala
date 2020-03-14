@@ -10,6 +10,7 @@ import com.wa9nnn.wfdserver.DurationFormat
 import scala.language.implicitConversions
 
 object TimeConverters {
+   implicit val zoneIdUtc: ZoneId = ZoneId.of("UTC")
 
   def nanoToSecond(nanoseconds: Double): Double = nanoseconds / 1000000000.0
 
@@ -74,6 +75,9 @@ object TimeConverters {
     val scst = fmt.format(ZonedDateTime.ofInstant(instant, TimeZone.getTimeZone("CST").toZoneId))
 
     s"$sUtc ($scst)"
+  }
+  def local(instant: Instant): String = {
+    fmt.format(ZonedDateTime.ofInstant(instant, TimeZone.getTimeZone("CST").toZoneId))
   }
 
 }

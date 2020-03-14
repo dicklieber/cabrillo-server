@@ -114,7 +114,7 @@ object CallSign {
   }
 
 
-  val callSign: Mapping[CallSign] = of[CallSign]
+//  val callSign: Mapping[CallSign] = of[CallSign]
 
   // for routes
   implicit object queryStringBindable extends QueryStringBindable[CallSign] {

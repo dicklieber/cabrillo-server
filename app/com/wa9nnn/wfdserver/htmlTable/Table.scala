@@ -7,14 +7,18 @@ import scala.reflect.ClassTag
  *
  * @param headers       zero or more rows of column headers [[Cell]]s that makeup the <thead>
  * @param rows          in the <tbody>
+ * @param cssClass      class of table element.
+ * @param sideCar       something extra that view may be able to use.
  */
-case class Table(headers: Seq[Seq[Any]], rows: Seq[Row], id: Option[String] = None, cssClass: String = "headeredTable") {
+case class Table(headers: Seq[Seq[Any]], rows: Seq[Row], id: Option[String] = None, cssClass: String = "headeredTable", sideCar: Any = Nil) {
 
   val columnHeaders: Seq[Seq[Cell]] = headers.map(hw => hw.map(Cell(_)))
 
   def withId(id: String): Table = copy(id = Option(id))
 
   def withCssClass(cssClass: String): Table = copy(cssClass = cssClass)
+
+  def withSideCar(sideCar: Any): Table = copy(sideCar = sideCar)
 }
 
 object Table {
@@ -40,17 +44,19 @@ object Table {
 
   /**
    * A table with one column.
+   *
    * @param singleColHeader column header
-   * @param rowValues values for row.
+   * @param rowValues       values for row.
    * @return
    */
-  def apply(singleColHeader:String, rowValues:Seq[Any]):Table = {
-    val rows: Seq[Row] = rowValues.map{ v =>
+  def apply(singleColHeader: String, rowValues: Seq[Any]): Table = {
+    val rows: Seq[Row] = rowValues.map { v =>
       Row(Seq(Cell(v)))
     }
     Table(Header(singleColHeader), rows)
 
   }
+
   /**
    * A multi line header
    *

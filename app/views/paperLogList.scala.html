@@ -1,12 +1,14 @@
 @import com.wa9nnn.wfdserver.htmlTable.Table
-@import com.wa9nnn.wfdserver.auth.WfdSubject
-@import com.typesafe.config.Config
-@import views.html.helper.form
-@(table: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
+    @import com.wa9nnn.wfdserver.auth.WfdSubject
+    @import com.typesafe.config.Config
+    @import views.html.helper.form
+    @(table: Table)(implicit subject: WfdSubject, request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider)
 
-@paperEditor(){
-    @renderTable(table)
-    @form(action = routes.PaperLogController.create()){
-        Start CallSign: <input type="text" name="callSign" class ="caps"> <input type="submit">
+    @paperEditor(){
+        @renderTable(table)
+        @form(action = routes.PaperLogController.create()){
+            Start CallSign: <input type="text" name="callSign" class ="caps"> <input type="submit">
+
+            <a href="@routes.PaperLogController.sessionsList()">Current Sessions</a>
+        }
     }
-}

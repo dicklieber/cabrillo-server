@@ -6,9 +6,9 @@ import java.time.Instant
 
 import com.github.racc.tscg.TypesafeConfig
 import com.wa9nnn.wfdserver.auth.WfdSubject
-import com.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, RowSource, Table}
+import com.wa9nnn.wfdserver.htmlTable._
 import com.wa9nnn.wfdserver.model.{CallSign, PaperLogQso}
-import com.wa9nnn.wfdserver.paper.PaperLogDao.metadata
+import com.wa9nnn.wfdserver.paper.SessionDao.metadata
 import controllers.routes
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{Format, Json}
@@ -40,8 +40,13 @@ class PaperLogsDao @Inject()(@TypesafeConfig("wfd.paperLogDirectory") paperLogDi
       .toScala(Iterator)
       .filterNot(Files.isHidden)
       .map { callSignPath =>
-      metadata(callSignPath)
-    }.toSeq
+        metadata(callSignPath)
+      }.toSeq
+  }
+
+  def table:Table = {
+    val metadatas: Seq[PaperLogMetadata] = list()
+      Table(PaperLogMetadata.header(metadatas.length), metadatas.map(_.toRow)).withCssClass("resultTable")
   }
 
 
@@ -49,11 +54,11 @@ class PaperLogsDao @Inject()(@TypesafeConfig("wfd.paperLogDirectory") paperLogDi
    *
    * @param callSign   potential new paper log.
    * @param wfdSubject who
-   * @return Left[PaperLogEditor] if ok to edit Right[PaperLog] if somewone else is editing
+   * @return Left[PaperLogEditor] if ok to edit Right[PaperLog] if someone else is editing
    */
-  def start(callSign: CallSign)(implicit wfdSubject: WfdSubject): PaperLogDao = {
+  def start(callSign: CallSign)(implicit wfdSubject: WfdSubject): SessionDao = {
     val callSignDir = directory.resolve(callSign.fileSafe)
-    new PaperLogDao(callSign, callSignDir)
+    new SessionDao(callSign, callSignDir)
     //    if (Files.exists(callSignDir)) {
     //      Right(metadata(callSign, callSignDir))
     //    } else {
@@ -84,17 +89,15 @@ case class PaperLogMetadata(callSign: CallSign, user: String, lastUpdate: Instan
 }
 
 object PaperLogMetadata {
-  val header: Header = Header("Callsigns being edited", "CallSign", "User", "Updated", "Qso Count")
+  def header(count:Int): Header = Header(s"CallSigns being edited $count", "CallSign", "User", "Updated", "Qso Count")
 }
 
 
-case class PaperLog(paperLogDetails: PaperLogMetadata, paperLogHeader: PaperLogHeader, qsos: Seq[PaperLogQso]){
-  def table:Table = Table(PaperLogQso.header(qsos.length), qsos.map(_.toRow)).withCssClass("resultTable")
-}
+case class PaperLog(paperLogDetails: PaperLogMetadata, paperLogHeader: PaperLogHeader, qsos: Seq[PaperLogQso])
 
 
 object PaperLogFormat {
-  implicit val f = CallSign.callSignFormat
+  implicit val f: Format[CallSign] = CallSign.callSignFormat
 
   implicit val qsoFormat: Format[PaperLogQso] = Json.format
   implicit val detailsFormat: Format[PaperLogMetadata] = Json.format

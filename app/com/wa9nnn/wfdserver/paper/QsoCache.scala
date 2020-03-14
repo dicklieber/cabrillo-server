@@ -9,6 +9,7 @@ import com.wa9nnn.wfdserver.util.Page
 
 import scala.io.Source
 import scala.util.Using
+
 /**
  * Handles QSO persistence with caching.
  *
@@ -21,7 +22,14 @@ class QsoCache(val ourDir: Path)(implicit wfdSubject: WfdSubject) {
 
   def size: Int = cache.size
 
-  def add(qso: PaperLogQso): Unit = {
+  def upsert(qso: PaperLogQso):Unit = {
+    if( qso.isCreate){
+      add(qso)
+    }else{
+      update(qso)
+    }
+  }
+  private def add(qso: PaperLogQso): Unit = {
     cache += qso
     Using(Files.newOutputStream(qsosFile,
       StandardOpenOption.WRITE,
@@ -32,38 +40,53 @@ class QsoCache(val ourDir: Path)(implicit wfdSubject: WfdSubject) {
     }
   }
 
-  /**
-   * .
-   * @param index to be removed.
-   * @return new collection of QSOs to be persisted
-   */
-  def remove(index:Int): Unit = {
-    cache.remove(index)
-
+  private def save(): Unit = {
     Using(Files.newOutputStream(qsosFile,
+      StandardOpenOption.TRUNCATE_EXISTING,
       StandardOpenOption.WRITE,
       StandardOpenOption.CREATE)) { outputStream =>
-      cache.all.foreach{qso =>
+      cache.all.foreach { qso =>
         outputStream.write(qso.toCsvLine.getBytes())
         outputStream.write('\n')
       }
     }
+    println("saving")
+//todo save needs to rebuild indexes
+  }
 
-    }
+  /**
+   * * Update qso at index and save entire collection
+   *
+   * @param qso with valid index.
+   */
+  private def update(qso: PaperLogQso): Unit = {
+    cache.update(qso)
+    save()
+  }
+
+  /**
+   * Remove qso at index and save entire collection
+   * @param index to be removed.
+   * @return new collection of QSOs to be persisted
+   */
+  def remove(index: Int): Unit = {
+    cache.remove(index)
+    save()
+  }
+
   /**
    *
    * @param page None gets all, ter
    * @return
    */
-  def page(page: Option[Page] = None): Iterable[PaperLogQso] = {
+  def page(page: Page): Seq[PaperLogQso] = {
     cache.page(page)
   }
-  def lastPage: Iterable[PaperLogQso] = {
-    cache.lastPage
-  }
 
-  def all:Iterable[PaperLogQso] = cache.all
-  def get(index:Int):Option[PaperLogQso] = cache.get(index)
+
+  def all: Seq[PaperLogQso] = page(Page.all)
+
+  def get(index: Int): Option[PaperLogQso] = cache.get(index)
 
   private def readFile: IndexedCache = {
     Using(Source.fromFile(qsosFile.toFile)) { bs =>

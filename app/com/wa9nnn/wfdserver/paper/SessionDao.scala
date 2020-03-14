@@ -6,11 +6,12 @@ import java.nio.file.{Files, Path}
 import java.time.Instant
 
 import com.wa9nnn.wfdserver.auth.WfdSubject
-import com.wa9nnn.wfdserver.htmlTable.Table
+import com.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, RowSource, Table}
 import com.wa9nnn.wfdserver.model.CallSign._
 import com.wa9nnn.wfdserver.model.{CallSign, PaperLogQso}
-import com.wa9nnn.wfdserver.paper.PaperLogDao._
+import com.wa9nnn.wfdserver.paper.SessionDao._
 import com.wa9nnn.wfdserver.util.{JsonLogging, Page}
+import controllers.routes
 import play.api.libs.json.{Format, Json}
 
 import scala.io.{BufferedSource, Source}
@@ -29,10 +30,11 @@ import scala.util.{Failure, Using}
  *                                    qsos.txt appended on each addQso. One line of CSV per qso.
  * @param wfdSubject                  who is doing this.
  */
-class PaperLogDao(val callSign: CallSign, val ourDir: Path)(implicit wfdSubject: WfdSubject) extends JsonLogging {
+class SessionDao(val callSign: CallSign, val ourDir: Path)(implicit wfdSubject: WfdSubject)
+  extends JsonLogging with RowSource {
   Files.createDirectories(ourDir)
-  val started: Instant = Instant.now
-  var touched: Instant = Instant.now()
+  private val started: Instant = Instant.now
+  private var touched: Instant = Instant.now()
   private val headerFile = ourDir.resolve("header.json")
   private val qsoCache = new QsoCache(ourDir)
 
@@ -43,6 +45,21 @@ class PaperLogDao(val callSign: CallSign, val ourDir: Path)(implicit wfdSubject:
     }
   }
 
+  override def toRow: Row = {
+    val identifier: String = wfdSubject.identifier
+    Row(
+      identifier,
+      callSign,
+      com.wa9nnn.wfdserver.util.TimeConverters.local(started),
+      com.wa9nnn.wfdserver.util.TimeConverters.local(touched),
+      qsoCache.size,
+      Cell("Invalidate").withCssClass("invalidate")
+        .withImage(routes.Assets.versioned("images/delete.png").url)
+        .withUrl(routes.PaperLogController.invalidate(callSign).url)
+        .withToolTip("Remove this QSO, Can't be undone!")
+    )
+  }
+
   private def touch(): Unit = {
     touched = Instant.now()
   }
@@ -51,15 +68,17 @@ class PaperLogDao(val callSign: CallSign, val ourDir: Path)(implicit wfdSubject:
 
   def header: PaperLogHeader = {
     touch()
-    Using(Files.newInputStream(headerFile)) { inputStream =>
-      Json.parse(inputStream).as[PaperLogHeader]
+    Using(Files.newInputStream(headerFile)) {
+      inputStream =>
+        Json.parse(inputStream).as[PaperLogHeader]
     }
   }.getOrElse(PaperLogHeader(callSign))
 
   def saveHeader(paperLogHeader: PaperLogHeader): Unit = {
     touch()
-    Using(Files.newOutputStream(headerFile)) { outputStream: OutputStream =>
-      outputStream.write(Json.prettyPrint(Json.toJson(paperLogHeader)).getBytes)
+    Using(Files.newOutputStream(headerFile)) {
+      outputStream: OutputStream =>
+        outputStream.write(Json.prettyPrint(Json.toJson(paperLogHeader)).getBytes)
     } match {
       case Failure(e) =>
         logger.error(e.getMessage)
@@ -73,27 +92,50 @@ class PaperLogDao(val callSign: CallSign, val ourDir: Path)(implicit wfdSubject:
    */
   def addQso(qso: PaperLogQso): Unit = {
     touch()
-    qsoCache.add(qso)
+    qsoCache.upsert(qso)
   }
+
+  def get(index: Int): Option[PaperLogQso] = qsoCache.get(index)
 
   def remove(index: Int): Unit = {
     touch()
     qsoCache.remove(index)
   }
 
-  def qsos(page: Option[Page] = None): Iterable[PaperLogQso] = {
+  def qsos(page: Page = Page.all): Seq[PaperLogQso] = {
     touch()
     qsoCache.page(page)
   }
 
-  def qsosTable(page: Option[Page] = None): Table = {
+  def qsosTable(page: Page, editIndex: Option[Int] = None): Table = {
     touch()
-    val seq = qsoCache.all.toSeq
-    val header1 = PaperLogQso.header(seq.length)
-    Table(header1, qsoCache.lastPage
-      .toSeq
-      .zipWithIndex
-      .map { case (qso, index) => qso.withIndex(index).toRow }
+    val thisPage = qsoCache.page(page)
+
+    val rangeInfo = page match {
+      case Page.last =>
+        s"Last page of ${
+          qsoCache.size
+        } qsos"
+      case Page.all =>
+        s"All ${
+          qsoCache.size
+        } qsos"
+      case _: Page =>
+        s"From ${
+          page.start
+        } to ${
+          page.end
+        } of ${
+          qsoCache.size
+        } qsos"
+    }
+
+
+    val header = PaperLogQso.header(rangeInfo)
+    val editMatchIndex = editIndex.getOrElse(Int.MinValue)
+    Table(header, thisPage.map {
+      qso => qso.toRow(qso.index == editMatchIndex)
+    }
     ).withCssClass("resultTable")
   }
 
@@ -111,12 +153,14 @@ class PaperLogDao(val callSign: CallSign, val ourDir: Path)(implicit wfdSubject:
       .getOrElse(Instant.now)
 
     val metadata = PaperLogMetadata(callSign, wfdSubject.identifier, latest, qsoCache.size)
-    PaperLog(metadata, header, qsos().toSeq)
+    PaperLog(metadata, header, qsos())
   }
+
 }
 
 
-object PaperLogDao {
+object SessionDao {
+  def header(count: Int): Header = Header(s"Paper Log Sessions ($count)", "User", "CallSign", "Started", "Touched", "QSOs", "Invalidate")
 
   def userFile(directory: Path): Path = {
     directory.resolve("user.txt")

@@ -14,81 +14,88 @@
 @(callSign: Option[CallSign], paperQsoForm: Form[PaperLogQso], qsosTable: Table)(implicit subject: WfdSubject,
         request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider, addMany: AddMany, dates: Seq[LocalDate], sectionChoices: SectionChoices)
 
-    @paperEditor(callSign) {
-        <script>
-                $(document).ready(function () {
-                    $('#qsoTime').focusout(function () {
-                        let v = this.value;
-                        let tokens = v.match("(\\d{2})(\\d{2})");
-                        if (tokens != null) {
-                            let r = tokens[1] + ":" + tokens[2];
-                            $(this).val(r)
+@paperEditor(callSign) {
+    <script>
+            $(document).ready(function () {
+                $('#qsoTime').focusout(function () {
+                    let v = this.value;
+                    let tokens = v.match("(\\d{2})(\\d{2})");
+                    if (tokens != null) {
+                        let r = tokens[1] + ":" + tokens[2];
+                        $(this).val(r)
+                    }
+                });
+            });
+
+            $(document).ready(function () {
+                $("#sect").autocomplete({
+                    source: [@Html(sectionChoices.autoComplete)]
+                });
+            });
+
+            $(function () {
+                $(".deleteQso").on("click", function () {
+                    var qso = $(this);
+                    var qsoIndex = qso.attr('id');
+                    var tokens = qsoIndex.split("|")
+                    var index = tokens[0];
+                    var callSign = tokens[1];
+                    $("#dialog-confirm").dialog({
+                        resizable: false,
+                        height: "auto",
+                        width: 400,
+                        modal: true,
+                        buttons: {
+                            "Delete": function () {
+                                $(this).dialog("close");
+                                window.location = "/paperDelete/".concat(index, "/", callSign);
+                            },
+                            Cancel: function () {
+                                $(this).dialog("close");
+                            }
                         }
                     });
                 });
+            });
 
-                $(document).ready(function () {
-                    $("#sect").autocomplete({
-                        source: [@Html(sectionChoices.autoComplete)]
-                    });
-                });
-
-                $( function() {
-                    $(".deleteQso").on("click", function () {
-                        var qso = $(this);
-                        var qsoIndex = qso.attr('id');
-                        var tokens =qsoIndex.split("|")
-                        var index =  tokens[0];
-                        var callSign =  tokens[1];
-                        $("#dialog-confirm").dialog({
-                            resizable: false,
-                            height: "auto",
-                            width: 400,
-                            modal: true,
-                            buttons: {
-                                "Delete": function () {
-                                    $(this).dialog("close");
-                                    window.location = "/paperDelete/".concat(index, "/",  callSign);
-                                },
-                                Cancel: function () {
-                                    $(this).dialog("close");
-                                }
-                            }
-                        });
-                    });
-                });
-
-        </script>
-
-        <h2>@paperQsoForm("callSign").value.get</h2>
+    </script>
 
 
-        @form(action = routes.PaperLogController.addQso()) {
+    <h2>@paperQsoForm("callSign").value.get</h2>
 
-            @renderTable(qsosTable)
 
-            <input type="hidden", name="callSign" value="@paperQsoForm("callSign").value.get">
-            <input type="hidden", name="index" value="@paperQsoForm("index").value.get">
-            <table class = "qsoTable">
-                <tr>
-                    <td>@inputText(paperQsoForm("freq"))</td>
-                    <td>@inputText(paperQsoForm("mode"), Symbol("class") -> "caps")</td>
-                    <td>@select(paperQsoForm("date"), dates.map(d => d.toString -> d.toString))</td>
-                    <td>@inputText(paperQsoForm("time"), Symbol("id") -> "qsoTime")</td>
-                    <td>@inputText(paperQsoForm("theirCall"), Symbol("class") -> "caps")</td>
-                    <td>@inputText(paperQsoForm("cat"), Symbol("class") -> "caps")</td>
-                    <td>@inputText(paperQsoForm("sect"), Symbol("id") -> "sect", Symbol("class") -> "caps")</td>
-                </tr>
-                <tr>
-                    <td colspan="5"><input type="submit" name="submit" value="Add QSO"></td>
-                </tr>
-            </table>
-        }
-        @if(addMany.enabled) {
-            <a href="@routes.PaperLogController.addMany(callSign.get.toString, 500)">Add 500 for testing</a>
+    @form(action = routes.PaperLogController.addQso()) {
+
+        @renderTable(qsosTable)
+
+        @defining(controllers.PaperLogController.editClass(paperQsoForm)) { ec =>
+            <div class="@ec">
+
+                <input type="hidden", name="callSign" value="@paperQsoForm("callSign").value.get">
+                <input type="hidden", name="index" value="@paperQsoForm("index").value.get">
+                <table class = "qsoTable">
+                    <tr>
+                        <td>@inputText(paperQsoForm("freq"))</td>
+                        <td>@inputText(paperQsoForm("mode"), Symbol("class") -> "caps")</td>
+                        <td>@select(paperQsoForm("date"), dates.map(d => d.toString -> d.toString))</td>
+                        <td>@inputText(paperQsoForm("time"), Symbol("id") -> "qsoTime")</td>
+                        <td>@inputText(paperQsoForm("theirCall"), Symbol("class") -> "caps")</td>
+                        <td>@inputText(paperQsoForm("cat"), Symbol("class") -> "caps")</td>
+                        <td>@inputText(paperQsoForm("sect"), Symbol("id") -> "sect", Symbol("class") -> "caps")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5"><input type="submit" name="submit" value="Add QSO"></td>
+                    </tr>
+                </table>
+            </div>
         }
     }
+    @if(addMany.enabled) {
+        <a href="@routes.PaperLogController.addMany(callSign.get.toString, 500)">Add 500 for testing</a>
+    }
+}
 
-    <div id="dialog-confirm" title="Delete QSO??">
-        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This QSO will be permanently deleted! Are you sure?</p>
-    </div>
+<div id="dialog-confirm" title="Delete QSO??">
+    <p><span class="ui-icon ui-icon-alert" style="float: left;
+        margin: 12px 12px 20px 0;"></span>This QSO will be permanently deleted! Are you sure?</p>
+</div>

@@ -12,7 +12,7 @@ import org.specs2.specification.ForEach
 
 import scala.jdk.StreamConverters._
 
-trait PaperLogDaoContext extends ForEach[PaperLogDao] {
+trait PaperLogDaoContext extends ForEach[SessionDao] {
   val callSign = "WM9W"
   val wfdSubject = WfdSubject("testor")
   val paperLogHeader = new PaperLogHeader(callSign = callSign,
@@ -32,8 +32,8 @@ trait PaperLogDaoContext extends ForEach[PaperLogDao] {
     satellite = true
   )
 
-  def foreach[R: AsResult](r: PaperLogDao => R): Result = {
-    val paperLogDao = new PaperLogDao(callSign, Files.createTempDirectory("PaperLogDaoSpec")) (wfdSubject)
+  def foreach[R: AsResult](r: SessionDao => R): Result = {
+    val paperLogDao = new SessionDao(callSign, Files.createTempDirectory("PaperLogDaoSpec")) (wfdSubject)
     val paperLogDir: Path = paperLogDao.ourDir
 println(s"paperLogDir: $paperLogDir")
     val result = AsResult(r(paperLogDao))
@@ -51,28 +51,28 @@ class PaperLogDaoSpec extends Specification with PaperLogDaoContext {
     callSign = CallSign("WA9NNN"))
 
   "PaperLogDao" >> {
-    "start" >> { paperLogDao: PaperLogDao =>
+    "start" >> { paperLogDao: SessionDao =>
       val paperLog = paperLogDao.paperLog
       paperLog.qsos must beEmpty
       paperLog.paperLogHeader must beEqualTo(PaperLogHeader(callSign = callSign))
       paperLog.paperLogDetails.lastUpdate.isBefore(Instant.now)
       Files.list(paperLogDao.ourDir).toScala(Iterator).toSeq must length(1)
     }
-    "add a header" >> { paperLogDao: PaperLogDao =>
+    "add a header" >> { paperLogDao: SessionDao =>
       paperLogDao.saveHeader(paperLogHeader)
       val paperLog = paperLogDao.paperLog
       paperLog.paperLogDetails.lastUpdate.isBefore(Instant.now)
       paperLog.qsos must beEmpty
       paperLog.paperLogHeader must beEqualTo(paperLogHeader)
     }
-    "with header and a qso" >> { paperLogDao: PaperLogDao =>
+    "with header and a qso" >> { paperLogDao: SessionDao =>
       paperLogDao.saveHeader(paperLogHeader)
       paperLogDao.addQso(qso)
       val paperLog = paperLogDao.paperLog
       paperLog.paperLogDetails.lastUpdate.isBefore(Instant.now)
       paperLog.paperLogHeader must beEqualTo(paperLogHeader)
       paperLog.qsos must haveLength(1)
-      paperLog.qsos.head must beEqualTo(qso)
+      paperLog.qsos.head must beEqualTo(qso.withIndex(0))
 
       val filesInDir = Files.list(paperLogDao.ourDir).toScala(Iterator).toSeq.map { f: Path =>
         f.getFileName.toString
@@ -84,13 +84,13 @@ class PaperLogDaoSpec extends Specification with PaperLogDaoContext {
       filesInDir must haveLength(3)
     }
 
-    "multiple QSO Lines">> { paperLogDao: PaperLogDao =>
+    "multiple QSO Lines">> { paperLogDao: SessionDao =>
       paperLogDao.addQso(qso)
       val qso1 = qso.copy(mode = "PH")
       paperLogDao.addQso(qso1)
       val paperLog = paperLogDao.paperLog
       val qsos = paperLog.qsos
-      qsos.head must beEqualTo (qso)
+      qsos.head must beEqualTo (qso.withIndex(0))
       qsos(1) must beEqualTo (qso1.withIndex(1))
       qsos must haveLength(2)
     }

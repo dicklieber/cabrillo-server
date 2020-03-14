@@ -15,7 +15,7 @@ object AdminMenu {
     MenuItem(routes.ScoringController.status(), "Scoring", """Run scoring. View Scoring results. <p class="experimental">Note currently scores are only saved if in MongodB mode!</p>"""),
     MenuItem(routes.BulkLoaderController.status(), "Bulk loader", """Bulk load from a directory accessible from the server. Actual direction is configured in application.conf: wfd.bulkLoad.directory"""),
     MenuItem(routes.MetricsController.metrics(), "Metrics", """Counter, meters, times and JVM stats."""),
-    MenuItem(routes.PaperLogController.index(), "Paper Log", """Create Cabrillo from paper log.""")
+    MenuItem(routes.PaperLogController.paperLogList(), "Paper Log", """Create Cabrillo from paper log.""")
   )
 }
 
