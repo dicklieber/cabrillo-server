@@ -22,13 +22,14 @@ class QsoCache(val ourDir: Path)(implicit wfdSubject: WfdSubject) {
 
   def size: Int = cache.size
 
-  def upsert(qso: PaperLogQso):Unit = {
-    if( qso.isCreate){
+  def upsert(qso: PaperLogQso): Unit = {
+    if (qso.isCreate) {
       add(qso)
-    }else{
+    } else {
       update(qso)
     }
   }
+
   private def add(qso: PaperLogQso): Unit = {
     cache += qso
     Using(Files.newOutputStream(qsosFile,
@@ -50,8 +51,6 @@ class QsoCache(val ourDir: Path)(implicit wfdSubject: WfdSubject) {
         outputStream.write('\n')
       }
     }
-    println("saving")
-//todo save needs to rebuild indexes
   }
 
   /**
@@ -66,6 +65,7 @@ class QsoCache(val ourDir: Path)(implicit wfdSubject: WfdSubject) {
 
   /**
    * Remove qso at index and save entire collection
+   *
    * @param index to be removed.
    * @return new collection of QSOs to be persisted
    */
