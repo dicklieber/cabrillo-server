@@ -35,7 +35,7 @@ case class PaperLogHeader(callSign: CallSign = CallSign.empty,
 object TxPower extends Enumeration {
   type TxPower = Value
   val qrp: paper.TxPower.Value = Value("qrp")
-  val medium: TxPower.Value = Value("medium")
+  val low: TxPower.Value = Value("low")
   val high: TxPower.Value = Value("high")
 
   implicit val format2: Format[TxPower] = Json.formatEnum(this)

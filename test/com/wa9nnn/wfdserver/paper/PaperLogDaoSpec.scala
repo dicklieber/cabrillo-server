@@ -26,7 +26,7 @@ trait PaperLogDaoContext extends ForEach[SessionDao] {
     category = "1H",
     section = "NLI",
     noMainPower = true,
-    txPower = TxPower.medium,
+    txPower = TxPower.low,
     outdoors = true,
     awayFromHome = true,
     satellite = true

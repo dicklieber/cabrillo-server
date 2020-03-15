@@ -27,7 +27,7 @@ import scala.jdk.StreamConverters._
  */
 @Singleton
 class PaperLogsDao @Inject()(@TypesafeConfig("wfd.paperLogDirectory") paperLogDirectory: String) {
-  def delete(callSign: CallSign):Unit = {
+  def delete(callSign: CallSign): Unit = {
     val callSignDir = directory.resolve(callSign.fileSafe)
     org.apache.commons.io.FileUtils.deleteDirectory(callSignDir.toFile)
   }
@@ -50,9 +50,9 @@ class PaperLogsDao @Inject()(@TypesafeConfig("wfd.paperLogDirectory") paperLogDi
       }.toSeq
   }
 
-  def table:Table = {
+  def table: Table = {
     val metadatas: Seq[PaperLogMetadata] = list()
-      Table(PaperLogMetadata.header(metadatas.length), metadatas.map(_.toRow)).withCssClass("resultTable")
+    Table(PaperLogMetadata.header(metadatas.length), metadatas.map(_.toRow)).withCssClass("resultTable")
   }
 
   /**
@@ -88,11 +88,15 @@ case class PaperLogMetadata(callSign: CallSign, user: String, lastUpdate: Instan
 }
 
 object PaperLogMetadata {
-  def header(count:Int): Header = Header(s"CallSigns being edited $count", "CallSign", "User", "Updated", "Qso Count")
+  def header(count: Int): Header = Header(s"CallSigns being edited $count", "CallSign", "User", "Updated", "Qso Count")
 }
 
-case class PaperLog(paperLogDetails: PaperLogMetadata, paperLogHeader: PaperLogHeader, qsos: Seq[PaperLogQso]){
-  def callSign:CallSign = paperLogDetails.callSign
+case class PaperLog(paperLogDetails: PaperLogMetadata, paperLogHeader: PaperLogHeader, qsos: Seq[PaperLogQso]) {
+  def callSign: CallSign = paperLogDetails.callSign
+
+  def okToSubmit: Boolean = {
+    qsos.nonEmpty && paperLogHeader.isvalid
+  }
 }
 
 object PaperLogFormat {

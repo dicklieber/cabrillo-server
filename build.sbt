@@ -35,7 +35,7 @@ initialize := {
 
 
 libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice,
-  "com.wa9nnn" %% "cabrillo-lib" % "1.0.0",
+  "com.wa9nnn" %% "cabrillo-lib" % "1.0.1",
   "com.typesafe.play" %% "play-slick" % "5.0.0",
   "com.typesafe.play" %% "play-json" % "2.8.1",
   "ch.qos.logback" % "logback-classic" % "1.2.3",

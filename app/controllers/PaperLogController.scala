@@ -8,7 +8,7 @@ import akka.pattern._
 import akka.util.Timeout
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
-import com.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
+import com.wa9nnn.cabrillo.ResultWithData
 import com.wa9nnn.wfdserver.Loader
 import com.wa9nnn.wfdserver.auth.{SubjectAccess, WfdSubject}
 import com.wa9nnn.wfdserver.htmlTable.Table
@@ -30,7 +30,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
                                    paperLogsDao: PaperLogsDao,
                                    scoringEngine: ScoringEngine,
                                    loader: Loader,
-
+                                   cabrilloGenerator: CabrilloGenerator,
                                    forms: PaperForms)
                                   (implicit exec: ExecutionContext, config: Config,
                                    addManyOp: AddMany, sectionChoices: SectionChoices)
@@ -55,7 +55,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
     implicit request =>
       val callSign: String = request.body.asFormUrlEncoded.get.head._2.head
 
-      (sessions ? StartSession(callSign, subject)).mapTo[SessionDao].map { dao =>
+      (sessions ? StartSession(callSign, subject)).mapTo[SessionDao].map { _ =>
         Redirect(routes.PaperLogController.headerEditor(callSign))
       }
   }
@@ -93,14 +93,14 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
       session(callSign) { dao =>
         mode match {
           case "view" =>
-            Ok(CabrilloGenerator.string(dao.paperLog))
+            Ok(cabrilloGenerator.string(dao.paperLog))
           case "download" =>
-            Ok(CabrilloGenerator.string(dao.paperLog).getBytes()).withHeaders(
+            Ok(cabrilloGenerator.string(dao.paperLog).getBytes()).withHeaders(
               "Content-Type" -> "text/plain",
               "Content-disposition" -> s"attachment; filename=$callSign.cbr"
             )
           case "submit" =>
-            val data = CabrilloGenerator.string(dao.paperLog).getBytes()
+            val data = cabrilloGenerator.string(dao.paperLog).getBytes()
             val (resultWithData: ResultWithData, maybeLogEntryId: Option[LogInstance]) = loader.doLoad(data)
             val scoringResultTable: Table = maybeLogEntryId.map {
               li: LogInstance =>
@@ -111,7 +111,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
           case "delete" =>
             paperLogsDao.delete(callSign)
-            Redirect(routes.PaperLogController.paperLogList)
+            Redirect(routes.PaperLogController.paperLogList())
 
         }
 

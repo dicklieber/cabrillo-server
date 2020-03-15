@@ -22,7 +22,7 @@ trait PaperLogsDaoContext extends ForEach[PaperLogsDao] {
     category = "1H",
     section = "NLI",
     noMainPower = true,
-    txPower = TxPower.medium,
+    txPower = TxPower.low,
     outdoors = true,
     awayFromHome = true,
     satellite = true

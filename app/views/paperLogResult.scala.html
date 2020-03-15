@@ -53,7 +53,12 @@
                         @defining(callSign.get) { cs =>
                             <td><button onclick="window.location.href = '@routes.PaperLogController.cabrillo(cs, "view")'" >View Cabrillo</button></td>
                             <td><button onclick="window.location.href = '@routes.PaperLogController.cabrillo(cs, "download")'" >Download Cabrillo</button></td>
-                            <td><button onclick="window.location.href = '@routes.PaperLogController.cabrillo(cs, "submit")'" >Submit</button></td>
+                                @if(paperLog.okToSubmit) {
+                                    <td><button onclick="window.location.href = '@routes.PaperLogController.cabrillo(cs, "submit")'" >
+                                        Submit</button></td>
+                                }else{
+                                    <td><button class="disabled">Submit</button></td>
+                                }
                             <td><button class="deleteQso">Delete</button></td>
                         }
                     }
