@@ -2,12 +2,13 @@
 package com.wa9nnn.wfdserver.model
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalTime}
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime}
 
 import com.wa9nnn.wfdserver.util.TimeConverters.zoneIdUtc
 import com.wa9nnn.wfdserver.htmlTable.{Cell, Header, Row, RowSource}
 import controllers.routes
 import PaperLogQso._
+import com.wa9nnn.wfdserver.util.TimeConverters
 
 /**
  *
@@ -20,11 +21,15 @@ case class PaperLogQso(freq: String = "", mode: String = "DI", date: LocalDate =
                        index: Int = createIndex) extends RowSource {
   def isCreate: Boolean = index == createIndex
 
+  def instant: Instant = {
+    LocalDateTime.of(date, time).atZone(TimeConverters.zoneIdUtc).toInstant
+  }
+
 
   def next: PaperLogQso = copy(time = LocalTime.MIN, theirCall = CallSign.empty, category = "", section = "")
 
   def withIndex(index: Int): PaperLogQso = {
-    if(this.index != createIndex){
+    if (this.index != createIndex) {
       throw new IllegalStateException(s"Qso already has index of ${this.index}")
     }
     copy(index = index)

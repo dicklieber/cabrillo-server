@@ -1,0 +1,70 @@
+@import java.time.LocalDate
+@import com.wa9nnn.wfdserver.model.CallSign
+@import com.typesafe.config.Config
+@import com.wa9nnn.wfdserver.auth.WfdSubject
+@import com.wa9nnn.wfdserver.paper.{AddMany, SectionChoices}
+@import com.wa9nnn.wfdserver.paper.PaperLog
+@(paperLog: PaperLog)(implicit subject: WfdSubject,
+        request: play.api.mvc.Request[AnyContent], config: Config, messagesProvider: MessagesProvider, addMany: AddMany, dates: Seq[LocalDate], sectionChoices: SectionChoices)
+
+
+
+    @defining(paperLog.callSign) { callSign =>
+        @paperEditor(callSign) {
+            <script>
+                    $(document).ready(function () {
+                        $(".deleteQso").on("click", function () {
+                            $("#dialog-confirm").dialog({
+                                resizable: false,
+                                height: "auto",
+                                width: 400,
+                                modal: true,
+                                buttons: {
+                                    "Delete": function () {
+                                        $(this).dialog("close");
+                                        window.location = "/paperViewCabrillo/".concat("@(callSign)", "/", "delete");
+                                    },
+                                    Cancel: function () {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                        });
+                    });
+
+            </script>
+
+            <h2>@callSign</h2>
+
+            @if(paperLog.paperLogHeader.isvalid){
+                <p class="happyCell">Header OK</p>
+            }else{
+                <p class="sadCell">Header is incomplete! <a href="@routes.PaperLogController.headerEditor(callSign)">Edit</a></p>
+            }
+            @if(paperLog.qsos.nonEmpty){
+                <p class="happyCell">@(f"${paperLog.qsos.length}%,d QSOs in log.")</p>
+            }else{
+                <p class="sadCell">There are no QSOs!. <a href="@routes.PaperLogController.qsoEditor(callSign)">Edit</a></p>
+            }
+
+            <table class="menu">
+                <tr>
+                    @if(callSign.isDefined) {
+                        @defining(callSign.get) { cs =>
+                            <td><button onclick="window.location.href = '@routes.PaperLogController.cabrillo(cs, "view")'" >View Cabrillo</button></td>
+                            <td><button onclick="window.location.href = '@routes.PaperLogController.cabrillo(cs, "download")'" >Download Cabrillo</button></td>
+                            <td><button onclick="window.location.href = '@routes.PaperLogController.cabrillo(cs, "submit")'" >Submit</button></td>
+                            <td><button class="deleteQso">Delete</button></td>
+                        }
+                    }
+                </tr>
+            </table>
+
+        }
+
+    }
+    <div style="display: none;">
+        <div id="dialog-confirm" title="Delete QSO??">
+            <p>This CallSign's Paper Log will be permanently deleted! Are you sure?</p>
+        </div>
+    </div>

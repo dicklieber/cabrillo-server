@@ -37,7 +37,7 @@
                 $(".deleteQso").on("click", function () {
                     var qso = $(this);
                     var qsoIndex = qso.attr('id');
-                    var tokens = qsoIndex.split("|")
+                    var tokens = qsoIndex.split("|");
                     var index = tokens[0];
                     var callSign = tokens[1];
                     $("#dialog-confirm").dialog({

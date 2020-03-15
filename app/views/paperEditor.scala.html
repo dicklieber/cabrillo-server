@@ -8,11 +8,14 @@
         <tr>
             <td><button onclick="window.location.href = '@routes.PaperLogController.paperLogList'">Logs</button></td>
             @if(callSign.isDefined) {
-                <td><button onclick="window.location.href = '@routes.PaperLogController.headerEditor(callSign)'">
-                    Header</button></td>
-                <td><button onclick="window.location.href = '@routes.PaperLogController.qsoEditor(callSign)'">
-                    QSOs</button></td>
-                <td><button onclick="window.location.href = '@routes.PaperLogController.paperLogList'">Result</button></td>
+                @defining(callSign.get) { cs =>
+                    <td><button onclick="window.location.href = '@routes.PaperLogController.headerEditor(cs)'" >
+                        Header</button></td>
+                    <td><button onclick="window.location.href = '@routes.PaperLogController.qsoEditor(cs)'">
+                        QSOs</button></td>
+                    <td><button onclick="window.location.href = '@routes.PaperLogController.result(cs)'">
+                        Result</button></td>
+                }
             }
         </tr>
     </table>

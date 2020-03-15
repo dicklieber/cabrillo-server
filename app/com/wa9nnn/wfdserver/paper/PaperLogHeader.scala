@@ -25,10 +25,10 @@ case class PaperLogHeader(callSign: CallSign = CallSign.empty,
    * @return true if minimum data is present.
    */
   def isvalid: Boolean = {
-    name.isEmpty ||
+    !(name.isEmpty ||
       email.isEmpty ||
       category.isEmpty ||
-      section.isEmpty
+      section.isEmpty)
   }
 }
 

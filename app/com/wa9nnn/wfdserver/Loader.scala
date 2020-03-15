@@ -30,38 +30,42 @@ class Loader @Inject()(fileSaver: CabrilloFileManager, db: DBRouter) extends Def
   def apply(path: Path, from: String): (ResultWithData, Option[LogInstance]) = {
     metrics.timer("Load").time {
       val rawFile: Array[Byte] = Files.readAllBytes(path)
-      val resultWithData: ResultWithData = Cabrillo(rawFile)
-      val result: Result = resultWithData.result
-      val callSign = if (result.callSign.isEmpty) {
-        logger.error("NoCallSign")
-        throw new NoCallSignException
-      } else {
-        result.callSign.get
-      }
-      val saveToPath = fileSaver.save(rawFile, callSign)
-
-        logJson("result")
-          .++("callSign" -> callSign)
-          .++("stamp" -> Instant.now())
-          .++("from" -> from)
-          .++("fileOk" -> (result.tagsWithErrors == 0))
-          .++("lines" -> result.linesInFile)
-          .++("size" -> rawFile.length)
-          .++("errorTags" -> result.tagsWithErrors.size)
-          .++("unknownTags" -> result.unknownTags.size)
-          .++("duration" -> result.duration)
-          .++("saveTo" -> saveToPath.toString)
-          .info()
-
-      val maybeLogInstance: Option[LogInstance] = resultWithData.goodData.map { cabrilloData =>
-        qsosMeter.mark(resultWithData.result.qsoCount)
-        val logInstance: LogInstance = LogInstanceAdapter(cabrilloData)
-
-        val li: LogInstance = db.ingest(logInstance)
-        li
-      }
-      loadMeter.mark()
-      resultWithData -> maybeLogInstance
+      doLoad( rawFile)
     }
+  }
+
+
+  def doLoad( rawFile:Array[Byte]): (ResultWithData, Option[LogInstance]) = {
+    val resultWithData: ResultWithData = Cabrillo(rawFile)
+    val result: Result = resultWithData.result
+    val callSign = if (result.callSign.isEmpty) {
+      logger.error("NoCallSign")
+      throw new NoCallSignException
+    } else {
+      result.callSign.get
+    }
+    val saveToPath = fileSaver.save(rawFile, callSign)
+
+    logJson("result")
+      .++("callSign" -> callSign)
+      .++("stamp" -> Instant.now())
+      .++("fileOk" -> (result.tagsWithErrors == 0))
+      .++("lines" -> result.linesInFile)
+      .++("errorTags" -> result.tagsWithErrors.size)
+      .++("unknownTags" -> result.unknownTags.size)
+      .++("duration" -> result.duration)
+      .++("saveTo" -> saveToPath.toString)
+      .info()
+
+    val maybeLogInstance: Option[LogInstance] = resultWithData.goodData.map { cabrilloData =>
+      qsosMeter.mark(resultWithData.result.qsoCount)
+      val logInstance: LogInstance = LogInstanceAdapter(cabrilloData)
+
+      val li: LogInstance = db.ingest(logInstance)
+      li
+    }
+    loadMeter.mark()
+    resultWithData -> maybeLogInstance
+
   }
 }

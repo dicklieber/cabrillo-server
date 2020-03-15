@@ -4,27 +4,33 @@ package controllers
 import java.time.{LocalDate, LocalTime}
 
 import akka.actor.ActorRef
+import akka.pattern._
+import akka.util.Timeout
 import be.objectify.deadbolt.scala.ActionBuilders
 import com.typesafe.config.Config
+import com.wa9nnn.cabrillo.{Cabrillo, ResultWithData}
+import com.wa9nnn.wfdserver.Loader
 import com.wa9nnn.wfdserver.auth.{SubjectAccess, WfdSubject}
 import com.wa9nnn.wfdserver.htmlTable.Table
-import com.wa9nnn.wfdserver.model.{CallSign, PaperLogQso}
+import com.wa9nnn.wfdserver.model.{CallSign, LogInstance, PaperLogQso}
 import com.wa9nnn.wfdserver.paper._
+import com.wa9nnn.wfdserver.scoring.ScoringEngine
 import com.wa9nnn.wfdserver.util.{JsonLogging, Page}
 import javax.inject.{Inject, Named, Singleton}
 import play.api.data.Form
 import play.api.mvc._
-import akka.pattern._
-import akka.util.Timeout
-import scala.language.postfixOps
-import scala.concurrent.{ExecutionContext, Future}
+
 import scala.concurrent.duration._
-import scala.language.implicitConversions
+import scala.concurrent.{ExecutionContext, Future}
+import scala.language.{implicitConversions, postfixOps}
 
 @Singleton
 class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: ActionBuilders,
                                    @Named("paperSessions") sessions: ActorRef,
                                    paperLogsDao: PaperLogsDao,
+                                   scoringEngine: ScoringEngine,
+                                   loader: Loader,
+
                                    forms: PaperForms)
                                   (implicit exec: ExecutionContext, config: Config,
                                    addManyOp: AddMany, sectionChoices: SectionChoices)
@@ -39,19 +45,6 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
   implicit val timeout: Timeout = Timeout(3 seconds)
 
-  //  private val byCallSign = new TrieMap[CallSign, PaperLogDao]()
-
-  //  private def paperLog(callSign: CallSign)(implicit request: Request[AnyContent]): SessionDao = {
-  //    byCallSign.getOrElseUpdate(callSign, paperLogsDao.start(callSign))
-  //  }
-
-  //  def index(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
-  //    implicit request =>
-  //      (sessions ? LogList).mapTo[Table].map { table =>
-  //        Ok(views.html.paperLogList(paperLogsDao.))
-  //      }
-  //  }
-
   def paperLogList: Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
 
@@ -60,19 +53,11 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
   def create(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      val callSign = request.body.asFormUrlEncoded.get.head._2.head
+      val callSign: String = request.body.asFormUrlEncoded.get.head._2.head
 
-      (sessions ? StartSession(callSign, subject)).mapTo[Table].map { table =>
-        Ok(views.html.paperLogList(table))
+      (sessions ? StartSession(callSign, subject)).mapTo[SessionDao].map { dao =>
+        Redirect(routes.PaperLogController.headerEditor(callSign))
       }
-
-    //
-    //
-    //      val pl: PaperLog = sessions.session(callSign).paperLog
-    //
-    //      val paperHeaderForm: Form[PaperLogHeader] = forms.header.fill(pl.paperLogHeader)
-    //      //      val paperQsoForm: Form[PaperLogQso] = formQso.fill(PaperLogQso(callSign = callSign))
-    //      Future(Ok(views.html.paperLogHeader(Some(callSign), paperHeaderForm)))
   }
 
   /**
@@ -87,13 +72,58 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         val pl: PaperLog = dao.paperLog
         val header = pl.paperLogHeader
         if (header.isvalid) {
+          doQsoEdit(dao)
+        } else {
           val plf: Form[PaperLogHeader] = forms.header.fill(header)
           Ok(views.html.paperLogHeader(Some(callSign), plf))
-        } else {
-          doQsoEdit(dao)
         }
       }
   }
+
+  def result(callSign: CallSign): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+    implicit request =>
+      session(callSign) { dao =>
+        val pl: PaperLog = dao.paperLog
+        Ok(views.html.paperLogResult(pl))
+      }
+  }
+
+  def cabrillo(callSign: CallSign, mode:String): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+    implicit request =>
+      session(callSign) { dao =>
+        mode match {
+          case "view" =>
+            Ok(CabrilloGenerator.string(dao.paperLog))
+          case "download" =>
+            Ok(CabrilloGenerator.string(dao.paperLog).getBytes()).withHeaders(
+              "Content-Type" -> "text/plain",
+              "Content-disposition" -> s"attachment; filename=$callSign.cbr"
+            )
+          case "submit" =>
+            val data = CabrilloGenerator.string(dao.paperLog).getBytes()
+            val (resultWithData: ResultWithData, maybeLogEntryId: Option[LogInstance]) = loader.doLoad(data)
+            val scoringResultTable: Table = maybeLogEntryId.map {
+              li: LogInstance =>
+                scoringEngine.provisional(li).table
+            }.getOrElse(Table("Couldn't Score", ""))
+
+            Ok(views.html.wfdresult(resultWithData.result, "Paper Log", maybeLogEntryId.map(_.id), scoringResultTable)(request.asInstanceOf[Request[AnyContent]], config: Config))
+
+          case "delete" =>
+            paperLogsDao.delete(callSign)
+            Redirect(routes.PaperLogController.paperLogList)
+
+        }
+
+
+
+
+
+
+
+      }
+  }
+
 
   implicit def csToOpt(callSign: CallSign): Option[CallSign] = Option(callSign)
 
@@ -107,30 +137,20 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
     Ok(views.html.qsoEditor(callSign, paperQsoForm, qsosTable))
   }
 
-  def qsoEditor(callSign: Option[CallSign]): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+  def qsoEditor(callSign: CallSign): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      callSign match {
-        case Some(cs) =>
-          session(cs) {
-            doQsoEdit(_)
-          }
-        case None =>
-          Future(Ok("Please select or create a callSign in the logs tab."))
+      session(callSign) {
+        doQsoEdit(_)
       }
   }
 
 
-  def headerEditor(callSign: Option[CallSign]): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
+  def headerEditor(callSign: CallSign): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      callSign match {
-        case Some(cs) =>
-          (sessions ? SessionRequest(cs, subject)).mapTo[SessionDao].map { sessionDao =>
-            val plHeader: PaperLogHeader = sessionDao.header
-            val form: Form[PaperLogHeader] = forms.header.fill(plHeader)
-            Ok(views.html.paperLogHeader(callSign, form))
-          }
-        case None =>
-          Future(Ok("Please select or create a callSign in the logs tab."))
+      session(callSign) { sessionDao =>
+        val plHeader: PaperLogHeader = sessionDao.header
+        val form: Form[PaperLogHeader] = forms.header.fill(plHeader)
+        Ok(views.html.paperLogHeader(callSign, form))
       }
   }
 
@@ -141,7 +161,7 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
    * @param subject  who
    * @return the [[Result]] in a [[Future]].
    */
-  def session(callSign: CallSign)(f: (SessionDao) => Result)(implicit subject: WfdSubject): Future[Result] = {
+  def session(callSign: CallSign)(f: SessionDao => Result)(implicit subject: WfdSubject): Future[Result] = {
     (sessions ? SessionRequest(callSign, subject)).mapTo[SessionDao].map(f(_))
   }
 
@@ -157,9 +177,10 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
         paperLogHeader => {
           val callSign = paperLogHeader.callSign
 
-          session(callSign) { sessionDao =>
-            sessionDao.saveHeader(paperLogHeader)
-            Redirect(routes.PaperLogController.headerEditor(Option(paperLogHeader.callSign)))
+          session(callSign) {
+            sessionDao =>
+              sessionDao.saveHeader(paperLogHeader)
+              Redirect(routes.PaperLogController.headerEditor(paperLogHeader.callSign))
           }
         }
       )
@@ -170,14 +191,16 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
       forms.qso.bindFromRequest.fold(
         (formWithErrors: Form[PaperLogQso]) => {
           val callSign: String = formWithErrors.data("callSign")
-          session(callSign) { sessionDao =>
-            BadRequest(views.html.qsoEditor(CallSign(callSign), formWithErrors, sessionDao.qsosTable(Page.last)))
+          session(callSign) {
+            sessionDao =>
+              BadRequest(views.html.qsoEditor(CallSign(callSign), formWithErrors, sessionDao.qsosTable(Page.last)))
           }
         },
         paperLogQso => {
-          session(paperLogQso.callSign) { sessionDao =>
-            sessionDao.addQso(paperLogQso)
-            doQsoEdit(sessionDao, None, None)
+          session(paperLogQso.callSign) {
+            sessionDao =>
+              sessionDao.addQso(paperLogQso)
+              doQsoEdit(sessionDao, None, None)
           }
         }
       )
@@ -185,9 +208,10 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
 
   def deleteQso(index: Int, callSign: CallSign): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      session(callSign) { sessionDao =>
-        sessionDao.remove(index)
-        doQsoEdit(sessionDao)
+      session(callSign) {
+        sessionDao =>
+          sessionDao.remove(index)
+          doQsoEdit(sessionDao)
       }
   }
 
@@ -199,13 +223,14 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
    */
   def editQso(callSign: CallSign, index: Int): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      session(callSign) { sessionDao =>
-        sessionDao.get(index) match {
-          case Some(qso) =>
-            doQsoEdit(sessionDao, Some(qso), Some(index))
-          case None =>
-            Ok(s"Can't find qso with index: $index for $callSign")
-        }
+      session(callSign) {
+        sessionDao =>
+          sessionDao.get(index) match {
+            case Some(qso) =>
+              doQsoEdit(sessionDao, Some(qso), Some(index))
+            case None =>
+              Ok(s"Can't find qso with index: $index for $callSign")
+          }
       }
   }
 
@@ -218,29 +243,34 @@ class PaperLogController @Inject()(cc: ControllerComponents, actionBuilder: Acti
    */
   def addMany(callSign: CallSign, howMany: Int): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      session(callSign) { sessionDao =>
-        var count = 0
+      session(callSign) {
+        sessionDao =>
+          var count = 0
 
-        addManyOp(2000) { theirCallSign =>
-          sessionDao.addQso(PaperLogQso(freq = s"7.$count", time = LocalTime.now().plusMinutes(count), theirCall = theirCallSign, category = "7O", section = "DX", callSign = callSign))
-          count += 1
-        }
-        Redirect(routes.PaperLogController.qsoEditor(callSign))
+          addManyOp(2000) {
+            theirCallSign =>
+              val freq = ManyFreqs.next
+              sessionDao.addQso(PaperLogQso(freq = s"$freq", time = LocalTime.now().plusMinutes(count), theirCall = theirCallSign, category = "7O", section = "DX", callSign = callSign))
+              count += 1
+          }
+          Redirect(routes.PaperLogController.qsoEditor(callSign))
       }
   }
 
   def sessionsList(): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      (sessions ? SessionList).mapTo[Table].map { table: Table =>
-        Ok(views.html.paperLogSessions(table))
+      (sessions ? SessionList).mapTo[Table].map {
+        table: Table =>
+          Ok(views.html.paperLogSessions(table))
       }
   }
 
   def invalidate(callSign: CallSign): Action[AnyContent] = actionBuilder.SubjectPresentAction().defaultHandler() {
     implicit request =>
-      (sessions ? InvalidateSession(callSign)).mapTo[Table].map { table: Table =>
+      (sessions ? InvalidateSession(callSign)).mapTo[Table].map {
+        table: Table =>
 
-        Ok(views.html.paperLogSessions(table))
+          Ok(views.html.paperLogSessions(table))
       }
   }
 }
